@@ -75,5 +75,5 @@ void Sorcerer2::reset(unsigned int address)
 void Sorcerer2::step()
 {
   // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
-  _Z80.step();
+  for(int i=0; i < 50; ++i) _Z80.step();
 }
