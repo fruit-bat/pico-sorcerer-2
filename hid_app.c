@@ -38,8 +38,6 @@ extern void sorcerer_keyboard_handler(hid_keyboard_report_t const *report);
 
 #define MAX_REPORT  4
 
-static uint8_t const keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
-
 // Each HID instance can has multiple reports
 static uint8_t _report_count[CFG_TUH_HID];
 static tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
@@ -141,60 +139,14 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 // Keyboard
 //--------------------------------------------------------------------+
 
-// look up new key in previous keys
-static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8_t keycode)
-{
-  for(uint8_t i=0; i<6; i++)
-  {
-    if (report->keycode[i] == keycode)  return true;
-  }
-
-  return false;
-}
-
 static void process_kbd_report(hid_keyboard_report_t const *report)
 {
-  static hid_keyboard_report_t prev_report = { 0, 0, {0} }; // previous report to check key released
-
-  unsigned char* p = (unsigned char*)report;
-  for(int i = 0; i < 8; ++i) {
-    printAt(i<<1,24, "%02X", p[i]);
-  }
+//  unsigned char* p = (unsigned char*)report;
+//  for(int i = 0; i < 8; ++i) {
+//    printAt(i<<1,24, "%02X", p[i]);
+//  }
 
   sorcerer_keyboard_handler(report);
-
-  for(uint8_t i=0; i<6; i++)
-  {
-    if ( prev_report.keycode[i] )
-    {
-      if ( !find_key_in_report(report, prev_report.keycode[i]) )
-      {
-        // Key released
-        bool const is_shift =  prev_report.modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-        uint8_t ch = keycode2ascii[prev_report.keycode[i]][is_shift ? 1 : 0];
-
-        printAt(0,23, "%02X (%c) %08X -", ch, ch, prev_report.keycode[i]);
-      }
-    }
-  }
-
-  //------------- example code ignore control (non-printable) key affects -------------//
-  for(uint8_t i=0; i<6; i++)
-  {
-    if ( report->keycode[i] )
-    {
-      if ( !find_key_in_report(&prev_report, report->keycode[i]) )
-      {
-        // not existed in previous report means the current key is pressed
-        bool const is_shift =  report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-        uint8_t ch = keycode2ascii[report->keycode[i]][is_shift ? 1 : 0];
-
-        printAt(0,23, "%02X (%c) %08X +", ch, ch, report->keycode[i]);
-      }
-    }
-  }
-
-  prev_report = *report;
 }
 
 //--------------------------------------------------------------------+

@@ -57,7 +57,7 @@ static inline void prepare_scanline(const unsigned char *chars, uint y) {
 	static uint8_t scanbuf[FRAME_WIDTH / 8];
 	for (uint i = 0; i < CHAR_COLS; ++i) {
 		uint c = chars[i + ((y >> 3) << 6)];
-		scanbuf[i + 8] = bit_reverse(exchr[(c << 3) + (y & 7)]);
+		scanbuf[i + 8] = exchr[(c << 3) + (y & 7)];
 	}
 	uint32_t *tmdsbuf;
 	queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
@@ -140,14 +140,14 @@ extern "C" int __not_in_flash("main") main() {
 	sem_release(&dvi_start_sem);
 
 	sorcerer2.reset(0xE000);
-	unsigned int a = 0;
+//	unsigned int a = 0;
 
 	while (1) {
 		tuh_task();
 		sorcerer2.step();
 		hid_app_task();
-		printAt(15,15, "%d", a);
-		a = (a + 1) & 0xff;
+//		printAt(15,15, "%d", a);
+//		a = (a + 1) & 0xff;
 	}
 	__builtin_unreachable();
 }

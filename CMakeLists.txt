@@ -23,6 +23,7 @@ target_compile_definitions(sorcerer2 PRIVATE
 	DVI_VERTICAL_REPEAT=2
 	DVI_N_TMDS_BUFFERS=3
 	DVI_MONOCHROME_TMDS=1
+	DVI_1BPP_BIT_REVERSE=1
 	)
 
 target_link_libraries(sorcerer2

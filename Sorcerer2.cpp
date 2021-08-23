@@ -28,10 +28,10 @@ void Sorcerer2::writeByte(void * context, int address, int value)
 
 int Sorcerer2::readIO(void * context, int address)
 {
-  auto m = (Sorcerer2*)context;
+  const auto m = (Sorcerer2*)context;
   if ((address & 0xFF) == 0xFE) { 
-    int c = m->_keyboard->read(address); 
-    m->printAtF(0,26,"IO IN:%02X %02X", address, c);
+    const int c = m->_keyboard->read(address); 
+    // m->printAtF(0,26,"IO IN:%02X %02X", address, c);
     return c;
   }
   if ((address & 0xff) == 0xFD) return 0xFC;
@@ -40,8 +40,8 @@ int Sorcerer2::readIO(void * context, int address)
 
 void Sorcerer2::writeIO(void * context, int address, int value)
 {
-  auto m = (Sorcerer2*)context;
-  m->printAtF(0,27,"IO OU:%02X %02X", address, value);
+  const auto m = (Sorcerer2*)context;
+  // m->printAtF(0,27,"IO OU:%02X %02X", address, value);
   if ((address & 0xFF) == 0xFE) m->_keyboard->write(address, value); 
 
   // not handlded!
@@ -74,6 +74,6 @@ void Sorcerer2::reset(unsigned int address)
 
 void Sorcerer2::step()
 {
-  printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
+  // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
   _Z80.step();
 }
