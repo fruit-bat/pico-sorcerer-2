@@ -11,6 +11,7 @@ add_executable(sorcerer2
 	Sorcerer2Keyboard.cpp
 	Sorcerer2HidKeyboard.cpp
 	hid_app.c
+	test_sd.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR})
@@ -26,6 +27,8 @@ target_compile_definitions(sorcerer2 PRIVATE
 	DVI_1BPP_BIT_REVERSE=1
 	)
 
+add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
+
 target_link_libraries(sorcerer2
 	pico_stdlib
 	pico_multicore
@@ -33,8 +36,8 @@ target_link_libraries(sorcerer2
 	libdvi
 	tinyusb_host
 	tinyusb_board
+	FatFs_SPI
 )
-
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(sorcerer2)

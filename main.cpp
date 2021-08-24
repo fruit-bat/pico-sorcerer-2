@@ -10,6 +10,7 @@
 #include "hardware/structs/bus_ctrl.h"
 #include "hardware/structs/ssi.h"
 #include "hardware/dma.h"
+#include "hardware/uart.h"
 #include "pico/sem.h"
 extern "C" {
 #include "dvi.h"
@@ -22,6 +23,14 @@ extern "C" {
 #include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
+
+#define UART_ID uart0
+#define BAUD_RATE 115200
+
+// We are using pins 0 and 1, but see the GPIO function select table in the
+// datasheet for information on which other pins can be used.
+#define UART_TX_PIN 0
+#define UART_RX_PIN 1
 
 #define FONT_CHAR_WIDTH 8
 #define FONT_CHAR_HEIGHT 8
@@ -43,6 +52,7 @@ unsigned char* charbuf;
 unsigned char* exchr;
 
 extern "C" void hid_app_task();
+extern void testsd();
 
 // Screen handler
 
@@ -72,7 +82,7 @@ void core1_scanline_callback() {
 }
 
 void __not_in_flash("main") core1_main() {
-	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_0);
+	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
 	sem_acquire_blocking(&dvi_start_sem);
 
 	dvi_start(&dvi0);
@@ -113,7 +123,6 @@ extern "C" int __not_in_flash("main") main() {
 	setup_default_uart();
 	tusb_init();
 
-
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
 
@@ -141,6 +150,8 @@ extern "C" int __not_in_flash("main") main() {
 
 	sorcerer2.reset(0xE000);
 //	unsigned int a = 0;
+
+	testsd();
 
 	while (1) {
 		tuh_task();
