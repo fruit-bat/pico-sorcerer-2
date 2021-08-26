@@ -28,13 +28,21 @@ void Sorcerer2DiskSystem::tick() {
 
 int Sorcerer2DiskSystem::readByte(int address) {
   printf("Disk system read %04X\n", address);
-
+  switch (address - 0xBE00) {
+    case 0: return readReg0();
+    case 1: return readReg1();
+    case 2: return readReg2();
+  }
   return 0;	
 }
 
-void Sorcerer2DiskSystem::writeByte(int address, int value) {
-  printf("Disk system write %04X %02X\n", address, value);
-
+void Sorcerer2DiskSystem::writeByte(int address, int b) {
+  printf("Disk system write %04X %02X\n", address, b);
+  switch (address - 0xBE00) {
+    case 0: writeReg0( b ); break;
+    case 1: writeReg1( b ); break;
+    case 2: writeReg2( b ); break;
+  }
 }
 
 bool Sorcerer2DiskSystem::dataReady() {
@@ -57,86 +65,49 @@ void Sorcerer2DiskSystem::stepBackward() {
   if (_activeDrive) _activeDrive->stepBackward();
 }
 
-/*
+void Sorcerer2DiskSystem::readyWrite() {
+  if (_activeDrive) _activeDrive->readyWrite();
+}
 
-    private readyWrite(): void {
-        if ( this._activeDrive != null ) {
-            this._activeDrive.readyWrite();
-        }
-    }
+void Sorcerer2DiskSystem::activate(const int n) {
+  _activeDriveNumber = n;
+  _activeDrive = &_drives[n];
+  _activeDrive->activate();
+}
 
-    private activate(drive: number): void {
-        this._activeDriveNumber = drive;
-        this._activeDrive = this._drives[ drive ];
-        this._activeDrive.activate();
-    }
+void Sorcerer2DiskSystem::writeReg0(const int b) {
+  switch ( b ) {
+    case 0xA0: break;
+    case 0x20: activate( 0 );    break;
+    case 0x21: activate( 1 );    break;
+    case 0x22: activate( 2 );    break;
+    case 0x23: activate( 3 );    break;
+    case 0x60: stepBackward();   break;
+    case 0x61: stepForward();    break;
+    case 0x80: readyWrite();     break;
+  }
+}
 
-    private writeReg0(b: number ): void {
-        switch ( b ) {
-            case 0xA0: break;
-            case 0x20: this.activate( 0 );    break;
-            case 0x21: this.activate( 1 );    break;
-            case 0x22: this.activate( 2 );    break;
-            case 0x23: this.activate( 3 );    break;
-            case 0x60: this.stepBackward(); break;
-            case 0x61: this.stepForward();    break;
-            case 0x80: this.readyWrite();     break;
-        }
-    }
+void Sorcerer2DiskSystem::writeReg1(const int b) {
+  writeReg0(b);
+}
 
-    private writeReg1(b: number): void {
-        switch ( b ) {
-            case 0xA0: break;
-            case 0x20: this.activate( 0 );    break;
-            case 0x21: this.activate( 1 );    break;
-            case 0x22: this.activate( 2 );    break;
-            case 0x23: this.activate( 3 );    break;
-            case 0x60: this.stepBackward(); break;
-            case 0x61: this.stepForward();    break;
-            case 0x80: this.readyWrite();     break;
-        }
-    }
+void Sorcerer2DiskSystem::writeReg2(const int b) {
+  if (_activeDrive) _activeDrive->writeReg2(b);
+}
 
-    private writeReg2(b: number): void {
-        if ( this._activeDrive != null ) {
-            this._activeDrive.writeReg2( b );
-        }
-    }
+int Sorcerer2DiskSystem::readReg0() {
+  return _activeDrive ? _activeDrive->readReg0() : 0;
+}
 
-    private readReg0(): number {
-        return this._activeDrive !== null ? this._activeDrive.readReg0() : 0;
-    }
+int Sorcerer2DiskSystem::readReg1() {
+  int r = _activeDriveNumber;
+  if (active()) r |= 0x20;
+  if (home()) r|= 0x80;
+  if (dataReady()) r|= 0x80; 
+  return r;
+}
 
-    private readReg1(): number {
-        let r = this._activeDriveNumber;
-
-        if ( this.active() ) r |= 0x20;
-        if ( this.home() ) r |= 0x08;
-        if ( this.dataReady() ) r |= 0x80;
-
-        return r;
-    }
-
-    private readReg2(): number {
-        return this._activeDrive === null ? 0 : this._activeDrive.readReg2();
-    }
-
-    public writeByte(address: number, b: number): void {
-        switch (address - MEM_DISK_REG_START) {
-            case 0: this.writeReg0( b ); break;
-            case 1: this.writeReg1( b ); break;
-            case 2: this.writeReg2( b ); break;
-        }
-    }
-
-    public readByte(address: number): number {
-        switch (address - MEM_DISK_REG_START) {
-            case 0: return this.readReg0();
-            case 1: return this.readReg1();
-            case 2: return this.readReg2();
-        }
-        return 0;
-    }
-
-
-    */
+int Sorcerer2DiskSystem::readReg2() {
+  return _activeDrive ? _activeDrive->readReg2() : 0;
+}

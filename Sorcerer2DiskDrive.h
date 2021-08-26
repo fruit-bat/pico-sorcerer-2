@@ -9,4 +9,9 @@ public:
   bool home();
   void stepForward();
   void stepBackward();
+  void readyWrite();
+  void activate();
+  int readReg0();
+  int readReg2();
+  void writeReg2(const int b);
 };

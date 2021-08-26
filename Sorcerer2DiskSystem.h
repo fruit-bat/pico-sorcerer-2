@@ -11,6 +11,14 @@ class Sorcerer2DiskSystem {
   bool home();
   void stepForward();
   void stepBackward();
+  void readyWrite();
+  void activate(const int n);
+  void writeReg0(const int b);
+  void writeReg1(const int b);
+  void writeReg2(const int b);
+  int readReg0();
+  int readReg1();
+  int readReg2();
 public:
   Sorcerer2DiskSystem();
   void tick();
