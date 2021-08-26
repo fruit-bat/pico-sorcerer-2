@@ -1,8 +1,18 @@
 #pragma once
 
-class Sorcerer2DiskDrive {
+#include "Sorcerer2Disk.h"
 
+class Sorcerer2DiskDrive {
+  Sorcerer2Disk* _disk;
+  int _activeCount;
+  int _sectorNumber;
+  int _trackNumber;
+  bool _newSector;
+  int _sectorIndex;
+  void deactivate();
+  void seekDisk();
 public:
+  Sorcerer2DiskDrive();
   bool active();
   void tick();
   bool dataReady();
@@ -14,4 +24,6 @@ public:
   int readReg0();
   int readReg2();
   void writeReg2(const int b);
+  void insert(Sorcerer2Disk* disk);
+  Sorcerer2Disk* eject();
 };

@@ -1,45 +1,133 @@
 #include "Sorcerer2DiskDrive.h"
 
+#define NUMBER_OF_TRACKS 77
+#define ACTIVE_FOR_TICKS 400
+#define BYTES_PER_SECTOR 270
+#define SECTORS_PER_TRACK 16
+
+Sorcerer2DiskDrive::Sorcerer2DiskDrive() : 
+  _disk(0),
+  _activeCount(0),
+  _sectorNumber(0),
+  _trackNumber(0),
+  _newSector(false),
+  _sectorIndex(0)
+{
+}
+  
+void Sorcerer2DiskDrive::insert(Sorcerer2Disk* disk) {
+  if (_disk && _disk->isOpen()) _disk->close();
+  _disk = disk;
+}
+
+Sorcerer2Disk* Sorcerer2DiskDrive::eject() {
+  deactivate();
+  Sorcerer2Disk* disk = _disk;
+  _disk = 0;
+  return disk;
+}
+  
 bool Sorcerer2DiskDrive::active() {
-  return false;
+  return _activeCount > 0;
 }
 
 bool Sorcerer2DiskDrive::dataReady() {
-  return false;
+  return true;
 }
 
 bool Sorcerer2DiskDrive::home() {
-  return false;
+  return _trackNumber == 0;
 }
 
 void Sorcerer2DiskDrive::stepForward() {
-
-}
-
-void Sorcerer2DiskDrive::readyWrite() {
-	
+  if (_trackNumber < ( NUMBER_OF_TRACKS - 1 ) ) {
+	++_trackNumber;
+  }
 }
 
 void Sorcerer2DiskDrive::stepBackward() {
-	
+  if ( _trackNumber > 0 ) {
+    --_trackNumber;
+  }
+}
+
+void Sorcerer2DiskDrive::readyWrite() {
+  // TODO Think about this
 }
 
 void Sorcerer2DiskDrive::activate() {
-	
+	// TODO Think about this
+  if (_disk && _activeCount == 0 && (_disk->isOpen() ||_disk->open())) {
+    _activeCount = ACTIVE_FOR_TICKS;
+    seekDisk();
+  }
+}
+
+void Sorcerer2DiskDrive::deactivate() {
+  if (_disk && _disk->isOpen()) _disk->close();
+  _activeCount = 0;
+  _sectorNumber = 0;
+  _trackNumber =0;
+  _newSector = false;
+  _sectorIndex = 0;
 }
   
 void Sorcerer2DiskDrive::tick() {
+  if ( active() ) {
+    _sectorNumber++;
+    _sectorIndex = 0;
+
+    if ( _sectorNumber >= SECTORS_PER_TRACK ) {
+	  _sectorNumber = 0;
+    }
+    _newSector = true;
+
+    _activeCount--;
+
+    if ( !active() ) {
+      deactivate();
+    }
+    else {
+      seekDisk();
+    }
+  }
 }
 
 int Sorcerer2DiskDrive::readReg0() {
-	return 0;
+  if ( active() ) {
+    _activeCount = ACTIVE_FOR_TICKS;
+  }
+  int r = _sectorNumber;
+  if ( _newSector ) {
+    r |= 0x80;
+    _newSector = false;
+  }
+  return r;
 }
   
 int Sorcerer2DiskDrive::readReg2() {
-	return 0;
+  if ( active() ) {
+    _activeCount = ACTIVE_FOR_TICKS;
+  }
+  if ( _disk && _disk->isOpen() && (_sectorIndex < BYTES_PER_SECTOR) ) {
+    _sectorIndex++;
+    return _disk->read() & 0xff;
+  }
+  return 0;
 }
-  
+
 void Sorcerer2DiskDrive::writeReg2(const int b) {
-	
+  if ( active() ) {
+	_activeCount = ACTIVE_FOR_TICKS;
+  }
+  if (_disk && _disk->isOpen() && (_sectorIndex < BYTES_PER_SECTOR) ) {
+    _sectorIndex++;
+	_disk->write(b);
+  }
 }
-  
+
+void Sorcerer2DiskDrive::seekDisk() {
+  if (_disk && _disk->isOpen()) {
+	  _disk->seek(((_trackNumber * SECTORS_PER_TRACK) + _sectorNumber) * BYTES_PER_SECTOR);
+  }
+}
