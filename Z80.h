@@ -6,6 +6,7 @@
  This code is free, do whatever you want with it.
 
  2020 adapted by Fabrizio Di Vittorio for fabgl ESP32 library
+ 2021 adapted for Sorcerer2 emulator
  */
 
 

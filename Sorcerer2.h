@@ -6,6 +6,7 @@
 class Sorcerer2 {
 private:
   Z80 _Z80;
+  int _cycles;
 
   static int readByte(void * context, int address);
   static void writeByte(void * context, int address, int value);
@@ -19,6 +20,8 @@ private:
   uint8_t _RAM[1<<16];
 
   Sorcerer2Keyboard *_keyboard;
+  
+  void diskTick();
 
 public:
   Sorcerer2(Sorcerer2Keyboard *keyboard);
