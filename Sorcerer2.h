@@ -2,6 +2,7 @@
 
 #include "Z80.h"
 #include "Sorcerer2Keyboard.h"
+#include "Sorcerer2DiskSystem.h"
 
 class Sorcerer2 {
 private:
@@ -20,11 +21,15 @@ private:
   uint8_t _RAM[1<<16];
 
   Sorcerer2Keyboard *_keyboard;
+  Sorcerer2DiskSystem *_diskSystem;
   
   void diskTick();
 
 public:
-  Sorcerer2(Sorcerer2Keyboard *keyboard);
+  Sorcerer2(
+    Sorcerer2Keyboard *keyboard,
+    Sorcerer2DiskSystem *diskSystem
+  );
   inline unsigned char* screenPtr() { return &_RAM[0xF080]; }
   inline unsigned char* charsPtr() { return &_RAM[0xF800]; }
   void reset(unsigned int address);

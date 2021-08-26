@@ -6,36 +6,42 @@
 #include <pico/printf.h>
 #include "Sorcerer2HidKeyboard.h"
 
-Sorcerer2::Sorcerer2(Sorcerer2Keyboard *keyboard) : _keyboard(keyboard) 
+Sorcerer2::Sorcerer2(
+  Sorcerer2Keyboard *keyboard,
+  Sorcerer2DiskSystem *diskSystem
+) : 
+  _keyboard(keyboard),
+  _diskSystem(diskSystem)
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
   memcpy(&_RAM[0xE000], monitor, 0x1000);
   memcpy(&_RAM[0xF800], exchr, 0x400);
-  memcpy(&_RAM[0xBC00], diskboot, 0x100);
+  if (_diskSystem) {
+    memcpy(&_RAM[0xBC00], diskboot, 0x100);
+  }
 }
-
 
 int Sorcerer2::readByte(void * context, int address)
 {
   if (address >= 0xBE00 && address < 0xBE10) {
-    // Disk system IO
-    printf("Disk read %04X\n", address);
+    return ((Sorcerer2*)context)->_diskSystem->readByte(address);
   }
   return ((Sorcerer2*)context)->_RAM[address];
 }
 
-
 void Sorcerer2::writeByte(void * context, int address, int value)
 {
-  if (address >= 0xBE00 && address < 0xBE10) {
-    // Disk system IO
-    printf("Disk write %04X %02X\n", address, value);
+  auto s = ((Sorcerer2*)context);
+  if (address >= 0xBE00 && address < 0xBE10 && s->_diskSystem) {
+    ((Sorcerer2*)context)->_diskSystem->writeByte(address, value);
+    return;
   }
+  
   // Diskboot rom  0xBC00 - 0xBD00
   // Monitor rom   0xC000 - 0xF000
   if (address >= 0xBC00 && address < 0xF000) return; // Diskboot and Monitor ROM
   if (address >= 0xF800 && address < 0xFC00) return; // Character set ROM
-  ((Sorcerer2*)context)->_RAM[address] = value;
+  s->_RAM[address] = value;
 }
 
 int Sorcerer2::readIO(void * context, int address)
@@ -87,6 +93,7 @@ void Sorcerer2::reset(unsigned int address)
 
 void Sorcerer2::diskTick()
 {
+  if (_diskSystem) _diskSystem->tick();
 }
 
 // This is just a guess!

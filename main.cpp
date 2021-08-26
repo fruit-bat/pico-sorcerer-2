@@ -55,14 +55,6 @@ extern "C" void hid_app_task();
 extern void testsd();
 
 // Screen handler
-
-static inline unsigned char bit_reverse(unsigned char b) {
-	b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-	b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-	b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-	return b;
-}
-
 static inline void prepare_scanline(const unsigned char *chars, uint y) {
 	static uint8_t scanbuf[FRAME_WIDTH / 8];
 	for (uint i = 0; i < CHAR_COLS; ++i) {
@@ -77,8 +69,8 @@ static inline void prepare_scanline(const unsigned char *chars, uint y) {
 
 void core1_scanline_callback() {
 	static uint y = 1;
-	prepare_scanline(charbuf, y);
-	y = (y + 1) % FRAME_HEIGHT;
+	prepare_scanline(charbuf, y++);
+	if (y >= FRAME_HEIGHT) y -= FRAME_HEIGHT;
 }
 
 void __not_in_flash("main") core1_main() {
@@ -94,8 +86,12 @@ void __not_in_flash("main") core1_main() {
 	__builtin_unreachable();
 }
 
+static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
-static Sorcerer2 sorcerer2(&sorcerer2HidKeyboard);
+static Sorcerer2 sorcerer2(
+  &sorcerer2HidKeyboard,
+  &sorcerer2DiskSystem
+);
 
 extern "C" void printAt(unsigned int x, unsigned int y, const char *fmt, ...) {
   va_list args;

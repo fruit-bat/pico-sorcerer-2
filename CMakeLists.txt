@@ -10,6 +10,8 @@ add_executable(sorcerer2
 	Sorcerer2Output.cpp
 	Sorcerer2Keyboard.cpp
 	Sorcerer2HidKeyboard.cpp
+	Sorcerer2DiskSystem.cpp
+	Sorcerer2DiskDrive.cpp
 	hid_app.c
 	test_sd.cpp
 )
