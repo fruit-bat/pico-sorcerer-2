@@ -4,6 +4,7 @@
 
 class Sorcerer2DiskDrive {
   Sorcerer2Disk* _disk;
+  int _unit;
   int _activeCount;
   int _sectorNumber;
   int _trackNumber;
@@ -12,7 +13,7 @@ class Sorcerer2DiskDrive {
   void deactivate();
   void seekDisk();
 public:
-  Sorcerer2DiskDrive();
+  Sorcerer2DiskDrive(int unit);
   bool active();
   void tick();
   bool dataReady();
@@ -26,4 +27,5 @@ public:
   void writeReg2(const int b);
   void insert(Sorcerer2Disk* disk);
   Sorcerer2Disk* eject();
+  char driveLetter();
 };

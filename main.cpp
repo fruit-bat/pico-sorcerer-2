@@ -20,6 +20,8 @@ extern "C" {
 }
 #include "Sorcerer2.h"
 #include "Sorcerer2HidKeyboard.h"
+#include "Sorcerer2DiskFatFsSpi.h"
+
 #include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
@@ -40,7 +42,9 @@ extern "C" {
 #define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
 #define DVI_TIMING dvi_timing_640x480p_60hz
-#define LED_PIN 16
+
+// Should be 25 for pico ?
+// #define LED_PIN 16
 
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
@@ -86,6 +90,8 @@ void __not_in_flash("main") core1_main() {
 	__builtin_unreachable();
 }
 
+static Sorcerer2SdCardFatFsSpi sdCard0(0);
+static Sorcerer2DiskFatFsSpi diskA(&sdCard0, "diskA.dsk");
 static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
 static Sorcerer2 sorcerer2(
@@ -118,7 +124,7 @@ extern "C" int __not_in_flash("main") main() {
 
 	setup_default_uart();
 	tusb_init();
-
+    
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
 
@@ -126,6 +132,7 @@ extern "C" int __not_in_flash("main") main() {
 
 	charbuf = sorcerer2.screenPtr();
 	exchr = sorcerer2.charsPtr();
+    sorcerer2DiskSystem.drive(0)->insert(&diskA);
 
 	dvi0.timing = &DVI_TIMING;
 	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
@@ -147,7 +154,9 @@ extern "C" int __not_in_flash("main") main() {
 	sorcerer2.reset(0xE000);
 //	unsigned int a = 0;
 
-	testsd();
+//	testsd();
+//    sdCard0.mount();
+//    sdCard0.unmount();
 
 	while (1) {
 		tuh_task();

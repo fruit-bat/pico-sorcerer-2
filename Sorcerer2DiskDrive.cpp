@@ -1,12 +1,11 @@
+#include <pico/printf.h>
+
 #include "Sorcerer2DiskDrive.h"
+#include "Sorcerer2DiskConsts.h"
 
-#define NUMBER_OF_TRACKS 77
-#define ACTIVE_FOR_TICKS 400
-#define BYTES_PER_SECTOR 270
-#define SECTORS_PER_TRACK 16
-
-Sorcerer2DiskDrive::Sorcerer2DiskDrive() : 
+Sorcerer2DiskDrive::Sorcerer2DiskDrive(int unit) : 
   _disk(0),
+  _unit(unit),
   _activeCount(0),
   _sectorNumber(0),
   _trackNumber(0),
@@ -14,7 +13,7 @@ Sorcerer2DiskDrive::Sorcerer2DiskDrive() :
   _sectorIndex(0)
 {
 }
-  
+
 void Sorcerer2DiskDrive::insert(Sorcerer2Disk* disk) {
   if (_disk && _disk->isOpen()) _disk->close();
   _disk = disk;
@@ -67,7 +66,7 @@ void Sorcerer2DiskDrive::deactivate() {
   if (_disk && _disk->isOpen()) _disk->close();
   _activeCount = 0;
   _sectorNumber = 0;
-  _trackNumber =0;
+  _trackNumber = 0;
   _newSector = false;
   _sectorIndex = 0;
 }
@@ -102,6 +101,7 @@ int Sorcerer2DiskDrive::readReg0() {
     r |= 0x80;
     _newSector = false;
   }
+  // printf("Disk drive reg0 %02X\n", r);
   return r;
 }
   
@@ -110,8 +110,7 @@ int Sorcerer2DiskDrive::readReg2() {
     _activeCount = ACTIVE_FOR_TICKS;
   }
   if ( _disk && _disk->isOpen() && (_sectorIndex < BYTES_PER_SECTOR) ) {
-    _sectorIndex++;
-    return _disk->read() & 0xff;
+    return _disk->read(_sectorIndex++) & 0xff;
   }
   return 0;
 }
@@ -121,8 +120,7 @@ void Sorcerer2DiskDrive::writeReg2(const int b) {
 	_activeCount = ACTIVE_FOR_TICKS;
   }
   if (_disk && _disk->isOpen() && (_sectorIndex < BYTES_PER_SECTOR) ) {
-    _sectorIndex++;
-	_disk->write(b);
+	_disk->write(b, _sectorIndex++);
   }
 }
 
@@ -130,4 +128,8 @@ void Sorcerer2DiskDrive::seekDisk() {
   if (_disk && _disk->isOpen()) {
 	  _disk->seek(((_trackNumber * SECTORS_PER_TRACK) + _sectorNumber) * BYTES_PER_SECTOR);
   }
+}
+
+char Sorcerer2DiskDrive::driveLetter() {
+  return "ABCD"[_unit];
 }

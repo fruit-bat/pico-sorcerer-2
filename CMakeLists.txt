@@ -12,6 +12,8 @@ add_executable(sorcerer2
 	Sorcerer2HidKeyboard.cpp
 	Sorcerer2DiskSystem.cpp
 	Sorcerer2DiskDrive.cpp
+	Sorcerer2DiskFatFsSpi.cpp
+	Sorcerer2SdCardFatFsSpi.cpp
 	hid_app.c
 	test_sd.cpp
 )

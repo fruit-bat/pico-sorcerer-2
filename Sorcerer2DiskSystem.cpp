@@ -4,10 +4,10 @@
 
 Sorcerer2DiskSystem::Sorcerer2DiskSystem() :
   _drives({
-	  Sorcerer2DiskDrive(),
-	  Sorcerer2DiskDrive(),
-	  Sorcerer2DiskDrive(),
-	  Sorcerer2DiskDrive()
+	  Sorcerer2DiskDrive(0),
+	  Sorcerer2DiskDrive(1),
+	  Sorcerer2DiskDrive(2),
+	  Sorcerer2DiskDrive(3)
   }),
   _activeDriveNumber(0x40),
   _activeDrive(0)
@@ -27,7 +27,7 @@ void Sorcerer2DiskSystem::tick() {
 }
 
 int Sorcerer2DiskSystem::readByte(int address) {
-  printf("Disk system read %04X\n", address);
+  // printf("Disk system read %04X\n", address);
   switch (address - 0xBE00) {
     case 0: return readReg0();
     case 1: return readReg1();
@@ -37,7 +37,7 @@ int Sorcerer2DiskSystem::readByte(int address) {
 }
 
 void Sorcerer2DiskSystem::writeByte(int address, int b) {
-  printf("Disk system write %04X %02X\n", address, b);
+  //printf("Disk system write %04X %02X\n", address, b);
   switch (address - 0xBE00) {
     case 0: writeReg0( b ); break;
     case 1: writeReg1( b ); break;
@@ -103,7 +103,7 @@ int Sorcerer2DiskSystem::readReg0() {
 int Sorcerer2DiskSystem::readReg1() {
   int r = _activeDriveNumber;
   if (active()) r |= 0x20;
-  if (home()) r|= 0x80;
+  if (home()) r|= 0x08;
   if (dataReady()) r|= 0x80; 
   return r;
 }

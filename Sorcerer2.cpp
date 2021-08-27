@@ -104,9 +104,9 @@ void Sorcerer2::step()
   // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
   for(int i=0; i < 50; ++i) {
     _cycles += _Z80.step();
-    if (_cycles >= CYCLES_PER_DISK_TICK) {
-      diskTick();
-      _cycles -= CYCLES_PER_DISK_TICK;
-    }
+  }
+  if (_cycles >= CYCLES_PER_DISK_TICK) {
+    diskTick();
+    _cycles -= CYCLES_PER_DISK_TICK;
   }
 }
