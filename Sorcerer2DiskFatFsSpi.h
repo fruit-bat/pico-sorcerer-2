@@ -9,8 +9,10 @@ class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
   const char* _name;
   FIL _fil;
   unsigned char _sector[BYTES_PER_SECTOR];
-  //bool _sectorRead = false;
+  bool _sectorRead;
+  long _offset;
   bool _open;
+  void readSector();
 public:
   Sorcerer2DiskFatFsSpi(Sorcerer2SdCardFatFsSpi* sdCard, const char* name);
   virtual void seek(long p);
