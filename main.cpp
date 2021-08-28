@@ -93,6 +93,8 @@ void __not_in_flash("main") core1_main() {
 static Sorcerer2SdCardFatFsSpi sdCard0(0);
 static Sorcerer2DiskFatFsSpi diskA(&sdCard0, "diskA.dsk");
 static Sorcerer2DiskFatFsSpi diskB(&sdCard0, "diskB.dsk");
+static Sorcerer2DiskFatFsSpi diskC(&sdCard0, "diskC.dsk");
+static Sorcerer2DiskFatFsSpi diskD(&sdCard0, "diskD.dsk");
 static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
 static Sorcerer2 sorcerer2(
@@ -135,6 +137,8 @@ extern "C" int __not_in_flash("main") main() {
 	exchr = sorcerer2.charsPtr();
     sorcerer2DiskSystem.drive(0)->insert(&diskA);
     sorcerer2DiskSystem.drive(1)->insert(&diskB);
+    sorcerer2DiskSystem.drive(2)->insert(&diskC);
+    sorcerer2DiskSystem.drive(3)->insert(&diskD);
 
 	dvi0.timing = &DVI_TIMING;
 	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;

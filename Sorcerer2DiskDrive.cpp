@@ -10,19 +10,23 @@ Sorcerer2DiskDrive::Sorcerer2DiskDrive(int unit) :
   _sectorNumber(0),
   _trackNumber(0),
   _newSector(false),
-  _sectorIndex(0)
+  _sectorIndex(0),
+  _dataReady(false)
 {
 }
 
 void Sorcerer2DiskDrive::insert(Sorcerer2Disk* disk) {
   if (_disk && _disk->isOpen()) _disk->close();
   _disk = disk;
+  _dataReady = false;
 }
 
 Sorcerer2Disk* Sorcerer2DiskDrive::eject() {
   deactivate();
   Sorcerer2Disk* disk = _disk;
   _disk = 0;
+  _dataReady = false;
+
   return disk;
 }
   
@@ -31,7 +35,7 @@ bool Sorcerer2DiskDrive::active() {
 }
 
 bool Sorcerer2DiskDrive::dataReady() {
-  return true;
+  return _dataReady;
 }
 
 bool Sorcerer2DiskDrive::home() {
@@ -39,23 +43,45 @@ bool Sorcerer2DiskDrive::home() {
 }
 
 void Sorcerer2DiskDrive::stepForward() {
+  _dataReady = false;
+  _sectorIndex = 0;
+
+  if ( active() ) {
+    _activeCount = ACTIVE_FOR_TICKS;
+  }
+  
   if (_trackNumber < ( NUMBER_OF_TRACKS - 1 ) ) {
 	++_trackNumber;
   }
 }
 
 void Sorcerer2DiskDrive::stepBackward() {
+  _dataReady = false;
+  _sectorIndex = 0;
+
+  if ( active() ) {
+    _activeCount = ACTIVE_FOR_TICKS;
+  }
+  
   if ( _trackNumber > 0 ) {
     --_trackNumber;
   }
 }
 
 void Sorcerer2DiskDrive::readyWrite() {
+  if ( active() ) {
+    _activeCount = ACTIVE_FOR_TICKS;
+  }
+  	
   // TODO Think about this
 }
 
 void Sorcerer2DiskDrive::activate() {
 	// TODO Think about this
+  _dataReady = false;
+  _sectorIndex = 0;
+  _sectorNumber = 0;
+
   if (_disk && _activeCount == 0 && (_disk->isOpen() ||_disk->open())) {
     _activeCount = ACTIVE_FOR_TICKS;
     seekDisk();
@@ -68,12 +94,24 @@ void Sorcerer2DiskDrive::deactivate() {
   _sectorNumber = 0;
   _trackNumber = 0;
   _newSector = false;
+  _dataReady = false;
   _sectorIndex = 0;
 }
   
 void Sorcerer2DiskDrive::tick() {
   if ( active() ) {
     _sectorNumber++;
+    
+    if (_sectorIndex > 0 && _sectorIndex < BYTES_PER_SECTOR) {
+		if(_dataReady) {
+			_dataReady = false;
+			return;
+		}
+		if (_sectorIndex !=3) printf("******* DISK UNDERRUN %d*********\n", _sectorIndex);
+		
+	}
+    _dataReady = true;
+    
     _sectorIndex = 0;
 
     if ( _sectorNumber >= SECTORS_PER_TRACK ) {

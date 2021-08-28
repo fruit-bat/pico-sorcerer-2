@@ -10,6 +10,7 @@ class Sorcerer2DiskDrive {
   int _trackNumber;
   bool _newSector;
   int _sectorIndex;
+  bool _dataReady;
   void deactivate();
   void seekDisk();
 public:

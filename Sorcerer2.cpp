@@ -96,8 +96,19 @@ void Sorcerer2::diskTick()
   if (_diskSystem) _diskSystem->tick();
 }
 
-// This is just a guess!
-#define CYCLES_PER_DISK_TICK 100000
+// This is just a guess at the CPU cycles for a sector to pass under the read head
+//
+//   Disk rotation rate 300rpm (based on micropolis docs)
+//   CPU 4MHz
+//   16 sectors per track
+//
+//    (4 * 10^6) / ( (300 / 60) * 16)
+//  = (4 * 10^6) / ( 5 * 16) 
+//  = 10^6 / ( 5 * 4 )
+//  = 10^5 / 2
+//  = 5 * 10^4
+//
+#define CYCLES_PER_DISK_TICK 50000
 
 void Sorcerer2::step()
 {
