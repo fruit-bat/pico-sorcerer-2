@@ -153,19 +153,16 @@ extern "C" int __not_in_flash("main") main() {
 
 	sem_release(&dvi_start_sem);
 
-	sorcerer2.reset(0xE000);
-//	unsigned int a = 0;
-
-//	testsd();
-//    sdCard0.mount();
-//    sdCard0.unmount();
+	sorcerer2.reset();
 
 	while (1) {
 		tuh_task();
 		sorcerer2.step();
 		hid_app_task();
-//		printAt(15,15, "%d", a);
-//		a = (a + 1) & 0xff;
+		if (sorcerer2HidKeyboard.resetPressed()) {
+			sorcerer2.reset();
+			// TODO Shudtown CD card and other periferals if required
+		}
 	}
 	__builtin_unreachable();
 }

@@ -19,6 +19,7 @@ Sorcerer2HidKey KEYS[] = {
   { HID_KEY_ESCAPE, 0, 0},
   { HID_KEY_SPACE, 1, 2},
   { HID_KEY_STOP, 1, 4}, // RUNSTOP
+  { HID_KEY_F9, 1, 4}, // RUNSTOP
   { HID_KEY_DELETE, 15, 0},
   { HID_KEY_0, 9, 4},
   { HID_KEY_1, 2, 4},
@@ -151,7 +152,10 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
     }
   }
   for(unsigned int i = 0; i < 6; ++i) {
-    const Sorcerer2HidKey *k = findKey(report->keycode[i]);
+    const unsigned char hidKeyCode = report->keycode[i];
+    if (hidKeyCode == HID_KEY_F11) setReset1(true); 
+    if (hidKeyCode == HID_KEY_F12) setReset2(true); 
+    const Sorcerer2HidKey *k = findKey(hidKeyCode);
     if (k) {
       const unsigned char keycode = k->keycode;
       bool isLockKey = false;

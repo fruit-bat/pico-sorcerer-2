@@ -33,6 +33,7 @@ public:
   inline unsigned char* screenPtr() { return &_RAM[0xF080]; }
   inline unsigned char* charsPtr() { return &_RAM[0xF800]; }
   void reset(unsigned int address);
+  void reset() { reset(0xE000); }
   void step();
   void printAt(unsigned int x, unsigned int y, const char *str);
   void printAtF(unsigned int x, unsigned int y, const char *fmt, ...);
