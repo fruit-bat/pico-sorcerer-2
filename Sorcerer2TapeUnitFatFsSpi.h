@@ -2,6 +2,12 @@
 
 #include "Sorcerer2SdCardFatFsSpi.h"
 #include "Sorcerer2TapeUnit.h"
+#include "f_util.h"
+#include "ff.h"
+#include "pico/stdlib.h"
+#include "rtc.h"
+//
+#include "hw_config.h"
 
 class Sorcerer2TapeUnitFatFsSpi : public Sorcerer2TapeUnit {
   Sorcerer2SdCardFatFsSpi* _sdCard;
@@ -9,7 +15,10 @@ class Sorcerer2TapeUnitFatFsSpi : public Sorcerer2TapeUnit {
   FRESULT dfr;    /* Return value for directory */
   DIR dj;         /* Directory object */
   FILINFO fno;    /* File information */
-
+  FRESULT fr;     /* Return value for file */
+  FIL fil;        /* File object */
+  bool nextFile();
+  bool openFile();
 public:
   Sorcerer2TapeUnitFatFsSpi(Sorcerer2SdCardFatFsSpi* sdCard, const char* folderName);
   

@@ -1,4 +1,5 @@
 #include "Sorcerer2TapeSystem.h"
+#include <pico/printf.h>
 
 Sorcerer2TapeSystem::Sorcerer2TapeSystem() :
   _units{0, 0},
@@ -12,7 +13,7 @@ void Sorcerer2TapeSystem::attach(int n, Sorcerer2TapeUnit* unit) {
   }
   _units[n] = unit;
   if (unit) {
-    unit->motor(0x10 << n & _control);
+    unit->motor((0x10 << n) & _control);
     unit->setBaud1200(0x40 & _control);
   }
 }
@@ -49,6 +50,7 @@ void Sorcerer2TapeSystem::writeData(unsigned char data) {
 }
 
 unsigned char Sorcerer2TapeSystem::readData() {
+  printf("r");
   for (int i = 0; i < 2; ++i) {
     Sorcerer2TapeUnit *unit = _units[i];
     if (unit && unit->readyForRead()) return unit->readData();
