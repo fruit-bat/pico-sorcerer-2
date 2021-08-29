@@ -16,6 +16,7 @@ add_executable(sorcerer2
 	Sorcerer2SdCardFatFsSpi.cpp
 	Sorcerer2TapeSystem.cpp
 	Sorcerer2TapeUnit.cpp
+	Sorcerer2TapeUnitFatFsSpi.cpp
 	hid_app.c
 	test_sd.cpp
 )

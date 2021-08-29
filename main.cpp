@@ -21,6 +21,7 @@ extern "C" {
 #include "Sorcerer2.h"
 #include "Sorcerer2HidKeyboard.h"
 #include "Sorcerer2DiskFatFsSpi.h"
+#include "Sorcerer2TapeUnitFatFsSpi.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -91,6 +92,7 @@ void __not_in_flash("main") core1_main() {
 }
 
 static Sorcerer2SdCardFatFsSpi sdCard0(0);
+static Sorcerer2TapeUnitFatFsSpi tapeUnit0(&sdCard0, "tapes");
 static Sorcerer2DiskFatFsSpi diskA(&sdCard0, "diskA.dsk");
 static Sorcerer2DiskFatFsSpi diskB(&sdCard0, "diskB.dsk");
 static Sorcerer2DiskFatFsSpi diskC(&sdCard0, "diskC.dsk");
@@ -139,6 +141,7 @@ extern "C" int __not_in_flash("main") main() {
     sorcerer2DiskSystem.drive(1)->insert(&diskB);
     sorcerer2DiskSystem.drive(2)->insert(&diskC);
     sorcerer2DiskSystem.drive(3)->insert(&diskD);
+    sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
 
 	dvi0.timing = &DVI_TIMING;
 	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
