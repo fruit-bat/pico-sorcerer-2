@@ -171,3 +171,7 @@ void Sorcerer2DiskDrive::seekDisk() {
 char Sorcerer2DiskDrive::driveLetter() {
   return "ABCD"[_unit];
 }
+
+void Sorcerer2DiskDrive::reset() {
+  deactivate();
+}

@@ -47,22 +47,29 @@ void Sorcerer2::writeByte(void * context, int address, int value)
 int Sorcerer2::readIO(void * context, int address)
 {
   const auto m = (Sorcerer2*)context;
-  if ((address & 0xFF) == 0xFE) { 
-    const int c = m->_keyboard->read(address); 
-    // m->printAtF(0,26,"IO IN:%02X %02X", address, c);
-    return c;
+  switch(address & 0xFF) {
+    case 0xFE: return m->_keyboard->read(address);
+    case 0xFC: return m->_tapeSystem.readData();
+    case 0xFD: return m->_tapeSystem.readStatus();
+    default: return 0xff;
   }
-  if ((address & 0xff) == 0xFD) return 0xFC;
-  return 0xff;
 }
 
 void Sorcerer2::writeIO(void * context, int address, int value)
 {
   const auto m = (Sorcerer2*)context;
-  // m->printAtF(0,27,"IO OU:%02X %02X", address, value);
-  if ((address & 0xFF) == 0xFE) m->_keyboard->write(address, value); 
-
-  // not handlded!
+  switch(address & 0xFF) {
+    case 0xFE: {
+      m->_keyboard->write(address, value);
+      m->_tapeSystem.writeControl(value);
+      break;
+    }
+    case 0xFC: {
+      m->_tapeSystem.writeData(value);
+      break;
+    }
+    default: break;
+  }  
 }
 
 void Sorcerer2::printAt(unsigned int x, unsigned int y, const char *s) {
@@ -120,4 +127,10 @@ void Sorcerer2::step()
     diskTick();
     _cycles -= CYCLES_PER_DISK_TICK;
   }
+}
+
+void Sorcerer2::reset() { 
+  _tapeSystem.reset();
+  if (_diskSystem) _diskSystem->reset();
+  reset(0xE000); 
 }

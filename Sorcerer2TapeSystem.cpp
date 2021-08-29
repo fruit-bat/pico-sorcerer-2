@@ -51,7 +51,7 @@ void Sorcerer2TapeSystem::writeData(unsigned char data) {
 unsigned char Sorcerer2TapeSystem::readData() {
   for (int i = 0; i < 2; ++i) {
     Sorcerer2TapeUnit *unit = _units[i];
-    if (unit && unit->readyForRead()) unit->readData();
+    if (unit && unit->readyForRead()) return unit->readData();
   }
   return 0;
 }

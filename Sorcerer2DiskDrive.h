@@ -29,4 +29,5 @@ public:
   void insert(Sorcerer2Disk* disk);
   Sorcerer2Disk* eject();
   char driveLetter();
+  void reset();
 };

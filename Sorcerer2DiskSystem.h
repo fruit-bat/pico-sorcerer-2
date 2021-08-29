@@ -25,4 +25,5 @@ public:
   int readByte(int address);
   void writeByte(int address, int value);
   Sorcerer2DiskDrive* drive(int unit) { return &_drives[unit]; }
+  void reset();
 };

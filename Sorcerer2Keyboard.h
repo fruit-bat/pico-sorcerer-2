@@ -3,6 +3,7 @@
 #include "Sorcerer2Input.h"
 #include "Sorcerer2Output.h"
 
+// TODO Sorcerer2Input, Sorcerer2Output look a bit pointless
 class Sorcerer2Keyboard : public Sorcerer2Input, Sorcerer2Output {
 private:
   unsigned char _line[16];

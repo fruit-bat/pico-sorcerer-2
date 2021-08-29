@@ -111,3 +111,11 @@ int Sorcerer2DiskSystem::readReg1() {
 int Sorcerer2DiskSystem::readReg2() {
   return _activeDrive ? _activeDrive->readReg2() : 0;
 }
+
+void Sorcerer2DiskSystem::reset() {
+  for (int i = 0; i < 4; ++i ) {
+	_drives[ i ].reset();
+  }
+  _activeDriveNumber = 0x40;
+  _activeDrive = 0;
+}

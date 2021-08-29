@@ -3,12 +3,14 @@
 #include "Z80.h"
 #include "Sorcerer2Keyboard.h"
 #include "Sorcerer2DiskSystem.h"
+#include "Sorcerer2TapeSystem.h"
 
 class Sorcerer2 {
 private:
   Z80 _Z80;
   int _cycles;
-
+  Sorcerer2TapeSystem _tapeSystem;
+  
   static int readByte(void * context, int address);
   static void writeByte(void * context, int address, int value);
 
@@ -33,9 +35,10 @@ public:
   inline unsigned char* screenPtr() { return &_RAM[0xF080]; }
   inline unsigned char* charsPtr() { return &_RAM[0xF800]; }
   void reset(unsigned int address);
-  void reset() { reset(0xE000); }
+  void reset();
   void step();
   void printAt(unsigned int x, unsigned int y, const char *str);
   void printAtF(unsigned int x, unsigned int y, const char *fmt, ...);
+  Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
 };
 
