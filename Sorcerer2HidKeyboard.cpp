@@ -153,8 +153,31 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
   }
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
-    if (hidKeyCode == HID_KEY_F11) setReset1(true); 
-    if (hidKeyCode == HID_KEY_F12) setReset2(true); 
+    
+    // F11 & F12 both down together for reset
+    bool checkReset = false;
+    if (hidKeyCode == HID_KEY_F11) {
+      setReset1(true);
+      checkReset = !isInReport(&prev, HID_KEY_F11);
+    }
+    if (hidKeyCode == HID_KEY_F12) {
+      setReset2(true); 
+      checkReset |= !isInReport(&prev, HID_KEY_F12);
+    }
+    if (resetPressed() && checkReset) {
+      _sorcerer2->reset();
+    }
+    
+    // F2 Copy lower mem
+    if (hidKeyCode == HID_KEY_F2 && !isInReport(&prev, HID_KEY_F2)) {
+      _sorcerer2->saveMem();
+    }
+    
+    // F3 Restore lower mem
+    if (hidKeyCode == HID_KEY_F3 && !isInReport(&prev, HID_KEY_F3)) {
+      _sorcerer2->loadMem();
+    }
+    
     const Sorcerer2HidKey *k = findKey(hidKeyCode);
     if (k) {
       const unsigned char keycode = k->keycode;

@@ -11,11 +11,11 @@ Sorcerer2TapeUnitFatFsSpi::Sorcerer2TapeUnitFatFsSpi(Sorcerer2SdCardFatFsSpi* sd
 }
 
 bool Sorcerer2TapeUnitFatFsSpi::readyForRead(){
-  return _sdCard->mounted() /* && TODO */;
+  return true || _sdCard->mounted() /* && TODO */;
 }
 
 bool Sorcerer2TapeUnitFatFsSpi::readyForWrite(){
-  return false;
+  return true;
 }
 
 
@@ -26,18 +26,15 @@ void Sorcerer2TapeUnitFatFsSpi::writeData(unsigned char data){
 
 
 unsigned char Sorcerer2TapeUnitFatFsSpi::readData(){
-  printf("Tape read\n");
-
   if (dfr == FR_OK) {
-    
-    if (fr != FR_OK || f_eof(&fil)) {
-      nextFile();
-    }
-    
-    if (fr == FR_OK) {
+       
+    while (fr == FR_OK) {
       char d;
-      UINT br;
+      UINT br = 0;
       fr = f_read(&fil, &d, 1, &br);
+      if (fr != FR_OK || br == 0) {
+        if (!nextFile()) break;
+      }
       return d;
     }
   }  

@@ -21,7 +21,8 @@ private:
   static void writeIO(void * context, int address, int value);
 
   uint8_t _RAM[1<<16];
-
+  uint8_t _buf[1<<15];
+  
   Sorcerer2Keyboard *_keyboard;
   Sorcerer2DiskSystem *_diskSystem;
   
@@ -40,5 +41,7 @@ public:
   void printAt(unsigned int x, unsigned int y, const char *str);
   void printAtF(unsigned int x, unsigned int y, const char *fmt, ...);
   Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
+  void saveMem();
+  void loadMem();
 };
 

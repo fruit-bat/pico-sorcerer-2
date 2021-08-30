@@ -142,7 +142,8 @@ extern "C" int __not_in_flash("main") main() {
     sorcerer2DiskSystem.drive(2)->insert(&diskC);
     sorcerer2DiskSystem.drive(3)->insert(&diskD);
     sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
-
+    sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
+    
 	dvi0.timing = &DVI_TIMING;
 	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
 	dvi0.scanline_callback = core1_scanline_callback;
@@ -166,10 +167,6 @@ extern "C" int __not_in_flash("main") main() {
 		tuh_task();
 		sorcerer2.step();
 		hid_app_task();
-		if (sorcerer2HidKeyboard.resetPressed()) {
-			sorcerer2.reset();
-			// TODO Shudtown CD card and other periferals if required
-		}
 	}
 	__builtin_unreachable();
 }

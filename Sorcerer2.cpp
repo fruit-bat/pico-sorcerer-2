@@ -134,3 +134,13 @@ void Sorcerer2::reset() {
   if (_diskSystem) _diskSystem->reset();
   reset(0xE000); 
 }
+
+void Sorcerer2::saveMem()
+{
+  memcpy(_buf, _RAM + 0x100, 1<<15);
+}
+
+void Sorcerer2::loadMem()
+{
+  memcpy(_RAM + 0x100, _buf, 1<<15);
+}
