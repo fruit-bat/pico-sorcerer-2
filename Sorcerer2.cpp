@@ -10,6 +10,7 @@ Sorcerer2::Sorcerer2(
   Sorcerer2Keyboard *keyboard,
   Sorcerer2DiskSystem *diskSystem
 ) : 
+  _RAM{0},
   _keyboard(keyboard),
   _diskSystem(diskSystem)
 {
@@ -39,7 +40,8 @@ void Sorcerer2::writeByte(void * context, int address, int value)
   
   // Diskboot rom  0xBC00 - 0xBD00
   // Monitor rom   0xC000 - 0xF000
-  if (address >= 0xBC00 && address < 0xF000) return; // Diskboot and Monitor ROM
+  if (address >= 0xBC00 && address < 0xBD00) return; // Diskboot
+  if (address >= 0xC000 && address < 0xF000) return; // Monitor ROM
   if (address >= 0xF800 && address < 0xFC00) return; // Character set ROM
   s->_RAM[address] = value;
 }
