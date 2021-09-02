@@ -9,7 +9,10 @@ class Sorcerer2 {
 private:
   Z80 _Z80;
   int _cycles;
+  uint32_t _tu4;
+  int32_t _ta4;
   Sorcerer2TapeSystem _tapeSystem;
+  bool _moderate;
   
   static int readByte(void * context, int address);
   static void writeByte(void * context, int address, int value);
@@ -43,5 +46,7 @@ public:
   Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
   void saveMem();
   void loadMem();
+  void moderate(bool on);
+  void toggleModerate();
 };
 

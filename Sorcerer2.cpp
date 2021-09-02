@@ -10,6 +10,7 @@ Sorcerer2::Sorcerer2(
   Sorcerer2Keyboard *keyboard,
   Sorcerer2DiskSystem *diskSystem
 ) : 
+  _moderate(false),
   _RAM{0},
   _keyboard(keyboard),
   _diskSystem(diskSystem)
@@ -119,11 +120,22 @@ void Sorcerer2::diskTick()
 //
 #define CYCLES_PER_DISK_TICK 50000
 
+#define INSTRUCTION_PER_STEP 50 
+
 void Sorcerer2::step()
 {
+
   // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
-  for(int i=0; i < 50; ++i) {
-    _cycles += _Z80.step();
+  for(int i=0; i < INSTRUCTION_PER_STEP; ++i) {
+    int c = _Z80.step();
+    _cycles += c;
+    if (_moderate) {
+      uint32_t tu4 = time_us_32() << 2;
+      _ta4 += c - tu4 + _tu4; // +ve too fast, -ve too slow
+      _tu4 = tu4;
+      if (_ta4 > 4) busy_wait_us_32(_ta4 >> 2);
+      if (_ta4 < -1000000) _ta4 = -1000000;
+    }
   }
   if (_cycles >= CYCLES_PER_DISK_TICK) {
     diskTick();
@@ -135,6 +147,8 @@ void Sorcerer2::reset() {
   _tapeSystem.reset();
   if (_diskSystem) _diskSystem->reset();
   reset(0xE000); 
+  _tu4 = time_us_32() << 2;
+  _ta4 = 0;
 }
 
 void Sorcerer2::saveMem()
@@ -145,4 +159,19 @@ void Sorcerer2::saveMem()
 void Sorcerer2::loadMem()
 {
   memcpy(_RAM + 0x100, _buf, 1<<15);
+}
+
+void Sorcerer2::moderate(bool on) {
+  if (on == _moderate) return;
+  
+  if (on) {
+    _tu4 = time_us_32() << 2;
+    _ta4 = 0;
+  }
+  
+  _moderate = on;
+}
+
+void Sorcerer2::toggleModerate() {
+  moderate(!_moderate);
 }

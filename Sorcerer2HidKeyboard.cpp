@@ -178,6 +178,11 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
       _sorcerer2->loadMem();
     }
     
+    // F4 toggle moderate
+    if (hidKeyCode == HID_KEY_F4 && !isInReport(&prev, HID_KEY_F4)) {
+      _sorcerer2->toggleModerate();
+    }
+        
     const Sorcerer2HidKey *k = findKey(hidKeyCode);
     if (k) {
       const unsigned char keycode = k->keycode;
