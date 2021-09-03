@@ -18,7 +18,6 @@ add_executable(sorcerer2
 	Sorcerer2TapeUnit.cpp
 	Sorcerer2TapeUnitFatFsSpi.cpp
 	hid_app.c
-	test_sd.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR})

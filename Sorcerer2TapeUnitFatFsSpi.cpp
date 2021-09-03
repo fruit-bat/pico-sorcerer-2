@@ -45,7 +45,7 @@ bool Sorcerer2TapeUnitFatFsSpi::openFile() {
   printf("open file...\n");
   fr = FR_NOT_READY;
   if (dfr == FR_OK && fno.fname[0]) {
-    char name[100];
+    char name[280];
     sprintf(name, "/tapes/%s", fno.fname);
     printf("Tape file %s\n", name);
     fr = f_open(&fil, name, FA_READ|FA_OPEN_EXISTING);
