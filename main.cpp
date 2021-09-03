@@ -57,7 +57,6 @@ unsigned char* charbuf;
 unsigned char* exchr;
 
 extern "C" void hid_app_task();
-extern void testsd();
 
 // Screen handler
 static inline void prepare_scanline(const unsigned char *chars, uint y) {
