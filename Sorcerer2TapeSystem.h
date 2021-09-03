@@ -7,10 +7,7 @@ class Sorcerer2TapeSystem {
   Sorcerer2TapeUnit* _units[2];
   
   unsigned char _control;
-  
-  void applyStatus(Sorcerer2TapeUnit *unit, unsigned int *status);
-  
-  
+    
 public:
 
   Sorcerer2TapeSystem();

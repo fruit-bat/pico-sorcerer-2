@@ -11,23 +11,20 @@ Sorcerer2TapeUnitFatFsSpi::Sorcerer2TapeUnitFatFsSpi(Sorcerer2SdCardFatFsSpi* sd
 }
 
 bool Sorcerer2TapeUnitFatFsSpi::readyForRead(){
-  return true || _sdCard->mounted() /* && TODO */;
+  return _sdCard->mounted() && dfr == FR_OK && fr == FR_OK;
 }
 
 bool Sorcerer2TapeUnitFatFsSpi::readyForWrite(){
-  return true;
+  return false;
 }
-
 
 void Sorcerer2TapeUnitFatFsSpi::writeData(unsigned char data){
   // TODO
   printf("Tape write\n");
 }
 
-
 unsigned char Sorcerer2TapeUnitFatFsSpi::readData(){
   if (dfr == FR_OK) {
-       
     while (fr == FR_OK) {
       char d;
       UINT br = 0;
@@ -110,10 +107,8 @@ void Sorcerer2TapeUnitFatFsSpi::motor(bool on) {
   }
 }
 
-
 void Sorcerer2TapeUnitFatFsSpi::setBaud1200(bool baud1200) {
     printf("Tape baud %s\n", (baud1200 ? "1200" : "300"));
 
   // Don't need to take any action here
 }
-
