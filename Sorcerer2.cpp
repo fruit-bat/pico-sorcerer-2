@@ -23,58 +23,6 @@ Sorcerer2::Sorcerer2(
   }
 }
 
-int Sorcerer2::readByte(void * context, int address)
-{
-  if (address >= 0xBE00 && address < 0xBE10) {
-    return ((Sorcerer2*)context)->_diskSystem->readByte(address);
-  }
-  return ((Sorcerer2*)context)->_RAM[address];
-}
-
-void Sorcerer2::writeByte(void * context, int address, int value)
-{
-  auto s = ((Sorcerer2*)context);
-  if (address >= 0xBE00 && address < 0xBE10 && s->_diskSystem) {
-    ((Sorcerer2*)context)->_diskSystem->writeByte(address, value);
-    return;
-  }
-  
-  // Diskboot rom  0xBC00 - 0xBD00
-  // Monitor rom   0xC000 - 0xF000
-  if (address >= 0xBC00 && address < 0xBD00) return; // Diskboot
-  if (address >= 0xC000 && address < 0xF000) return; // Monitor ROM
-  if (address >= 0xF800 && address < 0xFC00) return; // Character set ROM
-  s->_RAM[address] = value;
-}
-
-int Sorcerer2::readIO(void * context, int address)
-{
-  const auto m = (Sorcerer2*)context;
-  switch(address & 0xFF) {
-    case 0xFE: return m->_keyboard->read(address);
-    case 0xFC: return m->_tapeSystem.readData();
-    case 0xFD: return m->_tapeSystem.readStatus();
-    default: return 0xff;
-  }
-}
-
-void Sorcerer2::writeIO(void * context, int address, int value)
-{
-  const auto m = (Sorcerer2*)context;
-  switch(address & 0xFF) {
-    case 0xFE: {
-      m->_keyboard->write(address, value);
-      m->_tapeSystem.writeControl(value);
-      break;
-    }
-    case 0xFC: {
-      m->_tapeSystem.writeData(value);
-      break;
-    }
-    default: break;
-  }  
-}
-
 void Sorcerer2::printAt(unsigned int x, unsigned int y, const char *s) {
   const unsigned int m = 64 * 30;
   const unsigned int p = x + (y<<6);
@@ -120,7 +68,7 @@ void Sorcerer2::diskTick()
 //
 #define CYCLES_PER_DISK_TICK 50000
 
-#define INSTRUCTION_PER_STEP 50 
+#define INSTRUCTION_PER_STEP 100
 
 void Sorcerer2::step()
 {
