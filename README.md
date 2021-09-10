@@ -23,3 +23,7 @@ Exidy Sorcerer for Pico Pi with HDMI and SD card
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
 
 ![image](https://www.raspberrypi.org/documentation/rp2040/getting-started/static/64b50c4316a7aefef66290dcdecda8be/Pico-R3-SDK11-Pinout.svg "Pinout")
+
+<a href="https://buyzero.de/products/raspberry-pi-pico-dvi-sock-videoausgabe-fur-den-pico">
+<img src="https://cdn.shopify.com/s/files/1/1560/1473/products/Raspberry-Pi-Pico-Video-Output-DVI-Sock-topview_1200x.jpg" width="400"/>
+</a>
