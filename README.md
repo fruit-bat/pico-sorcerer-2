@@ -1,6 +1,10 @@
 # pico-sorcerer-2
 Exidy Sorcerer for Pico Pi with HDMI and SD card
 
+<a href="http://oldcomputers.net/sorcerer.html">
+<img src="http://oldcomputers.net/pics/sorcerer.jpg" width="400"/>
+</a>
+
 ## Wiring
 
 |       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
