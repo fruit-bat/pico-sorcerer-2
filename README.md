@@ -36,3 +36,13 @@ Exidy Sorcerer for Pico Pi with HDMI and SD card
 <img src="https://cdn.shopify.com/s/files/1/0176/3274/products/4682-01_dcdcf68d-19aa-4deb-b758-471e8e7baf62_600x.jpg" width="300"/>
 </a>
   
+## Resources
+  [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
+  [Exidy Sorcerer Software Library](https://www.classic-computers.org.nz/blog/2017-01-23-software-for-real-sorcerers.htm)<br/>
+  [USB HID Keycodes](https://gist.github.com/MightyPork/6da26e382a7ad91b5496ee55fdc73db2)<br/>
+  [Z88dk example for Sorcerer](https://github.com/z88dk/z88dk/wiki/Platform---Sorcerer)<br/>
+  [Trailing Edge - Exidy Sorcerer monitor commands](http://www.trailingedge.com/exidy/exidymon.html)<br/>
+  [FAT FS Documentation](http://www.elm-chan.org/fsw/ff/00index_e.html)<br/>
+  [No OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
+  
+  
