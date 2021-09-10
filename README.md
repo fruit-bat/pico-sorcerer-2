@@ -27,3 +27,7 @@ Exidy Sorcerer for Pico Pi with HDMI and SD card
 <a href="https://buyzero.de/products/raspberry-pi-pico-dvi-sock-videoausgabe-fur-den-pico">
 <img src="https://cdn.shopify.com/s/files/1/1560/1473/products/Raspberry-Pi-Pico-Video-Output-DVI-Sock-topview_1200x.jpg" width="400"/>
 </a>
+
+<a href="https://thepihut.com/products/adafruit-dvi-breakout-board-for-hdmi-source-devices">
+<img src="https://cdn.shopify.com/s/files/1/0176/3274/products/67e1a982-7668-48e2-acaf-df9de6f6e6fe_600x.jpg" width="400"/>
+</a>
