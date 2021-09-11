@@ -30,9 +30,9 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 | GP16  |       | 16    | 21    |           |           | TX2+      | Data channel 2+        |
 | GP17  |       | 17    | 22    |           |           | TX2-      | Data channel 2-        |
 | GP18  |       | 18    | 24    |           |           | TX1+      | Data channel 1+        |
-| GP19  |       | 19    | 25    |           |           | TX1-      | Data channel 1+        |
+| GP19  |       | 19    | 25    |           |           | TX1-      | Data channel 1-        |
 | GP12  |       | 12    | 16    |           |           | TX0+      | Data channel 0+        |
-| GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0+        |
+| GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
 
