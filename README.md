@@ -5,6 +5,15 @@ Exidy Sorcerer for Pico Pi with HDMI and SD card
 <img src="http://oldcomputers.net/pics/sorcerer.jpg" width="400"/>
 </a>
 
+## Features
+* DVI over HDMI output<br/>
+* 4 emulated disk units with read/write to SD card
+* 2 eumlated tape units with read from SD card
+* USB Keyboard input
+
+## Prototype
+<img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
+
 ## Wiring
 
 |       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
@@ -28,6 +37,7 @@ Exidy Sorcerer for Pico Pi with HDMI and SD card
 
 ![image](https://www.raspberrypi.org/documentation/rp2040/getting-started/static/64b50c4316a7aefef66290dcdecda8be/Pico-R3-SDK11-Pinout.svg "Pinout")
 
+## Components 
 <a href="https://buyzero.de/products/raspberry-pi-pico-dvi-sock-videoausgabe-fur-den-pico">
 <img src="https://cdn.shopify.com/s/files/1/1560/1473/products/Raspberry-Pi-Pico-Video-Output-DVI-Sock-topview_1200x.jpg" width="300"/>
 </a>
