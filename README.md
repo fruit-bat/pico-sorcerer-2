@@ -1,11 +1,12 @@
 # pico-sorcerer-2
-Exidy Sorcerer for Pico Pi
+Exidy Sorcerer for Raspberry Pi Pico RP2040 
 
 <a href="http://oldcomputers.net/sorcerer.html">
 <img src="http://oldcomputers.net/pics/sorcerer.jpg" width="400"/>
 </a>
 
 ## Features
+* CP/M 1.4
 * DVI over HDMI output<br/>
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read from SD card
