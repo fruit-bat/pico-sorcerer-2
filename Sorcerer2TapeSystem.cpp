@@ -61,7 +61,7 @@ void Sorcerer2TapeSystem::reset() {
     Sorcerer2TapeUnit *unit = _units[i];
     if (unit) {
       unit->motor(false);
-      unit->setBaud1200(false);
+      unit->setBaud1200(true);
     }
   }
 }
