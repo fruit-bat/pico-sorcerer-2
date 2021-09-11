@@ -1,5 +1,5 @@
 # pico-sorcerer-2
-Exidy Sorcerer for Pico Pi with HDMI and SD card
+Exidy Sorcerer for Pico Pi
 
 <a href="http://oldcomputers.net/sorcerer.html">
 <img src="http://oldcomputers.net/pics/sorcerer.jpg" width="400"/>
@@ -49,7 +49,32 @@ Exidy Sorcerer for Pico Pi with HDMI and SD card
 <a href="https://thepihut.com/products/adafruit-micro-sd-spi-or-sdio-card-breakout-board-3v-only">
 <img src="https://cdn.shopify.com/s/files/1/0176/3274/products/4682-01_dcdcf68d-19aa-4deb-b758-471e8e7baf62_600x.jpg" width="300"/>
 </a>
-  
+
+## Issues
+USB host mode required for keyboard input still seems to need a [patch to the Pico SDK](https://github.com/raspberrypi/tinyusb/pull/7/files) version of TinyUSB. The patch seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
+
+## Build
+Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
+
+This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. In the 'apps' folder add the following line to CMakeLists.txt
+```
+add_subdirectory(sorcerer2)
+```
+In the build folder:
+```
+cmake
+make -j4 sorcerer2
+cp apps/sorcerer2/sorcerer2.uf2 /media/pi/RPI-RP2/
+```
+
+## Missing features
+* Write 'tape' format
+* Read/Write WAV files
+* Audio input
+* Audio Output
+* Centronics interface
+* Serial interface (Uart 0 is currently used for debug) 
+
 ## Resources
   [Exidy Sorcerer Software Library](https://www.classic-computers.org.nz/blog/2017-01-23-software-for-real-sorcerers.htm)<br/>
   [Trailing Edge - Exidy Sorcerer monitor commands](http://www.trailingedge.com/exidy/exidymon.html)<br/>
