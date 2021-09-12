@@ -72,6 +72,20 @@ make -j4 sorcerer2
 cp apps/sorcerer2/sorcerer2.uf2 /media/pi/RPI-RP2/
 ```
 
+## Special keys
+
+| Key | Action |
+| --- | ------ |
+| F2 | Copy #0100-#8100 to side buffer |
+| F3 | Copy side buffer to #0100-#8100 |
+| F4 | Toggle Z80 4Mhz moderator |
+| F5 | Repeat |
+| F6 | ? |
+| F7 | ? |
+| F8 | ? |
+| F9 | Run stop |
+| F11 + F12 | Reset |
+
 ## Missing features
 * Write 'tape' format
 * Read/Write WAV files
