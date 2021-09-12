@@ -61,7 +61,13 @@ USB host mode required for keyboard input still seems to need a [patch to the Pi
 ## Build
 Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
 
-This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. In the 'apps' folder add the following line to CMakeLists.txt
+This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
+```
+cd PicoDVI/software/apps
+git@github.com:fruit-bat/pico-sorcerer-2.git sorcerer2
+```
+
+In the 'apps' folder add the following line to CMakeLists.txt
 ```
 add_subdirectory(sorcerer2)
 ```
