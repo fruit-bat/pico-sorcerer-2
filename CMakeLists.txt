@@ -6,8 +6,6 @@ add_executable(sorcerer2
 	main.cpp
 	Z80.cpp
 	Sorcerer2.cpp
-	Sorcerer2Input.cpp
-	Sorcerer2Output.cpp
 	Sorcerer2Keyboard.cpp
 	Sorcerer2HidKeyboard.cpp
 	Sorcerer2DiskSystem.cpp
