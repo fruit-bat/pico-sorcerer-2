@@ -132,7 +132,6 @@ extern "C" int __not_in_flash("main") main() {
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
 
-	printf("Configuring DVI\n");
 
 	charbuf = sorcerer2.screenPtr();
 	exchr = sorcerer2.charsPtr();
@@ -143,6 +142,8 @@ extern "C" int __not_in_flash("main") main() {
     sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
     sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
     
+    	printf("Configuring DVI\n");
+
 	dvi0.timing = &DVI_TIMING;
 	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
 	dvi0.scanline_callback = core1_scanline_callback;

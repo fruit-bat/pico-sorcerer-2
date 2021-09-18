@@ -4,7 +4,7 @@
 #include "diskboot.h"
 #include <memory.h>
 #include <pico/printf.h>
-#include "Sorcerer2HidKeyboard.h"
+#include <pico/stdlib.h>
 
 Sorcerer2::Sorcerer2(
   Sorcerer2Keyboard *keyboard,
