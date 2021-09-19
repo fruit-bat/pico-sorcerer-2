@@ -59,6 +59,7 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 USB host mode required for keyboard input still seems to need a [patch to the Pico SDK](https://github.com/raspberrypi/tinyusb/pull/7/files) version of TinyUSB. The patch seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
 
 ## Build
+### Compile the software
 Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
 
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
@@ -77,6 +78,10 @@ cmake
 make -j4 sorcerer2
 cp apps/sorcerer2/sorcerer2.uf2 /media/pi/RPI-RP2/
 ```
+### Prepare an SD card
+Copy the contents of [SD card](sdcard/) onto a card.
+
+There is more information about which card to choose on [CarlK's no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) pages.
 
 ## Special keys
 
