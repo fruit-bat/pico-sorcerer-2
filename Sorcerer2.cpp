@@ -81,7 +81,7 @@ void Sorcerer2::step()
       uint32_t tu4 = time_us_32() << 2;
       _ta4 += c - tu4 + _tu4; // +ve too fast, -ve too slow
       _tu4 = tu4;
-      if (_ta4 > 4) busy_wait_us_32(_ta4 >> 2);
+      if (_ta4 >= 4) busy_wait_us_32(_ta4 >> 2);
       if (_ta4 < -1000000) _ta4 = -1000000;
     }
   }

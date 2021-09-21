@@ -5,9 +5,6 @@
 #include "f_util.h"
 #include "ff.h"
 #include "pico/stdlib.h"
-#include "rtc.h"
-//
-#include "hw_config.h"
 
 class Sorcerer2TapeUnitFatFsSpi : public Sorcerer2TapeUnit {
   Sorcerer2SdCardFatFsSpi* _sdCard;

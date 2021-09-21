@@ -56,8 +56,6 @@ struct semaphore dvi_start_sem;
 unsigned char* charbuf;
 unsigned char* exchr;
 
-extern "C" void hid_app_task();
-
 // Screen handler
 static inline void prepare_scanline(const unsigned char *chars, uint y) {
 	static uint8_t scanbuf[FRAME_WIDTH / 8];
@@ -166,7 +164,6 @@ extern "C" int __not_in_flash("main") main() {
 	while (1) {
 		tuh_task();
 		sorcerer2.step();
-		hid_app_task();
 	}
 	__builtin_unreachable();
 }
