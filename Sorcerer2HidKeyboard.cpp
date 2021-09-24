@@ -130,7 +130,7 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-Sorcerer2HidKeyboard::Sorcerer2HidKeyboard() : _reset1(false), _reset2(false) {
+Sorcerer2HidKeyboard::Sorcerer2HidKeyboard() {
   sort_keys();
 }
 
@@ -151,20 +151,21 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
       if (k) press(k->line, k->key);
     }
   }
+  
+  bool reset1 = false;
+  bool reset2 = false;
+    
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
     
     // F11 & F12 both down together for reset
     bool checkReset = false;
-    if (hidKeyCode == HID_KEY_F11) {
-      setReset1(true);
-      checkReset = !isInReport(&prev, HID_KEY_F11);
-    }
-    if (hidKeyCode == HID_KEY_F12) {
-      setReset2(true); 
-      checkReset |= !isInReport(&prev, HID_KEY_F12);
-    }
-    if (resetPressed() && checkReset) {
+    reset1 |= hidKeyCode == HID_KEY_F11;
+    reset2 |= hidKeyCode == HID_KEY_F12;
+    checkReset |= reset1 && !isInReport(&prev, HID_KEY_F11);
+    checkReset |= reset2 && !isInReport(&prev, HID_KEY_F12);
+    
+    if (reset1 && reset2 && checkReset) {
       _sorcerer2->reset();
     }
     
