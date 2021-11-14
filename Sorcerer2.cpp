@@ -47,6 +47,7 @@ void Sorcerer2::reset(unsigned int address)
   _Z80.reset();
   _Z80.setPC(address);
   _cycles = 0;
+  _centronicsOut = 0;
 }
 
 void Sorcerer2::diskTick()

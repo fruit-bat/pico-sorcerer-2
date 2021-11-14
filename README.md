@@ -116,6 +116,7 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
   [Z88dk example for Sorcerer](https://github.com/z88dk/z88dk/wiki/Platform---Sorcerer)<br/>
   [FAT FS Documentation](http://www.elm-chan.org/fsw/ff/00index_e.html)<br/>
   [USB HID Keycodes](https://gist.github.com/MightyPork/6da26e382a7ad91b5496ee55fdc73db2)<br/>
-
+  [4 Voice sound](https://sw-ke.facebook.com/groups/AusVintage/permalink/1188402214859386/)<br/>
+  
   
   

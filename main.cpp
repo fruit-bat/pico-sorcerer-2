@@ -57,7 +57,7 @@ unsigned char* charbuf;
 unsigned char* exchr;
 
 // Screen handler
-static inline void prepare_scanline(const unsigned char *chars, uint y) {
+static void __not_in_flash_func(prepare_scanline)(const unsigned char *chars, uint y) {
 	static uint8_t scanbuf[FRAME_WIDTH / 8];
 	for (uint i = 0; i < CHAR_COLS; ++i) {
 		uint c = chars[i + ((y >> 3) << 6)];
@@ -69,13 +69,13 @@ static inline void prepare_scanline(const unsigned char *chars, uint y) {
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
 }
 
-void core1_scanline_callback() {
+void __not_in_flash_func(core1_scanline_callback)() {
 	static uint y = 1;
 	prepare_scanline(charbuf, y++);
 	if (y >= FRAME_HEIGHT) y -= FRAME_HEIGHT;
 }
 
-void __not_in_flash("main") core1_main() {
+void core1_main() {
 	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
 	sem_acquire_blocking(&dvi_start_sem);
 
@@ -114,7 +114,7 @@ extern "C" void sorcerer_keyboard_handler(hid_keyboard_report_t const *report) {
   sorcerer2HidKeyboard.processHidReport(report);
 }
 
-extern "C" int __not_in_flash("main") main() {
+extern "C" int __not_in_flash_func(main)() {
 	vreg_set_voltage(VREG_VSEL);
 	sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL

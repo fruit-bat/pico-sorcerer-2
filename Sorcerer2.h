@@ -14,6 +14,7 @@ private:
   int32_t _ta4;
   Sorcerer2TapeSystem _tapeSystem;
   bool _moderate;
+  uint8_t _centronicsOut;
   
   inline int readByte(int address)
   {
@@ -70,7 +71,8 @@ private:
       case 0xFE: return _keyboard->read(address);
       case 0xFC: return _tapeSystem.readData();
       case 0xFD: return _tapeSystem.readStatus();
-      default: return 0xff;
+      case 0xFF: return 0xFF; // Centronics
+      default: return 0xFF;
     }
   }
 
@@ -86,10 +88,14 @@ private:
         _tapeSystem.writeData(value);
         break;
       }
+      case 0xFF: {
+        _centronicsOut = value;
+        //printf("Centronics out %02X %d\n", _centronicsOut, (int)((int8_t)_centronicsOut));
+      }
       default: break;
-    }  
+    }
   }
-  
+
   inline int readWord(int addr) { 
     return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
   }
@@ -148,7 +154,7 @@ public:
   inline unsigned char* charsPtr() { return &_RAM[0xF800]; }
   void reset(unsigned int address);
   void reset();
-  void step();
+  void __not_in_flash_func(step)();
   void printAt(unsigned int x, unsigned int y, const char *str);
   void printAtF(unsigned int x, unsigned int y, const char *fmt, ...);
   Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
