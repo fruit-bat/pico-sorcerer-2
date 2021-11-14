@@ -58,6 +58,9 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 ## Issues
 USB host mode required for keyboard input still seems to need a [patch to the Pico SDK](https://github.com/raspberrypi/tinyusb/pull/7/files) version of TinyUSB. The patch seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
 
+This allows usb reconnect: <br/>
+https://github.com/hathach/tinyusb/pull/1193/files<br/>
+
 ## Build
 ### Compile the software
 Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
