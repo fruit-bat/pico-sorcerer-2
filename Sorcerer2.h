@@ -15,20 +15,16 @@ private:
   Sorcerer2TapeSystem _tapeSystem;
   bool _moderate;
   
-  static inline int readByte(void * context, int address)
+  inline int readByte(int address)
   {
-    if (address >= 0xBE00 && address < 0xBE10) {
-      return ((Sorcerer2*)context)->_diskSystem->readByte(address);
+    if (address >= 0xBE00 && address < 0xBE10 && _diskSystem) {
+      return _diskSystem->readByte(address);
     }
-    return ((Sorcerer2*)context)->_RAM[address];
+    return _RAM[address];
   }
 
-
-
-  static inline void writeByte(void * context, int address, int value)
+  inline void writeByte(int address, int value)
   {
-    auto s = ((Sorcerer2*)context);
-    
     if (address >= 0xBC00) {
         if (address >= 0xC000) {
           if (address >= 0xF800) {
@@ -41,8 +37,8 @@ private:
         else {
           if (address >= 0xBE00) {
             if (address < 0xBE10) {
-              if (s->_diskSystem) {
-                s->_diskSystem->writeByte(address, value);
+              if (_diskSystem) {
+                _diskSystem->writeByte(address, value);
                 return;
               }
             }
@@ -50,13 +46,13 @@ private:
           else if (address < 0xBD00) return;
         }
     }
-    s->_RAM[address] = value;
+    _RAM[address] = value;
 
     /*
     if (address >= 0xBC00 && address < 0xBD00) return; // Diskboot
     
-    if (address >= 0xBE00 && address < 0xBE10 && s->_diskSystem) {
-      s->_diskSystem->writeByte(address, value);
+    if (address >= 0xBE00 && address < 0xBE10 && _diskSystem) {
+      _diskSystem->writeByte(address, value);
       return;
     }
     
@@ -64,46 +60,75 @@ private:
     // Monitor rom   0xC000 - 0xF000
     if (address >= 0xC000 && address < 0xF000) return; // Monitor ROM
     if (address >= 0xF800 && address < 0xFC00) return; // Character set ROM
-    s->_RAM[address] = value;
+    _RAM[address] = value;
     * */
   }
   
-  static inline int readIO(void * context, int address)
+  inline int readIO(int address)
   {
-    const auto m = (Sorcerer2*)context;
     switch(address & 0xFF) {
-      case 0xFE: return m->_keyboard->read(address);
-      case 0xFC: return m->_tapeSystem.readData();
-      case 0xFD: return m->_tapeSystem.readStatus();
+      case 0xFE: return _keyboard->read(address);
+      case 0xFC: return _tapeSystem.readData();
+      case 0xFD: return _tapeSystem.readStatus();
       default: return 0xff;
     }
   }
 
-  static inline void writeIO(void * context, int address, int value)
+  inline void writeIO(int address, int value)
   {
-    const auto m = (Sorcerer2*)context;
     switch(address & 0xFF) {
       case 0xFE: {
-        m->_keyboard->write(address, value);
-        m->_tapeSystem.writeControl(value);
+        _keyboard->write(address, value);
+        _tapeSystem.writeControl(value);
         break;
       }
       case 0xFC: {
-        m->_tapeSystem.writeData(value);
+        _tapeSystem.writeData(value);
         break;
       }
       default: break;
     }  
   }
   
-  static inline int readWord(void * context, int addr) 
-  { 
-    return readByte(context, addr) | (readByte(context, addr + 1) << 8); 
+  inline int readWord(int addr) { 
+    return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
   }
   
-  static inline void writeWord(void * context, int addr, int value) 
-  { 
-    writeByte(context, addr, value & 0xFF); writeByte(context, addr + 1, value >> 8); 
+  inline void writeWord(int addr, int value) { 
+    writeByte(addr, value & 0xFF); 
+    writeByte((addr + 1) & 0xffff, value >> 8);
+  }
+  
+  static inline int readByte(void * context, int address) {
+    return ((Sorcerer2*)context)->readByte(address);
+  }
+
+  static inline void writeByte(void * context, int address, int value) {
+    ((Sorcerer2*)context)->writeByte(address, value);
+  }
+  
+  // TODO Can addr ever be odd (if not readWord can be simplified)? 
+  static inline int readWord(void * context, int addr) { 
+    return ((Sorcerer2*)context)->readWord(addr); 
+  }
+  
+  // TODO Can addr ever be odd (if not writeWord can be simplified)?
+  static inline void writeWord(void * context, int addr, int value) { 
+    ((Sorcerer2*)context)->writeWord(addr, value);
+  }
+  
+  static inline int readIO(void * context, int address)
+  {
+    //printf("readIO %04X\n", address);
+    const auto m = (Sorcerer2*)context;
+    return m->readIO(address);
+  }
+
+  static inline void writeIO(void * context, int address, int value)
+  {
+    //printf("writeIO %04X %02X\n", address, value);
+    const auto m = (Sorcerer2*)context;
+    m->writeIO(address, value);
   }
 
   uint8_t _RAM[1<<16];
