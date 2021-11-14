@@ -77,7 +77,7 @@ add_subdirectory(sorcerer2)
 ```
 In the build folder:
 ```
-cmake
+cmake -DPICO_COPY_TO_RAM=0 ..
 make -j4 sorcerer2
 cp apps/sorcerer2/sorcerer2.uf2 /media/pi/RPI-RP2/
 ```
