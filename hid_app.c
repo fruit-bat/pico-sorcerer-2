@@ -26,7 +26,6 @@
 #include "bsp/board.h"
 #include "tusb.h"
 
-extern void printAt(unsigned int x, unsigned int y, const char *fmt, ...);
 extern void sorcerer_keyboard_handler(hid_keyboard_report_t const *report);
 
 //--------------------------------------------------------------------+
@@ -54,7 +53,7 @@ static void process_mouse_report(hid_mouse_report_t const * report);
 // can be used to parse common/simple enough descriptor.
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_report, uint16_t desc_len)
 {
-  printAt(0, 20, "HID device address = %d, instance = %d is mounted\r\n", dev_addr, instance);
+  printf("HID device address = %d, instance = %d is mounted\r\n", dev_addr, instance);
 
   // Interface protocol
   const char* protocol_str[] = { "None", "Keyboard", "Mouse" }; // hid_protocol_type_t
@@ -62,17 +61,24 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_re
 
   // Parse report descriptor with built-in parser
   _report_count[instance] = tuh_hid_parse_report_descriptor(_report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
-  printAt(0,21,"HID has %u reports and interface protocol = %s\r\n", _report_count[instance], protocol_str[interface_protocol]);
+  printf("HID has %u reports and interface protocol = %s\r\n", _report_count[instance], protocol_str[interface_protocol]);
+
+  // request to receive report
+  // tuh_hid_report_received_cb() will be invoked when report is available
+  if ( !tuh_hid_receive_report(dev_addr, instance) )
+  {
+    printf("Error: cannot request to receive report\r\n");
+  }
 }
 
 // Invoked when device with hid interface is un-mounted
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance)
 {
-  printAt(0, 20, "HID device address = %d, instance = %d is unmounted\r\n", dev_addr, instance);
+  printf("HID device address = %d, instance = %d is unmounted\r\n", dev_addr, instance);
 }
 
 // Invoked when received report from device via interrupt endpoint
-void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* report, uint16_t len)
+void __not_in_flash_func(tuh_hid_report_received_cb)(uint8_t dev_addr, uint8_t instance, uint8_t const* report, uint16_t len)
 {
   (void) dev_addr;
 
@@ -106,10 +112,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
   if (!rpt_info)
   {
     printf("Couldn't find the report info for this report !\r\n");
-    return;
   }
-
-  if ( rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP )
+  else if ( rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP )
   {
     switch (rpt_info->usage)
     {
@@ -128,6 +132,12 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       default: break;
     }
   }
+
+    // continue to request to receive report
+  if ( !tuh_hid_receive_report(dev_addr, instance) )
+  {
+    printf("Error: cannot request to receive report\r\n");
+  }
 }
 
 //--------------------------------------------------------------------+
@@ -136,11 +146,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 
 static void process_kbd_report(hid_keyboard_report_t const *report)
 {
-//  unsigned char* p = (unsigned char*)report;
-//  for(int i = 0; i < 8; ++i) {
-//    printAt(i<<1,24, "%02X", p[i]);
-//  }
-
   sorcerer_keyboard_handler(report);
 }
 
@@ -180,7 +185,7 @@ void cursor_movement(int8_t x, int8_t y, int8_t wheel)
 
   printf("\r\n");
 #else
-  printAt(0, 21, "(%d %d %d)\r\n", x, y, wheel);
+  printf("(%d %d %d)\r\n", x, y, wheel);
 #endif
 }
 
@@ -192,7 +197,7 @@ static void process_mouse_report(hid_mouse_report_t const * report)
   uint8_t button_changed_mask = report->buttons ^ prev_report.buttons;
   if ( button_changed_mask & report->buttons)
   {
-    printAt(0, 22, " %c%c%c ",
+    printf(" %c%c%c ",
        report->buttons & MOUSE_BUTTON_LEFT   ? 'L' : '-',
        report->buttons & MOUSE_BUTTON_MIDDLE ? 'M' : '-',
        report->buttons & MOUSE_BUTTON_RIGHT  ? 'R' : '-');
