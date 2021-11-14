@@ -13,11 +13,6 @@
 #include "Z80.h"
 
 
-#pragma GCC optimize ("O2")
-
-
-
-
 /* Write the following macros for memory access and input/output on the Z80.
  *
  * Z80_FETCH_BYTE() and Z80_FETCH_WORD() are used by the emulator to read the
@@ -94,7 +89,7 @@
 
 #define Z80_READ_WORD(address, x)                                       \
 {                                                                       \
-  (x) = (m_readByte(m_context, (address) & 0xffff) | (m_readByte(m_context, ((address) + 1) & 0xffff) << 8)); \
+  (x) = (m_readWord(m_context, (address) & 0xffff)); \
 }
 
 #define Z80_FETCH_WORD(address, x)    Z80_READ_WORD((address), (x))
@@ -106,8 +101,7 @@
 
 #define Z80_WRITE_WORD(address, x)                                 \
 {                                                                  \
-  m_writeByte(m_context, (address) & 0xffff, (x));                 \
-  m_writeByte(m_context, ((address) + 1) & 0xffff, (x) >> 8);      \
+  m_writeWord(m_context, (address) & 0xffff, (x));                 \
 }
 
 #define Z80_READ_WORD_INTERRUPT(address, x)  Z80_READ_WORD((address), (x))
@@ -1907,7 +1901,7 @@ int Z80::NMI()
 
 int Z80::step()
 {
-  state.status = 0;
+  if (state.status != 0) return 0; 
   int elapsed_cycles = 0;
   int pc = state.pc;
   int opcode;
@@ -3829,7 +3823,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     n;
 
         READ_N(n);
-        Z80_INPUT_BYTE(n, A);
+        Z80_INPUT_BYTE((n | (A << 8)), A);
 
         elapsed_cycles += 4;
 
@@ -3840,7 +3834,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       case IN_R_C: {
 
         int     x;
-        Z80_INPUT_BYTE(C, x);
+        Z80_INPUT_BYTE(BC, x);
         if (Y(opcode) != INDIRECT_HL)
 
           R(Y(opcode)) = x;
@@ -3864,7 +3858,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         int     x, f;
 
-        Z80_INPUT_BYTE(C, x);
+        Z80_INPUT_BYTE(BC, x);
         WRITE_BYTE(HL, x);
 
         f = SZYX_FLAGS_TABLE[--B & 0xff]
@@ -3915,7 +3909,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           r += 2;
 
-          Z80_INPUT_BYTE(C, x);
+          Z80_INPUT_BYTE(BC, x);
           Z80_WRITE_BYTE(hl, x);
 
           hl += d;
@@ -3985,7 +3979,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         x = Y(opcode) != INDIRECT_HL
         ? R(Y(opcode))
         : 0;
-        Z80_OUTPUT_BYTE(C, x);
+        Z80_OUTPUT_BYTE(BC, x);
 
         elapsed_cycles += 4;
 
@@ -3998,7 +3992,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     x, f;
 
         READ_BYTE(HL, x);
-        Z80_OUTPUT_BYTE(C, x);
+        Z80_OUTPUT_BYTE(BC, x);
 
         HL += opcode == OPCODE_OUTI ? +1 : -1;
 
@@ -4030,7 +4024,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           r += 2;
 
           Z80_READ_BYTE(hl, x);
-          Z80_OUTPUT_BYTE(C, x);
+          Z80_OUTPUT_BYTE(BC, x);
 
           hl += d;
           if (--b)

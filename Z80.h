@@ -22,6 +22,7 @@
 
 
 #include <stdint.h>
+#include <pico/printf.h>
 
 
 
@@ -44,8 +45,8 @@
  * accepted at the instruction right after a DI or EI on an actual processor.
  */
 
+#define Z80_CATCH_HALT
 /*
- #define Z80_CATCH_HALT
  #define Z80_CATCH_DI
  #define Z80_CATCH_EI
  #define Z80_CATCH_RETI
@@ -83,7 +84,7 @@
  * option.
  */
 
-/* #define Z80_MASK_IM2_VECTOR_ADDRESS */
+#define Z80_MASK_IM2_VECTOR_ADDRESS
 
 
 
@@ -96,13 +97,13 @@
 
 enum {
 
-  Z80_STATUS_HALT = 1,
-  Z80_STATUS_DI,
-  Z80_STATUS_EI,
-  Z80_STATUS_RETI,
-  Z80_STATUS_RETN,
-  Z80_STATUS_ED_UNDEFINED,
-  Z80_STATUS_PREFIX
+  Z80_STATUS_FLAG_HALT = 1,
+  Z80_STATUS_FLAG_DI = 1<<1,
+  Z80_STATUS_FLAG_EI = 1<<2,
+  Z80_STATUS_FLAG_RETI = 1<<3,
+  Z80_STATUS_FLAG_RETN = 1<<4,
+  Z80_STATUS_FLAG_ED_UNDEFINED = 1<<5,
+  Z80_STATUS_FLAG_PREFIX = 1<<6
 
 };
 
@@ -130,6 +131,8 @@ enum {
 #       define Z80_IXL          9
 #       define Z80_IYH          10
 #       define Z80_IYL          11
+#       define Z80_SPH          12
+#       define Z80_SPL          13
 
 #else
 
@@ -146,6 +149,8 @@ enum {
 #       define Z80_IXL          8
 #       define Z80_IYH          11
 #       define Z80_IYL          10
+#       define Z80_SPH          13
+#       define Z80_SPL          12
 
 #endif
 
@@ -250,14 +255,14 @@ public:
   * this will return zero. In interrupt mode 0, data_on_bus must be a single
   * byte opcode.
   */
-  int IRQ(int data_on_bus);
+  int __not_in_flash_func(IRQ)(int data_on_bus);
 
   /* Trigger a non maskable interrupt, then return the number of cycles elapsed
    * to accept it.
    */
   int NMI();
 
-  int step();
+  int __not_in_flash_func(step)();
 
 
   // CPU registers access
@@ -267,14 +272,61 @@ public:
 
   uint16_t readRegWord(int reg)               { return state.registers.word[reg]; }
   void writeRegWord(int reg, uint16_t value)  { state.registers.word[reg] = value; }
+  
+  void setPC(uint16_t v)                      { state.pc = v; }
+  void setA(uint8_t v)                        { state.registers.byte[Z80_A] = v; }
+  void setF(uint8_t v)                        { state.registers.byte[Z80_F] = v; }
+  void setB(uint8_t v)                        { state.registers.byte[Z80_B] = v; }
+  void setC(uint8_t v)                        { state.registers.byte[Z80_C] = v; }
+  void setD(uint8_t v)                        { state.registers.byte[Z80_D] = v; }
+  void setE(uint8_t v)                        { state.registers.byte[Z80_E] = v; }
+  void setH(uint8_t v)                        { state.registers.byte[Z80_H] = v; }
+  void setL(uint8_t v)                        { state.registers.byte[Z80_L] = v; }
+  void setIXH(uint8_t v)                      { state.registers.byte[Z80_IXH] = v; }
+  void setIXL(uint8_t v)                      { state.registers.byte[Z80_IXL] = v; }
+  void setIYH(uint8_t v)                      { state.registers.byte[Z80_IYH] = v; }
+  void setIYL(uint8_t v)                      { state.registers.byte[Z80_IYL] = v; }
+  void setIFF1(uint8_t v)                     { state.iff1 = v; }
+  void setIFF2(uint8_t v)                     { state.iff2 = v; }
+  void setIM(uint8_t v)                       { state.im = v; }
+  void setI(uint8_t v)                        { state.i = v; }
+  void setR(uint8_t v)                        { state.r = v; }
+  void setSPH(uint8_t v)                      { state.registers.byte[Z80_SPH] = v; }
+  void setSPL(uint8_t v)                      { state.registers.byte[Z80_SPL] = v; }
+ 
+  uint16_t getPC()                      { return state.pc; }
+  uint8_t getA()                        { return state.registers.byte[Z80_A]; }
+  uint8_t getF()                        { return state.registers.byte[Z80_F]; }
+  uint8_t getB()                        { return state.registers.byte[Z80_B]; }
+  uint8_t getC()                        { return state.registers.byte[Z80_C]; }
+  uint8_t getD()                        { return state.registers.byte[Z80_D]; }
+  uint8_t getE()                        { return state.registers.byte[Z80_E]; }
+  uint8_t getH()                        { return state.registers.byte[Z80_H]; }
+  uint8_t getL()                        { return state.registers.byte[Z80_L]; }
+  uint8_t getIXH()                      { return state.registers.byte[Z80_IXH]; }
+  uint8_t getIXL()                      { return state.registers.byte[Z80_IXL]; }
+  uint8_t getIYH()                      { return state.registers.byte[Z80_IYH]; }
+  uint8_t getIYL()                      { return state.registers.byte[Z80_IYL]; }
+  uint8_t getIFF1()                     { return state.iff1; }
+  uint8_t getIFF2()                     { return state.iff2; }
+  uint8_t getIM()                       { return state.im; }
+  uint8_t getI()                        { return state.i; }
+  uint8_t getR()                        { return state.r; }
+  uint8_t getSPH()                      { return state.registers.byte[Z80_SPH]; }
+  uint8_t getSPL()                      { return state.registers.byte[Z80_SPL]; } 
+ 
 
-  uint16_t getPC()                            { return state.pc; }
-  void setPC(uint16_t value)                  { state.pc = value; }
-
-
+  void swap() {
+      for(int i=0; i <4; ++i) {
+        unsigned short t = state.alternates[i];
+        state.alternates[i] = state.registers.word[i];
+        state.registers.word[i] = t;
+      }
+  }
+  
 private:
 
-  int intemulate(int opcode, int elapsed_cycles);
+  int __not_in_flash_func(intemulate)(int opcode, int elapsed_cycles);
 
 
   Z80_STATE         state;
