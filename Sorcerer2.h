@@ -5,6 +5,10 @@
 #include "Sorcerer2Keyboard.h"
 #include "Sorcerer2DiskSystem.h"
 #include "Sorcerer2TapeSystem.h"
+#include <pico/printf.h>
+#include <pico/stdlib.h>
+
+#define CYCLES_PER_DISK_TICK 50000
 
 class Sorcerer2 {
 private:
@@ -162,5 +166,29 @@ public:
   void loadMem();
   void moderate(bool on);
   void toggleModerate();
+  uint8_t inline getCentronics() { return _centronicsOut; }
+  
+  inline void stepCpu()
+  {
+    // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
+      int c = _Z80.step();
+      _cycles += c;
+      if (_moderate) {
+        uint32_t tu4 = time_us_32() << 2;
+        _ta4 += c - tu4 + _tu4; // +ve too fast, -ve too slow
+        _tu4 = tu4;
+        if (_ta4 >= 4) busy_wait_us_32(_ta4 >> 2);
+        if (_ta4 < -100000) _ta4 = -100000;
+      }
+  }
+
+  inline void stepDisk()
+  {
+    if (_cycles >= CYCLES_PER_DISK_TICK) {
+      diskTick();
+      _cycles -= CYCLES_PER_DISK_TICK;
+    }
+  }
+
 };
 

@@ -11,6 +11,7 @@
 #include "hardware/structs/ssi.h"
 #include "hardware/dma.h"
 #include "hardware/uart.h"
+#include "hardware/pwm.h"  // pwm 
 #include "pico/sem.h"
 extern "C" {
 #include "dvi.h"
@@ -46,6 +47,9 @@ extern "C" {
 
 // Should be 25 for pico ?
 // #define LED_PIN 16
+#define SPK_PIN 20
+#define PWM_WRAP ((64 * 64) + 512)
+#define PWM_MID (PWM_WRAP>>1)
 
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
@@ -130,7 +134,13 @@ extern "C" int __not_in_flash_func(main)() {
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
 
-
+	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
+	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
+	pwm_config config = pwm_get_default_config();
+	pwm_config_set_clkdiv(&config, 1.0f); 
+	pwm_config_set_wrap(&config, PWM_WRAP);
+	pwm_init(audio_pin_slice, &config, true);
+	
 	charbuf = sorcerer2.screenPtr();
 	exchr = sorcerer2.charsPtr();
     sorcerer2DiskSystem.drive(0)->insert(&diskA);
@@ -163,7 +173,12 @@ extern "C" int __not_in_flash_func(main)() {
 
 	while (1) {
 		tuh_task();
-		sorcerer2.step();
+		for(int i=0; i < 100; ++i) {
+			sorcerer2.stepCpu();
+			const uint32_t l = sorcerer2.getCentronics() >> 2;		
+			pwm_set_gpio_level(SPK_PIN, __mul_instruction(l, l));
+		}
+		sorcerer2.stepDisk();
 	}
 	__builtin_unreachable();
 }

@@ -11,6 +11,7 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read from SD card
 * USB Keyboard input
+* PWM audio out
 
 ## Prototype
 <img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
@@ -35,6 +36,7 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 | GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
+| GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
 

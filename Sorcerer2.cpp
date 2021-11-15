@@ -3,8 +3,6 @@
 #include "exchr.h"
 #include "diskboot.h"
 #include <memory.h>
-#include <pico/printf.h>
-#include <pico/stdlib.h>
 
 Sorcerer2::Sorcerer2(
   Sorcerer2Keyboard *keyboard,
@@ -67,30 +65,6 @@ void Sorcerer2::diskTick()
 //  = 10^5 / 2
 //  = 5 * 10^4
 //
-#define CYCLES_PER_DISK_TICK 50000
-
-#define INSTRUCTION_PER_STEP 100
-
-void Sorcerer2::step()
-{
-
-  // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
-  for(int i=0; i < INSTRUCTION_PER_STEP; ++i) {
-    int c = _Z80.step();
-    _cycles += c;
-    if (_moderate) {
-      uint32_t tu4 = time_us_32() << 2;
-      _ta4 += c - tu4 + _tu4; // +ve too fast, -ve too slow
-      _tu4 = tu4;
-      if (_ta4 >= 4) busy_wait_us_32(_ta4 >> 2);
-      if (_ta4 < -1000000) _ta4 = -1000000;
-    }
-  }
-  if (_cycles >= CYCLES_PER_DISK_TICK) {
-    diskTick();
-    _cycles -= CYCLES_PER_DISK_TICK;
-  }
-}
 
 void Sorcerer2::reset() { 
   _tapeSystem.reset();
