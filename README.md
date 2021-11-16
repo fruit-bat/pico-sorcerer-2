@@ -111,6 +111,14 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 * Serial interface (Uart 0 is currently used for debug) 
 
 ## Resources
+### Sound card
+The Sorcerer had a sound card that plugged into the parallel port. It appears to be a single DAC, using the six most significant bits from the port.
+
+<img src="docs/4-voice-top.jpg" width="200"/>
+<img src="docs/4-voice-bottom.jpg" width="200"/>
+
+
+### Websites
   [Exidy Sorcerer Software Library](https://www.classic-computers.org.nz/blog/2017-01-23-software-for-real-sorcerers.htm)<br/>
   [Trailing Edge - Exidy Sorcerer monitor commands](http://www.trailingedge.com/exidy/exidymon.html)<br/>
   [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
