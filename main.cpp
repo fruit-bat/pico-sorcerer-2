@@ -48,7 +48,7 @@ extern "C" {
 // Should be 25 for pico ?
 // #define LED_PIN 16
 #define SPK_PIN 20
-#define PWM_WRAP ((64 * 64) + 512)
+#define PWM_WRAP (512)
 #define PWM_MID (PWM_WRAP>>1)
 
 struct dvi_inst dvi0;
@@ -176,7 +176,7 @@ extern "C" int __not_in_flash_func(main)() {
 		for(int i=0; i < 100; ++i) {
 			sorcerer2.stepCpu();
 			const uint32_t l = sorcerer2.getCentronics() >> 2;		
-			pwm_set_gpio_level(SPK_PIN, __mul_instruction(l, l));
+			pwm_set_gpio_level(SPK_PIN, l);
 		}
 		sorcerer2.stepDisk();
 	}
