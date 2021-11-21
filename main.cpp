@@ -57,39 +57,72 @@ struct semaphore dvi_start_sem;
 #define CHAR_COLS 64
 #define CHAR_ROWS 30
 
-unsigned char* charbuf;
-unsigned char* exchr;
+static uint8_t* charbuf;
+static uint8_t* exchr;
+
+#define PCS_COLS 80
+#define PCS_ROWS 32
+static uint8_t charScreen[PCS_COLS * PCS_ROWS];
+static bool showMenu = false;
+static bool toggleMenu = false;
+
+// Menu handler
+static uint __not_in_flash_func(prepare_scanline_80)(const uint8_t *chars, const uint y, const uint ys) {
+  static uint8_t scanbuf[PCS_COLS];
+
+  const uint cr = y & 7;
+  for (uint i = 0; i < PCS_COLS; ++i) {
+    scanbuf[i] = exchr[(chars[i + ys] << 3) + cr];
+  }
+  uint32_t *tmdsbuf;
+  queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
+  tmds_encode_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
+  queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
+  return PCS_COLS;
+}
 
 // Screen handler
-static void __not_in_flash_func(prepare_scanline)(const unsigned char *chars, uint y) {
-	static uint8_t scanbuf[FRAME_WIDTH / 8];
-	for (uint i = 0; i < CHAR_COLS; ++i) {
-		uint c = chars[i + ((y >> 3) << 6)];
-		scanbuf[i + 8] = exchr[(c << 3) + (y & 7)];
-	}
-	uint32_t *tmdsbuf;
-	queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
-	tmds_encode_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
-	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
+static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const uint y, const uint ys) {
+  static uint8_t scanbuf[FRAME_WIDTH / 8];
+
+  const uint cr = y & 7;
+  for (uint i = 0; i < CHAR_COLS; ++i) {
+    scanbuf[i + 8] = exchr[(chars[i + ys] << 3) + cr];
+  }
+  uint32_t *tmdsbuf;
+  queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
+  tmds_encode_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
+  queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
+  return CHAR_COLS;
 }
 
 void __not_in_flash_func(core1_scanline_callback)() {
-	static uint y = 1;
-	prepare_scanline(charbuf, y++);
-	if (y >= FRAME_HEIGHT) y -= FRAME_HEIGHT;
+  static uint y = 1;
+  static uint ys = 0;
+  uint rs = showMenu ? prepare_scanline_80((const uint8_t *)&charScreen, y++, ys) : prepare_scanline_64(charbuf, y++, ys);
+  if (0 == (y & 7)) {
+    ys += rs;
+  }
+  if (y == FRAME_HEIGHT) {
+    y = 0;
+    ys = 0;
+    if (toggleMenu) {
+      showMenu = !showMenu;
+    }
+  }
 }
 
 void core1_main() {
-	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
-	sem_acquire_blocking(&dvi_start_sem);
+  dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
+  sem_acquire_blocking(&dvi_start_sem);
 
-	dvi_start(&dvi0);
+  dvi_start(&dvi0);
 
-	// The text display is completely IRQ driven (takes up around 30% of cycles @
-	// VGA). We could do something useful, or we could just take a nice nap
-	while (1) 
-		__wfi();
-	__builtin_unreachable();
+  // The text display is completely IRQ driven (takes up around 30% of cycles @
+  // VGA). We could do something useful, or we could just take a nice nap
+  while (1) 
+    __wfi();
+  __builtin_unreachable();
 }
 
 static Sorcerer2SdCardFatFsSpi sdCard0(0);
@@ -105,44 +138,35 @@ static Sorcerer2 sorcerer2(
   &sorcerer2DiskSystem
 );
 
-extern "C" void printAt(unsigned int x, unsigned int y, const char *fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  char buf[128];
-  vsnprintf(buf, 128, fmt, args );
-  sorcerer2.printAt(x, y, buf);
-  va_end(args);
-}
-
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   sorcerer2HidKeyboard.processHidReport(report, prev_report);
 }
 
 extern "C" int __not_in_flash_func(main)() {
-	vreg_set_voltage(VREG_VSEL);
-	sleep_ms(10);
+  vreg_set_voltage(VREG_VSEL);
+  sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL
-	set_sys_clock_khz(12000, true);
+  set_sys_clock_khz(12000, true);
 #else
-	// Run system at TMDS bit clock
-	set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
+  // Run system at TMDS bit clock
+  set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
 #endif
 
-	setup_default_uart();
-	tusb_init();
+  setup_default_uart();
+  tusb_init();
     
-	gpio_init(LED_PIN);
-	gpio_set_dir(LED_PIN, GPIO_OUT);
+  gpio_init(LED_PIN);
+  gpio_set_dir(LED_PIN, GPIO_OUT);
 
-	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
-	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
-	pwm_config config = pwm_get_default_config();
-	pwm_config_set_clkdiv(&config, 1.0f); 
-	pwm_config_set_wrap(&config, PWM_WRAP);
-	pwm_init(audio_pin_slice, &config, true);
-	
-	charbuf = sorcerer2.screenPtr();
-	exchr = sorcerer2.charsPtr();
+  gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
+  const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
+  pwm_config config = pwm_get_default_config();
+  pwm_config_set_clkdiv(&config, 1.0f); 
+  pwm_config_set_wrap(&config, PWM_WRAP);
+  pwm_init(audio_pin_slice, &config, true);
+  
+  charbuf = sorcerer2.screenPtr();
+  exchr = sorcerer2.charsPtr();
     sorcerer2DiskSystem.drive(0)->insert(&diskA);
     sorcerer2DiskSystem.drive(1)->insert(&diskB);
     sorcerer2DiskSystem.drive(2)->insert(&diskC);
@@ -150,35 +174,35 @@ extern "C" int __not_in_flash_func(main)() {
     sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
     sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
     
-    	printf("Configuring DVI\n");
+      printf("Configuring DVI\n");
 
-	dvi0.timing = &DVI_TIMING;
-	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
-	dvi0.scanline_callback = core1_scanline_callback;
-	dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
+  dvi0.timing = &DVI_TIMING;
+  dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
+  dvi0.scanline_callback = core1_scanline_callback;
+  dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
 
-	printf("Prepare first scanline\n");
+  printf("Prepare first scanline\n");
 
-	prepare_scanline(charbuf, 0);
+  prepare_scanline_64(charbuf, 0, 0);
 
-	printf("Core 1 start\n");
-	sem_init(&dvi_start_sem, 0, 1);
-	hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
-	multicore_launch_core1(core1_main);
+  printf("Core 1 start\n");
+  sem_init(&dvi_start_sem, 0, 1);
+  hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
+  multicore_launch_core1(core1_main);
 
 
-	sem_release(&dvi_start_sem);
+  sem_release(&dvi_start_sem);
 
-	sorcerer2.reset();
+  sorcerer2.reset();
 
-	while (1) {
-		tuh_task();
-		for(int i=0; i < 100; ++i) {
-			sorcerer2.stepCpu();
-			const uint32_t l = sorcerer2.getCentronics() >> 2;		
-			pwm_set_gpio_level(SPK_PIN, l);
-		}
-		sorcerer2.stepDisk();
-	}
-	__builtin_unreachable();
+  while (1) {
+    tuh_task();
+    for(int i=0; i < 100; ++i) {
+      sorcerer2.stepCpu();
+      const uint32_t l = sorcerer2.getCentronics() >> 2;    
+      pwm_set_gpio_level(SPK_PIN, l);
+    }
+    sorcerer2.stepDisk();
+  }
+  __builtin_unreachable();
 }

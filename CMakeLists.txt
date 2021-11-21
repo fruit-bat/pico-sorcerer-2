@@ -17,6 +17,7 @@ add_executable(sorcerer2
 	Sorcerer2TapeUnitFatFsSpi.cpp
 	hid_app.c
 	hw_config.c
+	PicoCharScreen.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR})

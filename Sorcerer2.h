@@ -159,8 +159,6 @@ public:
   void reset(unsigned int address);
   void reset();
   void __not_in_flash_func(step)();
-  void printAt(unsigned int x, unsigned int y, const char *str);
-  void printAtF(unsigned int x, unsigned int y, const char *fmt, ...);
   Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
   void saveMem();
   void loadMem();
