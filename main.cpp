@@ -24,6 +24,9 @@ extern "C" {
 #include "Sorcerer2DiskFatFsSpi.h"
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 
+#include "PicoWinHidKeyboard.h"
+#include "PicoCharScreen.h"
+
 #include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
@@ -108,6 +111,7 @@ void __not_in_flash_func(core1_scanline_callback)() {
     ys = 0;
     if (toggleMenu) {
       showMenu = !showMenu;
+      toggleMenu = false;
     }
   }
 }
@@ -137,9 +141,18 @@ static Sorcerer2 sorcerer2(
   &sorcerer2HidKeyboard,
   &sorcerer2DiskSystem
 );
+static PicoWinHidKeyboard picoWinHidKeyboard;
+static PicoCharScreen picoCharScreen((uint8_t *)&charScreen);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
-  sorcerer2HidKeyboard.processHidReport(report, prev_report);
+  int r;
+  if (showMenu) {
+    r = picoWinHidKeyboard.processHidReport(report, prev_report);
+  }
+  else {
+    r = sorcerer2HidKeyboard.processHidReport(report, prev_report);
+  }
+  if (r == 1) toggleMenu = true;
 }
 
 extern "C" int __not_in_flash_func(main)() {
@@ -167,14 +180,14 @@ extern "C" int __not_in_flash_func(main)() {
   
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();
-    sorcerer2DiskSystem.drive(0)->insert(&diskA);
-    sorcerer2DiskSystem.drive(1)->insert(&diskB);
-    sorcerer2DiskSystem.drive(2)->insert(&diskC);
-    sorcerer2DiskSystem.drive(3)->insert(&diskD);
-    sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
-    sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
-    
-      printf("Configuring DVI\n");
+  sorcerer2DiskSystem.drive(0)->insert(&diskA);
+  sorcerer2DiskSystem.drive(1)->insert(&diskB);
+  sorcerer2DiskSystem.drive(2)->insert(&diskC);
+  sorcerer2DiskSystem.drive(3)->insert(&diskD);
+  sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
+  sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
+  
+  printf("Configuring DVI\n");
 
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;

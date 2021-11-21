@@ -18,6 +18,7 @@ add_executable(sorcerer2
 	hid_app.c
 	hw_config.c
 	PicoCharScreen.cpp
+	PicoWinHidKeyboard.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR})
