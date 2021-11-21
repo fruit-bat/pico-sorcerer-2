@@ -114,8 +114,8 @@ extern "C" void printAt(unsigned int x, unsigned int y, const char *fmt, ...) {
   va_end(args);
 }
 
-extern "C" void sorcerer_keyboard_handler(hid_keyboard_report_t const *report) {
-  sorcerer2HidKeyboard.processHidReport(report);
+extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  sorcerer2HidKeyboard.processHidReport(report, prev_report);
 }
 
 extern "C" int __not_in_flash_func(main)() {

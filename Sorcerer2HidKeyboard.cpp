@@ -139,8 +139,7 @@ static unsigned char LOCK_KEYS[] = {
 //  HID_KEY_NUM_LOCK
 };
 
-void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report) {
-  static hid_keyboard_report_t prev = { 0, 0, {0} };
+void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   static bool lock_flags[sizeof(LOCK_KEYS)] = {false};
   reset();
   if (report->keycode[0] == 1) return;
@@ -162,25 +161,25 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
     bool checkReset = false;
     reset1 |= hidKeyCode == HID_KEY_F11;
     reset2 |= hidKeyCode == HID_KEY_F12;
-    checkReset |= reset1 && !isInReport(&prev, HID_KEY_F11);
-    checkReset |= reset2 && !isInReport(&prev, HID_KEY_F12);
+    checkReset |= reset1 && !isInReport(prev_report, HID_KEY_F11);
+    checkReset |= reset2 && !isInReport(prev_report, HID_KEY_F12);
     
     if (reset1 && reset2 && checkReset) {
       _sorcerer2->reset();
     }
     
     // F2 Copy lower mem
-    if (hidKeyCode == HID_KEY_F2 && !isInReport(&prev, HID_KEY_F2)) {
+    if (hidKeyCode == HID_KEY_F2 && !isInReport(prev_report, HID_KEY_F2)) {
       _sorcerer2->saveMem();
     }
     
     // F3 Restore lower mem
-    if (hidKeyCode == HID_KEY_F3 && !isInReport(&prev, HID_KEY_F3)) {
+    if (hidKeyCode == HID_KEY_F3 && !isInReport(prev_report, HID_KEY_F3)) {
       _sorcerer2->loadMem();
     }
     
     // F4 toggle moderate
-    if (hidKeyCode == HID_KEY_F4 && !isInReport(&prev, HID_KEY_F4)) {
+    if (hidKeyCode == HID_KEY_F4 && !isInReport(prev_report, HID_KEY_F4)) {
       _sorcerer2->toggleModerate();
     }
         
@@ -189,7 +188,7 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
       const unsigned char keycode = k->keycode;
       bool isLockKey = false;
       for (unsigned int j = 0; j < sizeof(LOCK_KEYS); ++j) {
-        if (keycode == LOCK_KEYS[j] && !isInReport(&prev, keycode)) {
+        if (keycode == LOCK_KEYS[j] && !isInReport(prev_report, keycode)) {
           lock_flags[j] = !lock_flags[j];
           isLockKey = true;
         }
@@ -205,5 +204,4 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report)
       if (k) press(k->line, k->key);
     }
   }
-  prev = *report;
 }
