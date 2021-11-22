@@ -24,6 +24,7 @@ extern "C" {
 #include "Sorcerer2DiskFatFsSpi.h"
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 
+#include "MagneticFont.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoCharScreen.h"
 
@@ -66,6 +67,7 @@ static uint8_t* exchr;
 #define PCS_COLS 80
 #define PCS_ROWS 32
 static uint8_t charScreen[PCS_COLS * PCS_ROWS];
+static uint8_t charFont[256 * 8];
 static bool showMenu = false;
 static bool toggleMenu = false;
 
@@ -75,7 +77,7 @@ static uint __not_in_flash_func(prepare_scanline_80)(const uint8_t *chars, const
 
   const uint cr = y & 7;
   for (uint i = 0; i < PCS_COLS; ++i) {
-    scanbuf[i] = exchr[(chars[i + ys] << 3) + cr];
+    scanbuf[i] = charFont[(chars[i + ys] << 3) + cr];
   }
   uint32_t *tmdsbuf;
   queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
@@ -177,7 +179,8 @@ extern "C" int __not_in_flash_func(main)() {
   pwm_config_set_clkdiv(&config, 1.0f); 
   pwm_config_set_wrap(&config, PWM_WRAP);
   pwm_init(audio_pin_slice, &config, true);
-  
+
+  memcpy(&charFont[32*8], MagneticFont, sizeof(MagneticFont));
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();
   sorcerer2DiskSystem.drive(0)->insert(&diskA);
