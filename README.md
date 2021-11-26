@@ -111,6 +111,10 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 * Centronics interface
 * Serial interface (Uart 0 is currently used for debug) 
 
+## Debug
+```sh
+tio -m ODELBS /dev/ttyUSB0
+```
 ## Resources
 ### Sound card
 The Sorcerer had a [sound card](https://sw-ke.facebook.com/groups/AusVintage/permalink/1188402214859386/) that plugged into the parallel port. It appears to be a single DAC, using the six most significant bits from the port.
