@@ -13,7 +13,7 @@ public:
   }
 
   inline PicoRect(PicoRect *c) :
-    _x1(c->x1), _y1(c->y1), _x2(c->x2), _y2(c->y2)
+    _x1(c->_x1), _y1(c->_y1), _x2(c->_x2), _y2(c->_y2)
   {
   }
 
@@ -44,7 +44,7 @@ public:
     return _x2 - _x1;
   }
 
-  inline int32_t w() {
+  inline int32_t h() {
     return _y2 - _y1;
   }
 };
