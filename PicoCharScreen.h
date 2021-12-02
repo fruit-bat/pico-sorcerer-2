@@ -1,6 +1,5 @@
 #pragma once
 #include <pico/printf.h>
-#include <memory.h>
 #include "PicoRectXYWH.h"
 
 #define PCS_COLS 80
@@ -21,9 +20,7 @@ public:
     _chars[x +(y * _rect._w)] = c;
   }
 
-  void clear() {
-    memset(_chars, 32, _s);
-  }
+  void clear();
 
   PicoRectXYWH rect() { return _rect; } 
 };
