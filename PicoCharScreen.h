@@ -2,10 +2,6 @@
 #include <pico/printf.h>
 #include "PicoRectXYWH.h"
 
-#define PCS_COLS 80
-#define PCS_ROWS 32
-#define PCS_CHARS (PCS_COLS * PCS_ROWS)
-
 class PicoCharScreen {
 private:
   uint8_t *_chars;
