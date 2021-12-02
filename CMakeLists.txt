@@ -17,6 +17,7 @@ add_executable(sorcerer2
 	Sorcerer2TapeUnitFatFsSpi.cpp
 	hid_app.c
 	hw_config.c
+	PicoRectXYWH.cpp
 	PicoCharScreen.cpp
 	PicoWinHidKeyboard.cpp
 )

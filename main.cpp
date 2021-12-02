@@ -144,7 +144,7 @@ static Sorcerer2 sorcerer2(
   &sorcerer2DiskSystem
 );
 static PicoWinHidKeyboard picoWinHidKeyboard;
-static PicoCharScreen picoCharScreen((uint8_t *)&charScreen);
+static PicoCharScreen picoCharScreen((uint8_t *)&charScreen, PCS_COLS, PCS_ROWS);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;

@@ -1,23 +1,27 @@
 #pragma once
 #include <pico/printf.h>
 
-class PicoRect {
+class PicoRectXYWH;
+
+class PicoRectXYXY {
 
 public:
 
   int32_t _x1,_y1,_x2,_y2;
 
-  inline PicoRect(int32_t x1, int32_t y1, int32_t x2, int32_t y2) :
+  inline PicoRectXYXY(int32_t x1, int32_t y1, int32_t x2, int32_t y2) :
     _x1(x1), _y1(y1), _x2(x2), _y2(y2)
   {
   }
 
-  inline PicoRect(PicoRect *c) :
+  inline PicoRectXYXY(PicoRect *c) :
     _x1(c->_x1), _y1(c->_y1), _x2(c->_x2), _y2(c->_y2)
   {
   }
+  
+  void intersect(PicoRectXYWH *c);
 
-  void intersect(PicoRect *c) {
+  void intersect(PicoRectXYXY *c) {
     if (c->_x1 > _x1) _x1 = c->_x1;
     if (c->_y1 > _y1) _y1 = c->_y1;
     if (c->_x2 < _x2) _x2 = c->_x2;
