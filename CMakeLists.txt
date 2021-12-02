@@ -18,7 +18,9 @@ add_executable(sorcerer2
 	hid_app.c
 	hw_config.c
 	PicoRectXYWH.cpp
+	PicoRectXYXY.cpp
 	PicoCharScreen.cpp
+	PicoClippedScreen.cpp
 	PicoWinHidKeyboard.cpp
 )
 

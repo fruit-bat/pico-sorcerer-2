@@ -1,14 +1,14 @@
 #pragma once
 
 #include "PicoCharScreen.h"
-#include "PicoRect.h"
-#include "PicoSubWin.h"
+#include "PicoRectXYXY.h"
+#include "PicoRectXYWH.h"
 
 class PicoPen {
 
   PicoCharScreen* _screen;
-  PicoRect _clip;
-  int32_t _x, _y, _w, _h;
+  PicoRectXYXY _clip;
+  PicoRectXYXY _rect;
 
 public:
 

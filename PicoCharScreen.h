@@ -18,5 +18,5 @@ public:
 
   void clear();
 
-  PicoRectXYWH rect() { return _rect; } 
+  PicoRectXYWH *rect() { return &_rect; } 
 };
