@@ -1,49 +1,42 @@
 #pragma once
 
-#include "PicoCharScreen.h"
+#include "PicoClippedScreen.h"
 #include "PicoRectXYXY.h"
 #include "PicoRectXYWH.h"
 
 class PicoPen {
 
-  PicoCharScreen* _screen;
-  PicoRectXYXY _clip;
-  PicoRectXYXY _rect;
+  PicoRectXYWH _rect;
+  PicoClippedScreen* _screen;
 
 public:
 
-  PicoPen(PicoCharScreen* screen) :
-    _screen(screen),
-    _x(0),
-    _y(0),
-    _w(screen->w()),
-    _h(screen->h()),
-    _clip(0, 0, screen->w(), screen->h())
+  PicoPen(PicoClippedScreen* screen, PicoRectXYWH *r) :
+    _rect(r),
+    _screen(screen)
   {
   }
 
-  PicoPen(PicoPen* parentPen, PicoSubWin *subWin) :
-    _screen(parentPen->_screen),
-    _x(parentPen->_x + subWin->rx()),
-    _y(parentPen->_y + subWin->ry()),
-    _w(subWin->w()),
-    _h(subWin->h()),
-    _clip(_x, _y, _x + _h, _y + _h)
+  PicoPen(PicoPen* parentPen, PicoRectXYWH *r) :
+    _rect(
+      parentPen->_rect._x + r->_x,
+      parentPen->_rect._y + r->_y,
+      r->_w,
+      r->_h
+    ),
+    _screen(parentPen->_screen)
   {
-    _clip.intersect(parentPen->_clip);
+    _screen->clip(&_rect);
   }
 
-  void set(int32_t rx, int32_t ry, uint8_t c) {
-    int32_t sx = _x + rx;
-    int32_t sy = _y + ry;
-    if (_clip.containsPos(sx, sy)) {
-      _screen->set(sx, sy, c);
-    }
+  void set(int32_t x, int32_t y, uint8_t c) {
+    _screen->set(_rect._x + x, _rect._y + y, c);
   }
 
   void clear() {
-    for(int32_t y = _clip._y1; y < _clip._y2; ++y) {
-      for(int32_t x = _clip._x1; x < _clip._x2; ++x) {
+    PicoRectXYXY *clip = &_screen->_clip;
+    for(int32_t y = clip->_y1; y < clip->_y2; ++y) {
+      for(int32_t x = clip->_x1; x < clip->_x2; ++x) {
         _screen->set(x, y, 32);
       }
     }

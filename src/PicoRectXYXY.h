@@ -33,6 +33,10 @@ public:
   inline bool notEmpty() {
     return _x2 > _x1 && _y2 > _y1;
   }
+  
+  inline bool empty() {
+    return _x2 <= _x1 && _y2 <= _y1;
+  }
 
   inline bool containsRow(int32_t y) {
     return y >= _y1 && y < _y2;

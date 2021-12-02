@@ -22,6 +22,7 @@ add_executable(sorcerer2
 	src/PicoCharScreen.cpp
 	src/PicoClippedScreen.cpp
 	src/PicoWinHidKeyboard.cpp
+	src/PicoPen.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)

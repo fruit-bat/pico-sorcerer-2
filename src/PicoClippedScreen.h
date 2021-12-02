@@ -3,7 +3,9 @@
 #include "PicoRectXYXY.h"
 
 class PicoClippedScreen {
- 
+  
+friend class PicoPen;
+
   PicoCharScreen  *_screen;
   PicoRectXYXY _clip;
 
@@ -15,10 +17,13 @@ public:
   {
   }
   
-  PicoClippedScreen(PicoClippedScreen  *clippedScreen, PicoRectXYWH *r) :
+  PicoClippedScreen(PicoClippedScreen  *clippedScreen) :
     _screen(clippedScreen->_screen),
     _clip(clippedScreen->_clip)
   {
+  }
+
+  void clip(PicoRectXYWH *r) {
     _clip.intersect(r);
   }
 

@@ -20,7 +20,11 @@ public:
   inline bool notEmpty() {
     return _w > 0 && _h > 0;
   }
-
+  
+  inline bool empty() {
+    return _w <= 0 && _h <= 0;
+  }
+  
   inline bool containsRow(int32_t y) {
     return y >= _y && y < (_y + _h);
   }
