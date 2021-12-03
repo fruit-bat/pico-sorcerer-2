@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-void PicoPen::printAt(int32_t x, int32_t y, bool wrap, uint8_t *str) {
+void PicoPen::printAt(int32_t x, int32_t y, bool wrap, char *str) {
   if (_screen->_clip.empty()) return;
   int32_t xc = x, yc = y;
   if (wrap) {
@@ -19,16 +19,16 @@ void PicoPen::printAt(int32_t x, int32_t y, bool wrap, uint8_t *str) {
   while(*str) {
     set(xc++, yc, *str++);
     if (xc == _rect._w) {
-      if (wrap) { yc++; xc = 0;; }
+      if (wrap) { yc++; xc = 0; }
     }
   }
 }
 
-void PicoPen::printAtF(int32_t x, int32_t y, bool wrap, uint8_t *fmt, ...) {
+void PicoPen::printAtF(int32_t x, int32_t y, bool wrap, char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  uint8_t buf[128];
-  vsnprintf((char*)buf, 128, (char*)fmt, args );
+  char buf[128];
+  vsnprintf(buf, 128, fmt, args );
   printAt(x, y, wrap, buf);
   va_end(args);
 }

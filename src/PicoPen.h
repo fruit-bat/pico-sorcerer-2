@@ -6,13 +6,17 @@
 
 class PicoPen {
 
+  friend class PicoWin;
+
   PicoRectXYWH _rect;
+
+  // In theory there could be more than one screen (screen->_next)
   PicoClippedScreen* _screen;
 
 public:
 
-  PicoPen(PicoClippedScreen* screen, PicoRectXYWH *r) :
-    _rect(r),
+  PicoPen(PicoClippedScreen* screen) :
+    _rect(0,0,0,0),
     _screen(screen)
   {
   }
@@ -42,6 +46,7 @@ public:
     }
   }
 
-  void printAt(int32_t x, int32_t y, bool wrap, uint8_t *str);
-  void printAtF(int32_t x, int32_t y, bool wrap, uint8_t *fmt, ...);
+  void printAt(int32_t x, int32_t y, bool wrap, char *str);
+  
+  void printAtF(int32_t x, int32_t y, bool wrap, char *fmt, ...);
 };

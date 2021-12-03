@@ -1,25 +1,35 @@
 #pragma once
-#include "PicoRect.h"
 
-class PicoSubWin;
+#include "PicoRectXYWH.h"
+
+class PicoPen;
 
 class PicoWin {
-  friend PicoSubWin;
-protected:
-
-  int32_t _w, _h;
-  PicoSubWin *_firstChild;
+  
+  PicoWin *_parent;
+  PicoRectXYWH _rect;
+  PicoWin *_firstChild;
+  PicoWin *_nextChild;
+  bool _repaint;
   bool _repaintChild;
+  
+  void paintSubTree(PicoPen *pen);
 
 public:
 
-  PicoWin(int32_t w, int32_t h) :
-    _w(w), _h(h)
-  {
-  }
+  PicoWin(int32_t x, int32_t y, int32_t w, int32_t h);
 
-  inline int32_t w() { return _w; }
-  inline int32_t h() { return _h; }
-  inline PicoSubWin *firstChild() { return _firstChild; }
+  void addChild(PicoWin *child);
+
+  void repaint();
+
+  void refresh(PicoPen *parentPen);
+
+  void keyPressed(uint8_t keyCode);
+
+  virtual void clear(PicoPen *pen);
+  
+  virtual void paint(PicoPen *pen) {}
+
+  virtual bool handleKeyPressed(uint8_t keyCode) { return true; }
 };
-
