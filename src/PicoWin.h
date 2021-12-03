@@ -32,4 +32,10 @@ public:
   virtual void paint(PicoPen *pen) {}
 
   virtual bool handleKeyPressed(uint8_t keyCode) { return true; }
+  
+  int32_t wx() { return _rect._x; }
+  int32_t wy() { return _rect._y; }
+  int32_t ww() { return _rect._w; }
+  int32_t wh() { return _rect._h; }
+
 };

@@ -27,7 +27,7 @@ public:
     if (c->_x1 > _x1) _x1 = c->_x1;
     if (c->_y1 > _y1) _y1 = c->_y1;
     if (c->_x2 < _x2) _x2 = c->_x2;
-    if (c->_y2 < _y2) _y1 = c->_y2;
+    if (c->_y2 < _y2) _y2 = c->_y2;
   }
 
   inline bool notEmpty() {

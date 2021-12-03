@@ -26,7 +26,8 @@ extern "C" {
 
 #include "MagneticFont.h"
 #include "PicoWinHidKeyboard.h"
-#include "PicoCharScreen.h"
+#include "PicoDisplay.h"
+#include "PicoWinBlock.h" // Test
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -72,6 +73,7 @@ static bool showMenu = false;
 static bool toggleMenu = false;
 
 // Menu handler
+static volatile uint _frames = 0;
 static uint __not_in_flash_func(prepare_scanline_80)(const uint8_t *chars, const uint y, const uint ys) {
   static uint8_t scanbuf[PCS_COLS];
 
@@ -109,6 +111,7 @@ void __not_in_flash_func(core1_scanline_callback)() {
     ys += rs;
   }
   if (y == FRAME_HEIGHT) {
+    _frames++;
     y = 0;
     ys = 0;
     if (toggleMenu) {
@@ -145,6 +148,9 @@ static Sorcerer2 sorcerer2(
 );
 static PicoWinHidKeyboard picoWinHidKeyboard;
 static PicoCharScreen picoCharScreen((uint8_t *)&charScreen, PCS_COLS, PCS_ROWS);
+static PicoWin picoRootWin(0, 0, PCS_COLS, PCS_ROWS);
+static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
+static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
@@ -211,6 +217,9 @@ extern "C" int __not_in_flash_func(main)() {
 
   sorcerer2.reset();
 
+  picoRootWin.addChild(&picoWinBlock1);
+
+  uint frames = 0;
   while (1) {
     tuh_task();
     for(int i=0; i < 100; ++i) {
@@ -219,6 +228,10 @@ extern "C" int __not_in_flash_func(main)() {
       pwm_set_gpio_level(SPK_PIN, l);
     }
     sorcerer2.stepDisk();
+    if (showMenu && frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
   }
   __builtin_unreachable();
 }

@@ -7,7 +7,7 @@ void PicoRectXYXY::intersect(PicoRectXYWH *c) {
   if (c->_x > _x1) _x1 = c->_x;
   if (c->_y > _y1) _y1 = c->_y;
   if (cx2 < _x2) _x2 = cx2;
-  if (cy2 < _y2) _y1 = cy2;
+  if (cy2 < _y2) _y2 = cy2;
 }
 
 PicoRectXYXY::PicoRectXYXY(PicoRectXYWH *c) :

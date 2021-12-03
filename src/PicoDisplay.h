@@ -7,7 +7,7 @@
 class PicoDisplay {
 
   PicoCharScreen *_screen;
-  PicoWin *_root; // ??
+  PicoWin *_root;
   PicoWin *_focus;
 
 public:

@@ -5,7 +5,8 @@ PicoDisplay::PicoDisplay(
   PicoCharScreen *screen,
   PicoWin *root) :
   _screen(screen),
-  _root(root)
+  _root(root),
+  _focus(root)
 {
   _root->repaint();
 }
