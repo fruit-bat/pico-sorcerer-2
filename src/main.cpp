@@ -28,6 +28,7 @@ extern "C" {
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoWinBlock.h" // Test
+#include "PicoMenu.h" // Test
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -69,7 +70,7 @@ static uint8_t* exchr;
 #define PCS_ROWS 32
 static uint8_t charScreen[PCS_COLS * PCS_ROWS];
 static uint8_t charFont[256 * 8];
-static bool showMenu = false;
+static bool showMenu = true;
 static bool toggleMenu = false;
 
 // Menu handler
@@ -150,6 +151,8 @@ static PicoWinHidKeyboard picoWinHidKeyboard;
 static PicoCharScreen picoCharScreen((uint8_t *)&charScreen, PCS_COLS, PCS_ROWS);
 static PicoWin picoRootWin(0, 0, PCS_COLS, PCS_ROWS);
 static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
+static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
+static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -217,8 +220,9 @@ extern "C" int __not_in_flash_func(main)() {
 
   sorcerer2.reset();
 
-  picoRootWin.addChild(&picoWinBlock1);
-
+//  picoRootWin.addChild(&picoWinBlock1);
+  picoRootWin.addChild(&picoMenu1);
+  
   uint frames = 0;
   while (1) {
     tuh_task();

@@ -37,6 +37,7 @@ void PicoWin::refresh(PicoPen *parentPen) {
     paintSubTree(&pen);
   }
   else if (_repaintChild) {
+    _repaintChild = false;
     for(PicoWin *win = _firstChild; win; win = win->_nextChild) win->refresh(&pen);
   }
 }
@@ -46,6 +47,8 @@ void PicoWin::clear(PicoPen *pen) {
 }
 
 void PicoWin::paintSubTree(PicoPen *pen) {
+  _repaint = false;
+  _repaintChild = false;
   paint(pen);
   for(PicoWin *win = _firstChild; win; win = win->_nextChild) {
     PicoPen pen2(pen, &(win->_rect));

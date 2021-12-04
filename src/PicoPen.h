@@ -46,7 +46,7 @@ public:
     }
   }
 
-  void printAt(int32_t x, int32_t y, bool wrap, char *str);
+  void printAt(int32_t x, int32_t y, bool wrap, const char *str);
   
-  void printAtF(int32_t x, int32_t y, bool wrap, char *fmt, ...);
+  void printAtF(int32_t x, int32_t y, bool wrap, const char *fmt, ...);
 };

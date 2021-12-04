@@ -26,6 +26,7 @@ add_executable(sorcerer2
 	src/PicoWin.cpp
 	src/PicoDisplay.cpp
 	src/PicoWinBlock.cpp
+	src/PicoMenu.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
