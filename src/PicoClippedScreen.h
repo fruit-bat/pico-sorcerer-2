@@ -27,7 +27,7 @@ public:
     _clip.intersect(r);
   }
 
-  void set(int32_t x, int32_t y, uint8_t c) {
+  void set(int32_t x, int32_t y, uint16_t c) {
     if (_clip.containsPos(x, y)) {
       _screen->set(x, y, c);
     }

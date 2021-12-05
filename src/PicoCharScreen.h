@@ -4,15 +4,15 @@
 
 class PicoCharScreen {
 private:
-  uint8_t *_chars;
+  uint16_t *_chars;
   int32_t _s;
   PicoRectXYWH _rect;
   
 public:
 
-  PicoCharScreen(uint8_t *chars, uint32_t w, uint32_t h);
+  PicoCharScreen(uint16_t *chars, uint32_t w, uint32_t h);
   
-  inline void set(int32_t x, int32_t y, uint8_t c) {
+  inline void set(int32_t x, int32_t y, uint16_t c) {
     _chars[x +(y * _rect._w)] = c;
   }
 

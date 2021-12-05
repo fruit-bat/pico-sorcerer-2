@@ -68,19 +68,24 @@ static uint8_t* exchr;
 
 #define PCS_COLS 80
 #define PCS_ROWS 32
-static uint8_t charScreen[PCS_COLS * PCS_ROWS];
+static uint16_t charScreen[PCS_COLS * PCS_ROWS];
 static uint8_t charFont[256 * 8];
 static bool showMenu = true;
 static bool toggleMenu = false;
 
 // Menu handler
 static volatile uint _frames = 0;
-static uint __not_in_flash_func(prepare_scanline_80)(const uint8_t *chars, const uint y, const uint ys) {
+static uint __not_in_flash_func(prepare_scanline_80)(const uint16_t *chars, const uint y, const uint ys) {
   static uint8_t scanbuf[PCS_COLS];
-
+	const uint16_t m = (_frames >> 5) & 1;
   const uint cr = y & 7;
   for (uint i = 0; i < PCS_COLS; ++i) {
-    scanbuf[i] = charFont[(chars[i + ys] << 3) + cr];
+    const uint16_t ca = chars[i + ys];
+    const uint8_t cf = charFont[((ca & 0xff) << 3) + cr];
+    // bit 8 inverse video
+    // bit 9 flash
+    const uint16_t z = ((ca >> 8) ^ ((ca >> 9) & m)) & 1; 
+    scanbuf[i] = cf ^ __mul_instruction(z, 0xff);
   }
   uint32_t *tmdsbuf;
   queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
@@ -107,7 +112,7 @@ static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
-  uint rs = showMenu ? prepare_scanline_80((const uint8_t *)&charScreen, y++, ys) : prepare_scanline_64(charbuf, y++, ys);
+  uint rs = showMenu ? prepare_scanline_80((const uint16_t *)&charScreen, y++, ys) : prepare_scanline_64(charbuf, y++, ys);
   if (0 == (y & 7)) {
     ys += rs;
   }
@@ -148,7 +153,7 @@ static Sorcerer2 sorcerer2(
   &sorcerer2DiskSystem
 );
 static PicoWinHidKeyboard picoWinHidKeyboard;
-static PicoCharScreen picoCharScreen((uint8_t *)&charScreen, PCS_COLS, PCS_ROWS);
+static PicoCharScreen picoCharScreen((uint16_t *)&charScreen, PCS_COLS, PCS_ROWS);
 static PicoWin picoRootWin(0, 0, PCS_COLS, PCS_ROWS);
 static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
 static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
