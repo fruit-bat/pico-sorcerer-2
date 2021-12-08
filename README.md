@@ -70,12 +70,14 @@ Fistly patch up the TinyUSB library for USB host mode, as described [here](https
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
 cd PicoDVI/software/apps
-git@github.com:fruit-bat/pico-sorcerer-2.git sorcerer2
+git clone git@github.com:fruit-bat/pico-sorcerer-2.git sorcerer2
+git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 ```
 
-In the 'apps' folder add the following line to CMakeLists.txt
+In the 'apps' folder add the following lines to CMakeLists.txt
 ```
 add_subdirectory(sorcerer2)
+add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
 In the build folder:
 ```

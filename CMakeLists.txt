@@ -42,8 +42,6 @@ target_compile_definitions(sorcerer2 PRIVATE
 	DVI_1BPP_BIT_REVERSE=1
 	)
 
-add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
-
 target_link_libraries(sorcerer2
 	pico_stdlib
 	pico_multicore
