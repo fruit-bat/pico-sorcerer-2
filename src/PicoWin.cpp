@@ -56,6 +56,9 @@ void PicoWin::paintSubTree(PicoPen *pen) {
   }
 }
 
-void PicoWin::keyPressed(uint8_t keyCode) {
-  if (handleKeyPressed(keyCode) && _parent) _parent->keyPressed(keyCode); 
+void PicoWin::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
+  if (((_onkeydown && _onkeydown(keycode, modifiers, ascii)) || !_onkeydown) && _parent) 
+  {
+    _parent->keyPressed(keycode, modifiers, ascii); 
+  }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PicoRectXYWH.h"
+#include <functional>
 
 class PicoPen;
 
@@ -14,6 +15,9 @@ class PicoWin {
   bool _repaintChild;
   
   void paintSubTree(PicoPen *pen);
+  
+  std::function<bool(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> _onkeydown;
+  std::function<bool()> _onclose;
 
 public:
 
@@ -25,14 +29,13 @@ public:
 
   void refresh(PicoPen *parentPen);
 
-  void keyPressed(uint8_t keyCode);
+  // TODO this should return a boolean and be passed to the display if not handled by a window
+  void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
 
   virtual void clear(PicoPen *pen);
   
   virtual void paint(PicoPen *pen) {}
-
-  virtual bool handleKeyPressed(uint8_t keyCode) { return true; }
-  
+ 
   int32_t wx() { return _rect._x; }
   int32_t wy() { return _rect._y; }
   int32_t ww() { return _rect._w; }

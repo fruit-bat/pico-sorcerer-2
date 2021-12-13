@@ -152,10 +152,11 @@ static Sorcerer2 sorcerer2(
   &sorcerer2HidKeyboard,
   &sorcerer2DiskSystem
 );
-static PicoWinHidKeyboard picoWinHidKeyboard;
 static PicoCharScreen picoCharScreen((uint16_t *)&charScreen, PCS_COLS, PCS_ROWS);
 static PicoWin picoRootWin(0, 0, PCS_COLS, PCS_ROWS);
 static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
+static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
+
 static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
 static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
