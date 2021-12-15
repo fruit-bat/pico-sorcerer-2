@@ -20,4 +20,6 @@ public:
   void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
 
   void refresh();
+  
+  void focus(PicoWin *focus) { _focus = focus; }
 };

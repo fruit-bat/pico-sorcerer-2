@@ -30,7 +30,7 @@ public:
   void refresh(PicoPen *parentPen);
 
   // TODO this should return a boolean and be passed to the display if not handled by a window
-  void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
+  virtual void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
 
   virtual void clear(PicoPen *pen);
   
