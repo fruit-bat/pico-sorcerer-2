@@ -162,16 +162,7 @@ static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
 static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
-static PicoOption *so[] =  { 
-  new PicoOptionText("Select one"), 
-  new PicoOptionText("Select two"), 
-  new PicoOptionText("Select three"), 
-  new PicoOptionText("Select four"), 
-  new PicoOptionText("Select five"), 
-  new PicoOptionText("Select six"), 
-  new PicoOptionText("Select seven") 
-};
-static PicoSelect picoSelect1(10, 10, 20, 5, so, 7, false);
+static PicoSelect picoSelect1(10, 10, 20, 5, false);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
@@ -242,6 +233,13 @@ extern "C" int __not_in_flash_func(main)() {
 //  picoRootWin.addChild(&picoMenu1);
   picoRootWin.addChild(&picoSelect1);
   picoDisplay.focus(&picoSelect1);
+  picoSelect1.addOption(new PicoOptionText("Select one")); 
+  picoSelect1.addOption(new PicoOptionText("Select two"));
+  picoSelect1.addOption(new PicoOptionText("Select three")); 
+  picoSelect1.addOption(new PicoOptionText("Select four")); 
+  picoSelect1.addOption(new PicoOptionText("Select five")); 
+  picoSelect1.addOption(new PicoOptionText("Select six")); 
+  picoSelect1.addOption(new PicoOptionText("Select seven"));
 
   uint frames = 0;
   while (1) {

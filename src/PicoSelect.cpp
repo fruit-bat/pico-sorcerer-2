@@ -2,12 +2,22 @@
 #include "PicoPen.h"
 #include <pico/printf.h>
 
+void PicoSelect::addOption(PicoOption *option) {
+  _options.push_back(option);
+  repaint();
+}
+
+void PicoSelect::clearOptions() {
+  _options.clear();
+  repaint();
+}
+
 void PicoSelect::paint(PicoPen *pen) {
   int32_t s0 = _i - (wh() >> 1);
-  int32_t s = s0 < 0 ? 0 : s0 > _optionCount - wh() ? _optionCount - wh() : s0;
+  int32_t s = s0 < 0 ? 0 : s0 > optionCount() - wh() ? optionCount() - wh() : s0;
   for(int32_t r = 0; r < wh(); ++r) {
     const int32_t i = r + s;
-    if (i < _optionCount) paintRow(pen, r + s == _i, r, i);
+    if (i < optionCount()) paintRow(pen, r + s == _i, r, i);
     else clearRow(pen, r);
   }
 }
@@ -18,9 +28,7 @@ void PicoSelect::paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i) {
 
 void PicoSelect::clearRow(PicoPen *pen, int32_t y) {
   pen->setAttr(0);
-  for (int32_t x = 0; x < ww(); ++x) {
-    pen->set(x, y, ' ');
-  }
+  for (int32_t x = 0; x < ww(); ++x) pen->set(x, y, ' ');
 }
 
 void PicoSelect::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
@@ -30,9 +38,9 @@ void PicoSelect::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
   
   switch(ascii) {
     case 32: case 13: {
-      if (_i >= 0 && _i < _optionCount) {
+      if (_i >= 0 && _i < optionCount()) {
         if (_options[_i]->toggleSelection() && !_multiple) {
-          for(int32_t i = 0; i < _optionCount; ++i) {
+          for(int32_t i = 0; i < optionCount(); ++i) {
             if (i != _i && _options[i]->selected()) _options[i]->selected(false);
           }
         }
@@ -48,7 +56,7 @@ void PicoSelect::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
       break;
     }
     case 'a': case 'A': {
-      if (_i + 1 < _optionCount) {
+      if (_i + 1 < optionCount()) {
         ++_i;
         repaint();
       }

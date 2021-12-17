@@ -1,10 +1,11 @@
 #pragma once
 
 #include "PicoOption.h"
+#include <string>
 
 class PicoOptionText : public PicoOption {
 private:
-  char *_text;
+  std::string _text;
 public:
   PicoOptionText(const char *text);
   virtual ~PicoOptionText();
