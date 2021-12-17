@@ -142,7 +142,7 @@ void core1_main() {
   __builtin_unreachable();
 }
 
-static Sorcerer2SdCardFatFsSpi sdCard0(0);
+static SdCardFatFsSpi sdCard0(0);
 static Sorcerer2TapeUnitFatFsSpi tapeUnit0(&sdCard0, "tapes");
 static Sorcerer2DiskFatFsSpi diskA(&sdCard0, "diskA.dsk");
 static Sorcerer2DiskFatFsSpi diskB(&sdCard0, "diskB.dsk");

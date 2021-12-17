@@ -8,7 +8,7 @@
 #include "Sorcerer2DiskFatFsSpi.h"
 
 Sorcerer2DiskFatFsSpi::Sorcerer2DiskFatFsSpi(
-  Sorcerer2SdCardFatFsSpi* sdCard,
+  SdCardFatFsSpi* sdCard,
   const char* name
 ) :
   _sdCard(sdCard),

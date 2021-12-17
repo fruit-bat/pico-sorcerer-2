@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Sorcerer2Disk.h"
-#include "Sorcerer2SdCardFatFsSpi.h"
+#include "SdCardFatFsSpi.h"
 #include "Sorcerer2DiskConsts.h"
 
 class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
-  Sorcerer2SdCardFatFsSpi* _sdCard;
+  SdCardFatFsSpi* _sdCard;
   const char* _name;
   FIL _fil;
   unsigned char _sector[BYTES_PER_SECTOR];
@@ -14,7 +14,7 @@ class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
   bool _open;
   void readSector();
 public:
-  Sorcerer2DiskFatFsSpi(Sorcerer2SdCardFatFsSpi* sdCard, const char* name);
+  Sorcerer2DiskFatFsSpi(SdCardFatFsSpi* sdCard, const char* name);
   virtual void seek(long p);
   virtual int read(int sectorIndex);
   virtual void write(const int b, int sectorIndex);

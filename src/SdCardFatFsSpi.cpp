@@ -1,6 +1,6 @@
 #include <pico/printf.h>
 
-#include "Sorcerer2SdCardFatFsSpi.h"
+#include "SdCardFatFsSpi.h"
 #include "f_util.h"
 #include "ff.h"
 #include "pico/stdlib.h"
@@ -8,13 +8,13 @@
 //
 #include "hw_config.h"
 
-Sorcerer2SdCardFatFsSpi::Sorcerer2SdCardFatFsSpi(int unit) :
+SdCardFatFsSpi::SdCardFatFsSpi(int unit) :
   _unit(unit),
   _sdcard(0)
 {
 }
 
-bool Sorcerer2SdCardFatFsSpi::mount() {
+bool SdCardFatFsSpi::mount() {
   static bool timeInitialised = false;
   if (mounted()) return true;
   if (!timeInitialised) {
@@ -36,7 +36,7 @@ bool Sorcerer2SdCardFatFsSpi::mount() {
   return mounted();
 }
 
-void Sorcerer2SdCardFatFsSpi::unmount() {
+void SdCardFatFsSpi::unmount() {
   if (mounted()) {
     printf("Unmounting SD card %d... ", _unit);
     f_unmount(_sdcard->pcName);
