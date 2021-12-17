@@ -31,6 +31,7 @@ extern "C" {
 #include "PicoMenu.h" // Test
 #include "PicoSelect.h" // Test
 #include "PicoOptionText.h" // Test
+#include "PicoSelectFile.h" // Test
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -163,6 +164,7 @@ static const char *mo[] =  { "Option one", "Option two", "Option three", "Option
 static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
 static PicoSelect picoSelect1(10, 10, 20, 5, false);
+static PicoSelectFile picoSelect2(&sdCard0, "/", 15, 20, 30, 5, false);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
@@ -231,8 +233,9 @@ extern "C" int __not_in_flash_func(main)() {
 
 //  picoRootWin.addChild(&picoWinBlock1);
 //  picoRootWin.addChild(&picoMenu1);
-  picoRootWin.addChild(&picoSelect1);
-  picoDisplay.focus(&picoSelect1);
+  picoRootWin.addChild(&picoSelect2);
+  picoDisplay.focus(&picoSelect2);
+  picoSelect2.reload();
   picoSelect1.addOption(new PicoOptionText("Select one")); 
   picoSelect1.addOption(new PicoOptionText("Select two"));
   picoSelect1.addOption(new PicoOptionText("Select three")); 

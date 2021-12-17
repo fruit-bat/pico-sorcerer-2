@@ -2,12 +2,13 @@
 
 #include "SdCardFatFsSpi.h"
 #include <string>
+#include <functional>
 
 class FatFsSpiDirReader {
+private:
   SdCardFatFsSpi* _sdCard;
   std::string _folder;
-  void reload();
 public:
   FatFsSpiDirReader(SdCardFatFsSpi* sdCard, const char *folder);
-  ~FatFsSpiDirReader();
+  void foreach(std::function <void(const char* name)> cb);
 };

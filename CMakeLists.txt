@@ -31,6 +31,8 @@ add_executable(sorcerer2
 	src/PicoOptionText.cpp
 	src/SdCardFatFsSpi.cpp
 	src/FatFsSpiDirReader.cpp
+	src/PicoSelectFile.cpp
+
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)

@@ -7,14 +7,8 @@ FatFsSpiDirReader::FatFsSpiDirReader(SdCardFatFsSpi* sdCard, const char *folder)
 {
 }
 
-FatFsSpiDirReader::~FatFsSpiDirReader() {
-}
-
-void FatFsSpiDirReader::reload() {
-  if (!_sdCard->mounted()) {
-
-    // TODO clear down existing list
-    
+void FatFsSpiDirReader::foreach(std::function <void(const char* name)> cb) {
+  if (!_sdCard->mounted()) {   
     if (!_sdCard->mount()) {
       printf("Failed to mount SD card\n");
       return;
@@ -27,9 +21,7 @@ void FatFsSpiDirReader::reload() {
 
   while (dfr == FR_OK && fno.fname[0]) {
     printf("file %s\n", fno.fname);
-    
-    // ZxSpectrumFile *fsi = new ZxSpectrumFile(fno.fname);
-    
+    cb(fno.fname);
     dfr = f_findnext(&dj, &fno); // Search for next item
   }
 }

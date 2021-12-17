@@ -12,6 +12,13 @@ void PicoSelect::clearOptions() {
   repaint();
 }
 
+void PicoSelect::eraseOptions() {
+  for (auto option : _options) {
+    delete option;
+  }
+  clearOptions();
+}
+
 void PicoSelect::paint(PicoPen *pen) {
   int32_t s0 = _i - (wh() >> 1);
   int32_t s = s0 < 0 ? 0 : s0 > optionCount() - wh() ? optionCount() - wh() : s0;
