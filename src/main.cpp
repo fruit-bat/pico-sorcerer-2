@@ -30,6 +30,7 @@ extern "C" {
 #include "PicoWinBlock.h" // Test
 #include "PicoMenu.h" // Test
 #include "PicoSelect.h" // Test
+#include "PicoOptionText.h" // Test
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -161,8 +162,16 @@ static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
 static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
-static const char *so[] =  { "Select one", "Select two", "Select three", "Select four", "Select five", "Select six", "Select seven" };
-static PicoSelect picoSelect1(10, 10, 10, 5, so, 7);
+static PicoOption *so[] =  { 
+  new PicoOptionText("Select one"), 
+  new PicoOptionText("Select two"), 
+  new PicoOptionText("Select three"), 
+  new PicoOptionText("Select four"), 
+  new PicoOptionText("Select five"), 
+  new PicoOptionText("Select six"), 
+  new PicoOptionText("Select seven") 
+};
+static PicoSelect picoSelect1(10, 10, 20, 5, so, 7, false);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;

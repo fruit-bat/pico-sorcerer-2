@@ -37,7 +37,7 @@ public:
     _screen->clip(&_rect);
   }
 
-  void set(int32_t x, int32_t y, uint8_t c) {
+  inline void set(int32_t x, int32_t y, uint8_t c) {
     _screen->set(_rect._x + x, _rect._y + y, _attr | c);
   }
 
