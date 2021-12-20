@@ -32,6 +32,7 @@ extern "C" {
 #include "PicoSelect.h" // Test
 #include "PicoOptionText.h" // Test
 #include "PicoSelectFile.h" // Test
+#include "PicoQuickKeyAscii.h" // Test
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -231,18 +232,22 @@ extern "C" int __not_in_flash_func(main)() {
 
   sorcerer2.reset();
 
-//  picoRootWin.addChild(&picoWinBlock1);
-//  picoRootWin.addChild(&picoMenu1);
-  picoRootWin.addChild(&picoSelect2);
-  picoDisplay.focus(&picoSelect2);
-  picoSelect2.reload();
-  picoSelect1.addOption(new PicoOptionText("Select one")); 
-  picoSelect1.addOption(new PicoOptionText("Select two"));
-  picoSelect1.addOption(new PicoOptionText("Select three")); 
-  picoSelect1.addOption(new PicoOptionText("Select four")); 
-  picoSelect1.addOption(new PicoOptionText("Select five")); 
-  picoSelect1.addOption(new PicoOptionText("Select six")); 
-  picoSelect1.addOption(new PicoOptionText("Select seven"));
+  //picoRootWin.addChild(&picoWinBlock1);
+  picoRootWin.addChild(&picoSelect1);
+  picoDisplay.focus(&picoSelect1);
+  //picoRootWin.addChild(&picoSelect2);
+  //picoDisplay.focus(&picoSelect2);
+  //picoSelect2.reload();
+
+  picoSelect1.addOption((new PicoOptionText("Select one"))->addQuickKey(new PicoQuickKeyAscii('1'))); 
+  picoSelect1.addOption((new PicoOptionText("Select two"))->addQuickKey(new PicoQuickKeyAscii('2')));
+  picoSelect1.addOption((new PicoOptionText("Select three"))->addQuickKey(new PicoQuickKeyAscii('3'))); 
+  picoSelect1.addOption((new PicoOptionText("Select four"))->addQuickKey(new PicoQuickKeyAscii('4'))); 
+  picoSelect1.addOption((new PicoOptionText("Select five"))->addQuickKey(new PicoQuickKeyAscii('5'))); 
+  picoSelect1.addOption((new PicoOptionText("Select six"))->addQuickKey(new PicoQuickKeyAscii('6'))); 
+  picoSelect1.addOption((new PicoOptionText("Select seven"))->addQuickKey(new PicoQuickKeyAscii('7')));
+  picoSelect1.addOption((new PicoOptionText("Select k"))->addQuickKey(new PicoQuickKeyAscii('k')));
+  picoSelect1.enableQuickKeys();
 
   uint frames = 0;
   while (1) {

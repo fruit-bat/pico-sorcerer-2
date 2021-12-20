@@ -9,7 +9,7 @@ PicoSelectFile::PicoSelectFile(SdCardFatFsSpi* sdCard, const char *folder, int32
 }
 
 void PicoSelectFile::reload() {
-  eraseOptions(); // TODO rename deleteOptions
+  deleteOptions();
   _dir.foreach([=](const char *fn) { 
     addOption(new PicoOptionText(fn));
   });

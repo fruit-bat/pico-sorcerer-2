@@ -2,6 +2,14 @@
 #include "PicoPen.h"
 #include <pico/printf.h>
 
+PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h, bool multiple) :
+  PicoWin(x,y,w,h),
+  _i(0),
+  _multiple(multiple),
+  _quickKeys(false)
+{
+}
+
 void PicoSelect::addOption(PicoOption *option) {
   _options.push_back(option);
   repaint();
@@ -12,7 +20,7 @@ void PicoSelect::clearOptions() {
   repaint();
 }
 
-void PicoSelect::eraseOptions() {
+void PicoSelect::deleteOptions() {
   for (auto option : _options) {
     delete option;
   }
@@ -38,20 +46,33 @@ void PicoSelect::clearRow(PicoPen *pen, int32_t y) {
   for (int32_t x = 0; x < ww(); ++x) pen->set(x, y, ' ');
 }
 
+void PicoSelect::toggleSelection(PicoOption *option) {
+  if (option->toggleSelection() && !_multiple) {
+    for(PicoOption *option2 : _options) {
+      if (option != option2 && option2->selected()) option2->selected(false);
+    }
+  }
+  repaint();
+}
+
 void PicoSelect::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
    printf("Select key pressed %d %d %d %c\n", keycode, modifiers, ascii, ascii);
   // up    82 
   // down  81
+  if (_quickKeys) {
+    for (PicoOption * option : _options) {
+      if (option->isQuickKey(keycode, modifiers, ascii)) {
+           printf("Toggling %d %d %d %c\n", keycode, modifiers, ascii, ascii);
+
+        toggleSelection(option);
+      }
+    }
+  }
   
   switch(ascii) {
     case 32: case 13: {
       if (_i >= 0 && _i < optionCount()) {
-        if (_options[_i]->toggleSelection() && !_multiple) {
-          for(int32_t i = 0; i < optionCount(); ++i) {
-            if (i != _i && _options[i]->selected()) _options[i]->selected(false);
-          }
-        }
-        repaint();
+        toggleSelection(_options[_i]);
       }
       break;
     }

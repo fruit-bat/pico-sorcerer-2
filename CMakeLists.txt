@@ -32,6 +32,8 @@ add_executable(sorcerer2
 	src/SdCardFatFsSpi.cpp
 	src/FatFsSpiDirReader.cpp
 	src/PicoSelectFile.cpp
+	src/PicoQuickKey.cpp
+	src/PicoQuickKeyAscii.cpp
 
 )
 
