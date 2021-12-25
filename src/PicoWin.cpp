@@ -30,6 +30,26 @@ void PicoWin::addChild(PicoWin *child) {
   child->repaint();
 }
 
+void PicoWin::removeChild(PicoWin *child) {
+  if (child && child == _firstChild) {
+    _firstChild = child->_nextChild;
+    child->_nextChild  = 0;
+  }
+  else {
+    PicoWin *c = _firstChild;
+    if (c) {
+      while(c->_nextChild) {
+        if (c->_nextChild == child) {
+          c->_nextChild = child->_nextChild;
+          child->_nextChild  = 0;
+          break;
+        }
+        c = c->_nextChild;
+      }
+    }
+  }
+}
+
 void PicoWin::refresh(PicoPen *parentPen) {
   PicoPen pen(parentPen, &_rect);
   if (_repaint) {
