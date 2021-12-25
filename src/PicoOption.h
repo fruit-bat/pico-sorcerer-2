@@ -3,12 +3,14 @@
 #include "PicoPen.h"
 #include "PicoQuickKey.h"
 #include <vector>
+#include <functional>
 
 class PicoOption {
 private:
 
   bool _selected;
   std::vector<PicoQuickKey *> _quickKeys;
+  std::function<bool()> _onselect;
 
 public:
 
@@ -22,7 +24,7 @@ public:
 
   virtual void paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i, int32_t ww) {}
 
-  virtual void selected(bool s) { _selected = s; }
+  void selected(bool s);
 
   bool selected() { return _selected; }
 

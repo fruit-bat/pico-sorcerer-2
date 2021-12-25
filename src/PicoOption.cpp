@@ -25,3 +25,8 @@ bool PicoOption::isQuickKey(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
   }
   return false;
 }
+
+void PicoOption::selected(bool s) {
+  _selected = s;
+  if (_onselect) _onselect();
+}
