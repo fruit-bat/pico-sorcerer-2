@@ -233,8 +233,7 @@ extern "C" int __not_in_flash_func(main)() {
   sorcerer2.reset();
 
   //picoRootWin.addChild(&picoWinBlock1);
-  picoRootWin.addChild(&picoSelect1);
-  picoDisplay.focus(&picoSelect1);
+  picoRootWin.addChild(&picoSelect1, true);
   //picoRootWin.addChild(&picoSelect2);
   //picoDisplay.focus(&picoSelect2);
   //picoSelect2.reload();

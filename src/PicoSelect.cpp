@@ -60,10 +60,11 @@ void PicoSelect::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
   // up    82 
   // down  81
   if (_quickKeys) {
-    for (PicoOption * option : _options) {
+    for (int i = 0; i < optionCount(); ++ i) {
+      PicoOption * option = _options[i];
       if (option->isQuickKey(keycode, modifiers, ascii)) {
-           printf("Toggling %d %d %d %c\n", keycode, modifiers, ascii, ascii);
-
+        printf("Toggling %d %d %d %c\n", keycode, modifiers, ascii, ascii);
+        _i = i;
         toggleSelection(option);
       }
     }

@@ -5,8 +5,7 @@ PicoDisplay::PicoDisplay(
   PicoCharScreen *screen,
   PicoWin *root) :
   _screen(screen),
-  _root(root),
-  _focus(root)
+  _root(root)
 {
   _root->repaint();
 }
@@ -20,8 +19,8 @@ void PicoDisplay::refresh() {
 }
 
 void PicoDisplay::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
-  if (_focus) {
-    _focus->keyPressed(keycode, modifiers, ascii);
+  if (_root) {
+    _root->keyPressed(keycode, modifiers, ascii);
   }
 }
 

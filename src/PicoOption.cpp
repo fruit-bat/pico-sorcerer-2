@@ -11,8 +11,6 @@ PicoOption* PicoOption::addQuickKey(PicoQuickKey *quickKey) {
 }
 
 PicoOption::~PicoOption() {
-    printf("deleting PicoOption\n");
-  for (PicoQuickKey * quickKey : _quickKeys) delete quickKey;
 }
 
 bool PicoOption::isQuickKey(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {

@@ -9,6 +9,6 @@ private:
 
 public:
   PicoWiz(int32_t x, int32_t y, int32_t w, int32_t h);
-  void push(PicoWin *stage);
-  void pop();
+  void push(PicoWin *stage, bool focus);
+  void pop(bool focus);
 };

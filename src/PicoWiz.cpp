@@ -5,26 +5,20 @@ PicoWiz::PicoWiz(int32_t x, int32_t y, int32_t w, int32_t h) :
 {
 }
 
-void PicoWiz::push(PicoWin *stage){
+void PicoWiz::push(PicoWin *stage, bool focus){
   if (_stages.size()) {
     removeChild(_stages.back());
   }
   _stages.push_back(stage);
-  addChild(stage);
-  
-  // TODO give stage (or appropriate sub-element focus)
-  
+  addChild(stage, focus);
   repaint();
 }
 
-void PicoWiz::pop(){
+void PicoWiz::pop(bool focus){
   if (_stages.size() > 1) {
     removeChild(_stages.back());
     _stages.pop_back();
-    addChild(_stages.back());
-    
-    // TODO give _stages.back() focus (or appropriate sub-element focus)
-
+    addChild(_stages.back(), focus);
     repaint();    
   }
 }

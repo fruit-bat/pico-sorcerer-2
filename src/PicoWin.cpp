@@ -3,9 +3,10 @@
 
 PicoWin::PicoWin(int32_t x, int32_t y, int32_t w, int32_t h) :
   _parent(0),
-  _rect(x, y, w, h),
   _firstChild(0),
   _nextChild(0),
+  _focus(0),
+  _rect(x, y, w, h),
   _repaint(false),
   _repaintChild(false)
 {
@@ -16,7 +17,14 @@ void PicoWin::repaint() {
   for(PicoWin *win = _parent; win; win = win->_parent) win->_repaintChild = true;
 }
 
-void PicoWin::addChild(PicoWin *child) {
+void PicoWin::focus() {
+  if (_parent) {
+    _parent->_focus = this;
+    _parent->focus();
+  }
+}
+
+void PicoWin::addChild(PicoWin *child, bool focus) {
   PicoWin *c = _firstChild;
   child->_nextChild = 0;
   child->_parent = this;
@@ -27,11 +35,15 @@ void PicoWin::addChild(PicoWin *child) {
   else {
     _firstChild = child;
   }
+  child->focus();
   child->repaint();
 }
 
 void PicoWin::removeChild(PicoWin *child) {
-  if (child && child == _firstChild) {
+  if (child == _focus) {
+    _focus = 0;
+  }
+  if (child == _firstChild) {
     _firstChild = child->_nextChild;
     child->_nextChild  = 0;
   }
@@ -77,8 +89,13 @@ void PicoWin::paintSubTree(PicoPen *pen) {
 }
 
 void PicoWin::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
-  if (((_onkeydown && _onkeydown(keycode, modifiers, ascii)) || !_onkeydown) && _parent) 
-  {
-    _parent->keyPressed(keycode, modifiers, ascii); 
+  if (_focus) {
+    _focus->keyPressed(keycode, modifiers, ascii);
+  }
+  else {
+    if (((_onkeydown && _onkeydown(keycode, modifiers, ascii)) || !_onkeydown) && _parent) 
+    {
+      _parent->keyPressed(keycode, modifiers, ascii); 
+    }
   }
 }
