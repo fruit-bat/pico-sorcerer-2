@@ -35,14 +35,20 @@ void PicoWin::addChild(PicoWin *child, bool focus) {
   else {
     _firstChild = child;
   }
-  child->focus();
+  if (focus) child->focus();
   child->repaint();
 }
 
 void PicoWin::removeChild(PicoWin *child) {
+  
+  if (!child || child->_parent != this) return;
+  
+  child->_parent = 0;
+  
   if (child == _focus) {
     _focus = 0;
   }
+  
   if (child == _firstChild) {
     _firstChild = child->_nextChild;
     child->_nextChild  = 0;
@@ -91,11 +97,8 @@ void PicoWin::paintSubTree(PicoPen *pen) {
 void PicoWin::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
   if (_focus) {
     _focus->keyPressed(keycode, modifiers, ascii);
-  }
+  }/*
   else {
-    if (((_onkeydown && _onkeydown(keycode, modifiers, ascii)) || !_onkeydown) && _parent) 
-    {
-      _parent->keyPressed(keycode, modifiers, ascii); 
-    }
-  }
+    if (_onkeydown) _onkeydown(keycode, modifiers, ascii);
+  }*/
 }

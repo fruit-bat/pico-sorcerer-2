@@ -33,6 +33,7 @@ extern "C" {
 #include "PicoOptionText.h" // Test
 #include "PicoSelectFile.h" // Test
 #include "PicoQuickKeyAscii.h" // Test
+#include "PicoWiz.h" // Test
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -164,8 +165,12 @@ static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
 static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
-static PicoSelect picoSelect1(10, 10, 20, 5, false);
-static PicoSelectFile picoSelect2(&sdCard0, "/", 15, 20, 30, 5, false);
+
+static PicoWiz picoWizTest1(10, 10, 20, 5);
+static PicoSelect picoSelect1(0, 0, 20, 5, false);
+static PicoSelect picoSelect2(0, 0, 20, 5, false);
+
+static PicoSelectFile picoSelectDir(&sdCard0, "/", 15, 20, 30, 5, false);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
@@ -233,20 +238,43 @@ extern "C" int __not_in_flash_func(main)() {
   sorcerer2.reset();
 
   //picoRootWin.addChild(&picoWinBlock1);
-  picoRootWin.addChild(&picoSelect1, true);
+  picoRootWin.addChild(&picoWizTest1, true);
+  picoWizTest1.push(&picoSelect1, true);
   //picoRootWin.addChild(&picoSelect2);
   //picoDisplay.focus(&picoSelect2);
   //picoSelect2.reload();
-
-  picoSelect1.addOption((new PicoOptionText("Select one"))->addQuickKey(new PicoQuickKeyAscii('1'))); 
+{
+  PicoOptionText *gotoMenu2 = new PicoOptionText("1....Menu 2");
+  gotoMenu2->addQuickKey(new PicoQuickKeyAscii('1'));
+  gotoMenu2->onSelect([=]() {
+    picoWizTest1.push(&picoSelect2, true);
+    return true;
+  });
+  
+  picoSelect1.addOption(gotoMenu2); 
   picoSelect1.addOption((new PicoOptionText("Select two"))->addQuickKey(new PicoQuickKeyAscii('2')));
   picoSelect1.addOption((new PicoOptionText("Select three"))->addQuickKey(new PicoQuickKeyAscii('3'))); 
-  picoSelect1.addOption((new PicoOptionText("Select four"))->addQuickKey(new PicoQuickKeyAscii('4'))); 
-  picoSelect1.addOption((new PicoOptionText("Select five"))->addQuickKey(new PicoQuickKeyAscii('5'))); 
-  picoSelect1.addOption((new PicoOptionText("Select six"))->addQuickKey(new PicoQuickKeyAscii('6'))); 
-  picoSelect1.addOption((new PicoOptionText("Select seven"))->addQuickKey(new PicoQuickKeyAscii('7')));
-  picoSelect1.addOption((new PicoOptionText("Select k"))->addQuickKey(new PicoQuickKeyAscii('k')));
+  picoSelect1.addOption((new PicoOptionText("Select four"))->addQuickKey(new PicoQuickKeyAscii('4')));
+  // TODO crash without this line:
+  picoSelect1.addOption((new PicoOptionText("Select five"))->addQuickKey(new PicoQuickKeyAscii('5')));
   picoSelect1.enableQuickKeys();
+}
+
+{
+  PicoOptionText *goBack = new PicoOptionText("0....Back");
+  goBack->addQuickKey(new PicoQuickKeyAscii('0'));
+  goBack->onSelect([=]() {
+    picoWizTest1.pop(true);
+    return true;
+  });
+  
+  picoSelect2.addOption(goBack);
+  picoSelect2.addOption((new PicoOptionText("Select five"))->addQuickKey(new PicoQuickKeyAscii('5'))); 
+  picoSelect2.addOption((new PicoOptionText("Select six"))->addQuickKey(new PicoQuickKeyAscii('6'))); 
+  picoSelect2.addOption((new PicoOptionText("Select seven"))->addQuickKey(new PicoQuickKeyAscii('7')));
+  picoSelect2.addOption((new PicoOptionText("Select k"))->addQuickKey(new PicoQuickKeyAscii('k')));
+  picoSelect2.enableQuickKeys();
+}
 
   uint frames = 0;
   while (1) {

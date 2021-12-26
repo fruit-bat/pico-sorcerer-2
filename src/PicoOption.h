@@ -14,7 +14,7 @@ private:
 
 public:
 
-  PicoOption() : _selected(false) {}
+  PicoOption();
   
   PicoOption* addQuickKey(PicoQuickKey *quickKey);
 
@@ -31,4 +31,8 @@ public:
   bool toggleSelection();
   
   bool isQuickKey(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
+  
+  void onSelect(std::function<bool()> onselect) {
+    _onselect = onselect;
+  }
 };
