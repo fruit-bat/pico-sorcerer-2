@@ -48,8 +48,8 @@ void PicoSelect::paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i) {
 void PicoSelect::clearRow(PicoPen *pen, int32_t y) {
     printf("clearing row %ld \n", y); 
 
- // pen->setAttr(0);
- // for (int32_t x = 0; x < ww(); ++x) pen->set(x, y, ' ');
+  pen->setAttr(0);
+  for (int32_t x = 0; x < ww(); ++x) pen->set(x, y, ' ');
 }
 
 void PicoSelect::toggleSelection(PicoOption *option) {
