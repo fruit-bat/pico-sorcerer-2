@@ -256,7 +256,7 @@ extern "C" int __not_in_flash_func(main)() {
   picoSelect1.addOption((new PicoOptionText("Select three"))->addQuickKey(new PicoQuickKeyAscii('3'))); 
   picoSelect1.addOption((new PicoOptionText("Select four"))->addQuickKey(new PicoQuickKeyAscii('4')));
   // TODO crash without this line:
-  picoSelect1.addOption((new PicoOptionText("Select five"))->addQuickKey(new PicoQuickKeyAscii('5')));
+  //picoSelect1.addOption((new PicoOptionText("Select five"))->addQuickKey(new PicoQuickKeyAscii('5')));
   picoSelect1.enableQuickKeys();
 }
 
@@ -273,6 +273,7 @@ extern "C" int __not_in_flash_func(main)() {
   picoSelect2.addOption((new PicoOptionText("Select six"))->addQuickKey(new PicoQuickKeyAscii('6'))); 
   picoSelect2.addOption((new PicoOptionText("Select seven"))->addQuickKey(new PicoQuickKeyAscii('7')));
   picoSelect2.addOption((new PicoOptionText("Select k"))->addQuickKey(new PicoQuickKeyAscii('k')));
+  picoSelect2.addOption((new PicoOptionText("Select j"))->addQuickKey(new PicoQuickKeyAscii('j')));
   picoSelect2.enableQuickKeys();
 }
 
