@@ -10,7 +10,7 @@ private:
 
   bool _selected;
   std::vector<PicoQuickKey *> _quickKeys;
-  std::function<bool()> _onselect;
+  std::function<void(bool s)> _onselect;
 
 public:
 
@@ -32,7 +32,7 @@ public:
   
   bool isQuickKey(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
   
-  void onSelect(std::function<bool()> onselect) {
+  void onSelect(std::function<void(bool s)> onselect) {
     _onselect = onselect;
   }
 };

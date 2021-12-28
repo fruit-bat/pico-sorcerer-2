@@ -23,12 +23,13 @@ extern "C" {
 #include "Sorcerer2HidKeyboard.h"
 #include "Sorcerer2DiskFatFsSpi.h"
 #include "Sorcerer2TapeUnitFatFsSpi.h"
+#include "Sorcerer2Menu.h"
+
 
 #include "MagneticFont.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoWinBlock.h" // Test
-#include "PicoMenu.h" // Test
 #include "PicoSelect.h" // Test
 #include "PicoOptionText.h" // Test
 #include "PicoSelectFile.h" // Test
@@ -158,12 +159,10 @@ static Sorcerer2 sorcerer2(
   &sorcerer2DiskSystem
 );
 static PicoCharScreen picoCharScreen((uint16_t *)&charScreen, PCS_COLS, PCS_ROWS);
-static PicoWin picoRootWin(0, 0, PCS_COLS, PCS_ROWS);
+static Sorcerer2Menu picoRootWin;
 static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
-static const char *mo[] =  { "Option one", "Option two", "Option three", "Option four" };
-static PicoMenu picoMenu1(16, 14, 100, 10, mo, 4);
 static PicoWinBlock picoWinBlock1(5,9,10,8, 42);
 
 static PicoWiz picoWizTest1(10, 10, 20, 5);
@@ -236,7 +235,7 @@ extern "C" int __not_in_flash_func(main)() {
   sem_release(&dvi_start_sem);
 
   sorcerer2.reset();
-
+/*
   //picoRootWin.addChild(&picoWinBlock1);
   picoRootWin.addChild(&picoWizTest1, true);
   picoWizTest1.push(&picoSelect1, true);
@@ -276,7 +275,7 @@ extern "C" int __not_in_flash_func(main)() {
   picoSelect2.addOption((new PicoOptionText("Select j"))->addQuickKey(new PicoQuickKeyAscii('j')));
   picoSelect2.enableQuickKeys();
 }
-
+*/
   uint frames = 0;
   while (1) {
     tuh_task();

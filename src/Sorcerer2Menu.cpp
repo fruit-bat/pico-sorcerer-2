@@ -1,0 +1,79 @@
+#include "Sorcerer2Menu.h"
+#include "PicoPen.h"
+
+
+Sorcerer2Menu::Sorcerer2Menu() :
+ PicoWin(0, 0, 80, 32),
+  _k0('0'), _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), 
+  _wiz(5, 5, 54, 22),
+  _main(0, 0, 20, 20, false),
+  _mainOp1("1    Disk drives"),
+  _mainOp2("2    Tape players"),
+  _mainOp3("3    ROM Pac"),
+  _mainOp4("4    CPU Speed"),
+  _diskUnits(0, 0, 20, 20, false),
+  _diskUnitsOp0("0    Back"),
+  _diskUnitsOp1("1    Drive A"),
+  _diskUnitsOp2("2    Drive B"),
+  _diskUnitsOp3("3    Drive C"),
+  _diskUnitsOp4("4    Drive D"),
+  _tapeUnits(0, 0, 20, 20, false),
+  _tapeUnitsOp0("0    Back"),
+  _tapeUnitsOp1("1    Tape Player 1"),
+  _tapeUnitsOp2("2    Tape Player 2"),
+  _cpuSpeeds(0, 0, 20, 20, false),
+  _cpuSpeedOp0("0    Back"),
+  _cpuSpeedOp1("1    4Mhz"),
+  _cpuSpeedOp2("2    Max")
+{
+  addChild(&_wiz, true);
+  _wiz.push(&_main, true);
+  
+  _main.addOption(_mainOp1.addQuickKey(&_k1));
+  _main.addOption(_mainOp2.addQuickKey(&_k2));
+  _main.addOption(_mainOp3.addQuickKey(&_k3));
+  _main.addOption(_mainOp4.addQuickKey(&_k4));
+  _main.enableQuickKeys();
+  _mainOp1.onSelect([=](bool s) {
+    if (s) _wiz.push(&_diskUnits, true);
+  });
+  _mainOp2.onSelect([=](bool s) {
+    if (s) _wiz.push(&_tapeUnits, true);
+  });
+  _mainOp4.onSelect([=](bool s) {
+    if (s) _wiz.push(&_cpuSpeeds, true);
+  });
+
+  _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
+  _diskUnits.addOption(_diskUnitsOp2.addQuickKey(&_k2));
+  _diskUnits.addOption(_diskUnitsOp3.addQuickKey(&_k3));
+  _diskUnits.addOption(_diskUnitsOp4.addQuickKey(&_k4));
+  _diskUnits.addOption(_diskUnitsOp0.addQuickKey(&_k0));
+  _diskUnits.enableQuickKeys();
+  _diskUnitsOp0.onSelect([=](bool s) {
+    if (s) _wiz.pop(true);
+  });
+  
+  _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
+  _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
+  _tapeUnits.addOption(_tapeUnitsOp0.addQuickKey(&_k0));
+  _tapeUnits.enableQuickKeys();
+  _tapeUnitsOp0.onSelect([=](bool s) {
+    if (s) _wiz.pop(true);
+  });
+  
+  _cpuSpeeds.addOption(_cpuSpeedOp1.addQuickKey(&_k1));
+  _cpuSpeeds.addOption(_cpuSpeedOp2.addQuickKey(&_k2));
+  _cpuSpeeds.addOption(_cpuSpeedOp0.addQuickKey(&_k0));
+  _cpuSpeeds.enableQuickKeys();
+  _cpuSpeedOp0.onSelect([=](bool s) {
+    if (s) _wiz.pop(true);
+  });
+}
+
+void Sorcerer2Menu::paint(PicoPen *pen) {
+  pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
+  pen->printAt(0, 1, false, "on RP2040 Pico Pi");
+  pen->printAt(0, 30, false, "F1 to exit menu");
+}
+

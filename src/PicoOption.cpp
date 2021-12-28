@@ -33,6 +33,6 @@ void PicoOption::selected(bool s) {
   _selected = s;
   if (_onselect) {
     printf("Executing selection listener...\n");
-    _onselect();
+    _onselect(s);
   }
 }

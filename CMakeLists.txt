@@ -25,7 +25,7 @@ add_executable(sorcerer2
 	src/PicoWin.cpp
 	src/PicoDisplay.cpp
 	src/PicoWinBlock.cpp
-	src/PicoMenu.cpp
+	src/Sorcerer2Menu.cpp
 	src/PicoSelect.cpp
 	src/PicoOption.cpp
 	src/PicoOptionText.cpp

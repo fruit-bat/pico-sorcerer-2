@@ -25,6 +25,7 @@ class PicoWin {
 public:
 
   PicoWin(int32_t x, int32_t y, int32_t w, int32_t h);
+  virtual ~PicoWin() {}
 
   void addChild(PicoWin *child, bool focus);
   void removeChild(PicoWin *child);
