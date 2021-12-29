@@ -1,14 +1,19 @@
 #pragma once
 
 #include "PicoWin.h"
-#include "PicoSelect.h" // Test
-#include "PicoOptionText.h" // Test
-#include "PicoSelectFile.h" // Test
-#include "PicoQuickKeyAscii.h" // Test
-#include "PicoWiz.h" // Test
+#include "PicoSelect.h"
+#include "PicoOptionText.h"
+#include "PicoSelectFile.h"
+#include "PicoQuickKeyAscii.h"
+#include "PicoWiz.h" 
+#include "Sorcerer2.h"
+
+class Sorcerer2;
 
 class Sorcerer2Menu : public PicoWin {
 private:
+  Sorcerer2 *_sorcerer2;
+
   PicoQuickKeyAscii _k0;
   PicoQuickKeyAscii _k1;
   PicoQuickKeyAscii _k2;
@@ -42,7 +47,7 @@ private:
 
 public:
 
-  Sorcerer2Menu();
+  Sorcerer2Menu(Sorcerer2 *sorcerer2);
 
   virtual void paint(PicoPen *pen);
 };

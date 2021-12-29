@@ -2,7 +2,7 @@
 #include "PicoOptionText.h"
 
 PicoSelectFile::PicoSelectFile(SdCardFatFsSpi* sdCard, const char *folder, int32_t x, int32_t y, int32_t w, int32_t h, bool multiple) :
-  PicoSelect(x, y, w, h, multiple),
+  PicoSelect(x, y, w, h),
   _dir(sdCard, folder)
 {
   

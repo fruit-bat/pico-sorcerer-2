@@ -10,7 +10,6 @@ private:
   std::vector<PicoOption *> _options;
 
   int32_t _i;
-  bool _multiple;
   bool _quickKeys;
 
   void paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i);
@@ -20,7 +19,7 @@ private:
   
 public:
 
-  PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h, bool multiple);
+  PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h);
   
   virtual void clear(PicoPen *pen) {};
   virtual void paint(PicoPen *pen);

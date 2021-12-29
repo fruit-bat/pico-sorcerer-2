@@ -65,6 +65,10 @@ void Sorcerer2::loadMem()
   memcpy(_RAM + 0x100, _buf, 1<<15);
 }
 
+bool Sorcerer2::moderate() {
+  return _moderate;
+}
+
 void Sorcerer2::moderate(bool on) {
   if (on == _moderate) return;
   

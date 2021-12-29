@@ -1,13 +1,11 @@
 #include "PicoOption.h"
 
-PicoOption::PicoOption() : 
-  _selected(false)
+PicoOption::PicoOption()
 {
 }
 
-bool PicoOption::toggleSelection() {
-  selected(!_selected);
-  return _selected;
+bool PicoOption::selected() { 
+  return _selected && _selected();
 }
 
 PicoOption* PicoOption::addQuickKey(PicoQuickKey *quickKey) {
@@ -29,10 +27,9 @@ bool PicoOption::isQuickKey(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
   return false;
 }
 
-void PicoOption::selected(bool s) {
-  _selected = s;
-  if (_onselect) {
+void PicoOption::toggle() {
+  if (_toggle) {
     printf("Executing selection listener...\n");
-    _onselect(s);
+    _toggle();
   }
 }

@@ -163,6 +163,8 @@ public:
   void saveMem();
   void loadMem();
   void moderate(bool on);
+  bool moderate();
+
   void toggleModerate();
   uint8_t inline getCentronics() { return _centronicsOut; }
   

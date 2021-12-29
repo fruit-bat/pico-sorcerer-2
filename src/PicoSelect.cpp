@@ -2,10 +2,9 @@
 #include "PicoPen.h"
 #include <pico/printf.h>
 
-PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h, bool multiple) :
+PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h) :
   PicoWin(x,y,w,h),
   _i(0),
-  _multiple(multiple),
   _quickKeys(false)
 {
 }
@@ -53,11 +52,7 @@ void PicoSelect::clearRow(PicoPen *pen, int32_t y) {
 }
 
 void PicoSelect::toggleSelection(PicoOption *option) {
-  if (option->toggleSelection() && !_multiple) {
-    for(PicoOption *option2 : _options) {
-      if (option != option2 && option2->selected()) option2->selected(false);
-    }
-  }
+  option->toggle();
   repaint();
 }
 
