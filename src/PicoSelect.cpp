@@ -27,28 +27,26 @@ void PicoSelect::deleteOptions() {
 }
 
 void PicoSelect::paint(PicoPen *pen) {
-  int32_t s0 = _i - (wh() >> 1);  
-  int32_t s1 = optionCount() - wh();
-  int32_t s = s0 <= 0 || s1 <= 0 ? 0 : (s0 > s1 ? s1 : s0);
+  const int32_t s0 = _i - (wh() >> 1);  
+  const int32_t s1 = optionCount() - wh();
+  const int32_t s = s0 <= 0 || s1 <= 0 ? 0 : (s0 > s1 ? s1 : s0);
   printf("s0 = %ld, s = %ld\n", s0, s); 
   for(int32_t r = 0; r < wh(); ++r) {
     const int32_t i = r + s;
-    if (i < optionCount()) paintRow(pen, r + s == _i, r, i);
-    else clearRow(pen, r);
+    PicoPen rpen(pen, 0, r, ww(), 1);
+    if (!rpen.clipped()) {
+      if (i < optionCount()) {
+        paintRow(&rpen, r + s == _i, i);
+      }
+      else {
+        rpen.clear();
+      }
+    }
   }
 }
 
-void PicoSelect::paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i) {
-  printf("painting row %ld option %ld \n", y, i); 
-  
-  _options[i]->paintRow(pen, focused, y, i, ww());
-}
-
-void PicoSelect::clearRow(PicoPen *pen, int32_t y) {
-    printf("clearing row %ld \n", y); 
-
-  pen->setAttr(0);
-  for (int32_t x = 0; x < ww(); ++x) pen->set(x, y, ' ');
+void PicoSelect::paintRow(PicoPen *pen, bool focused, int32_t i) {
+  _options[i]->paintRow(pen, focused, i, ww());
 }
 
 void PicoSelect::toggleSelection(PicoOption *option) {

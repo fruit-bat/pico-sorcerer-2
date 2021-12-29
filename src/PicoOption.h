@@ -6,7 +6,7 @@
 #include <functional>
 
 class PicoOption {
-private:
+protected:
 
   std::vector<PicoQuickKey *> _quickKeys;
   std::function<bool()> _selected;
@@ -20,7 +20,7 @@ public:
   
   PicoOption* addQuickKey(PicoQuickKey *quickKey);
 
-  virtual void paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i, int32_t ww) {}
+  virtual void paintRow(PicoPen *pen, bool focused, int32_t i, int32_t ww) {}
 
   bool selected();
 

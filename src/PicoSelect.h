@@ -12,8 +12,7 @@ private:
   int32_t _i;
   bool _quickKeys;
 
-  void paintRow(PicoPen *pen, bool focused, int32_t y, int32_t i);
-  void clearRow(PicoPen *pen, int32_t y);
+  void paintRow(PicoPen *pen, bool focused, int32_t i);
   int32_t optionCount() { return (int32_t)_options.size(); }
   void toggleSelection(PicoOption *option);
   
