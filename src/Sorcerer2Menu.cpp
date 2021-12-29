@@ -77,6 +77,8 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
 void Sorcerer2Menu::paint(PicoPen *pen) {
   pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
   pen->printAt(0, 1, false, "on RP2040 Pico Pi");
+  pen->printAt(0, 2, false, "Menu System version 0.1");
+
   pen->printAt(0, 29, false, "F1 to exit menu");
 }
 
