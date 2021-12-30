@@ -17,11 +17,15 @@ void PicoPen::printAt(int32_t x, int32_t y, bool wrap, const char *str) {
     }
   }
   while(*str) {
-          printf("Prining %ld %ld %c\n", xc, yc, *str);
-
-    set(xc++, yc, *str++);
-    if (xc == _rect._w) {
-      if (wrap) { yc++; xc = 0; }
+    if (*str == '\n') {
+      xc = 0;
+      yc++;
+    }
+    else {
+      set(xc++, yc, *str++);
+      if (xc == _rect._w) {
+        if (wrap) { yc++; xc = 0; }
+      }
     }
   }
 }

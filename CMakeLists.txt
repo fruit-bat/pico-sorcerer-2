@@ -35,6 +35,8 @@ add_executable(sorcerer2
 	src/PicoQuickKey.cpp
 	src/PicoQuickKeyAscii.cpp
 	src/PicoWiz.cpp
+	src/PicoWinFunc.cpp
+
 
 )
 

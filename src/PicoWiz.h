@@ -1,13 +1,18 @@
 #pragma once
 
 #include "PicoWin.h"
+#include "PicoWinFunc.h"
 #include <vector>
+#include <string>
 
 class PicoWiz : public PicoWin {
 private:
-  std::vector<PicoWin *> _stages;
+  std::vector<PicoWin *> _stages;  
+  std::vector<std::string> _titles;
+  PicoWinFunc _title;
+  PicoWin _body;
 public:
-  PicoWiz(int32_t x, int32_t y, int32_t w, int32_t h);
-  void push(PicoWin *stage, bool focus);
+  PicoWiz(int32_t x, int32_t y, int32_t w, int32_t bh);
+  void push(PicoWin *stage, const char *title, bool focus);
   void pop(bool focus);
 };

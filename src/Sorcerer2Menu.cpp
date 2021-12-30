@@ -6,13 +6,13 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
  PicoWin(0, 0, 80, 30),
   _sorcerer2(sorcerer2),
   _k0('0'), _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), 
-  _wiz(5, 5, 54, 22),
+  _wiz(5, 6, 54, 18),
   _main(0, 0, 54, 5, 3),
   _mainOp1("Disk drives"),
   _mainOp2("Tape players"),
   _mainOp3("ROM Pac"),
   _mainOp4("CPU Speed"),
-  _diskUnits(0, 0, 54, 6, 2),
+  _diskUnits(0, 0, 54, 6, 3),
   _diskUnitsOp0("Back"),
   _diskUnitsOp1("Drive A"),
   _diskUnitsOp2("Drive B"),
@@ -28,7 +28,7 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
   _cpuSpeedOp2("Unmoderated")
 {
   addChild(&_wiz, true);
-  _wiz.push(&_main, true);
+  _wiz.push(&_main, "Main menu", true);
   
   _main.addOption(_mainOp1.addQuickKey(&_k1));
   _main.addOption(_mainOp2.addQuickKey(&_k2));
@@ -36,13 +36,13 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
   _main.addOption(_mainOp4.addQuickKey(&_k4));
   _main.enableQuickKeys();
   _mainOp1.toggle([=]() {
-    _wiz.push(&_diskUnits, true);
+    _wiz.push(&_diskUnits, "Disk drives", true);
   });
   _mainOp2.toggle([=]() {
-    _wiz.push(&_tapeUnits, true);
+    _wiz.push(&_tapeUnits, "Tape players", true);
   });
   _mainOp4.toggle([=]() {
-    _wiz.push(&_cpuSpeeds, true);
+    _wiz.push(&_cpuSpeeds, "CPU Speed", true);
   });
 
   _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
