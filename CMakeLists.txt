@@ -35,9 +35,6 @@ add_executable(sorcerer2
 	src/PicoQuickKey.cpp
 	src/PicoQuickKeyAscii.cpp
 	src/PicoWiz.cpp
-	src/PicoWinFunc.cpp
-
-
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)

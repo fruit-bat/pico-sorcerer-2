@@ -10,6 +10,9 @@ PicoWin::PicoWin(int32_t x, int32_t y, int32_t w, int32_t h) :
   _repaint(false),
   _repaintChild(false)
 {
+  _clear = [=](PicoPen *pen){
+    pen->clear();
+  };
 }
 
 void PicoWin::repaint() {
@@ -68,20 +71,20 @@ void PicoWin::removeChild(PicoWin *child) {
   }
 }
 
+void PicoWin::paint(PicoPen *pen) {
+  if (_paint) _paint(pen);
+}
+
 void PicoWin::refresh(PicoPen *parentPen) {
   PicoPen pen(parentPen, &_rect);
   if (_repaint) {
-    clear(&pen);
+    _clear(&pen);
     paintSubTree(&pen);
   }
   else if (_repaintChild) {
     _repaintChild = false;
     for(PicoWin *win = _firstChild; win; win = win->_nextChild) win->refresh(&pen);
   }
-}
-
-void PicoWin::clear(PicoPen *pen) {
-  pen->clear();
 }
 
 void PicoWin::paintSubTree(PicoPen *pen) {
@@ -97,8 +100,8 @@ void PicoWin::paintSubTree(PicoPen *pen) {
 void PicoWin::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
   if (_focus) {
     _focus->keyPressed(keycode, modifiers, ascii);
-  }/*
+  }
   else {
     if (_onkeydown) _onkeydown(keycode, modifiers, ascii);
-  }*/
+  }
 }

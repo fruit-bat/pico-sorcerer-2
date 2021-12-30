@@ -72,13 +72,13 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
   _cpuSpeedOp2.selected([=](){ return !_sorcerer2->moderate(); });
   _cpuSpeedOp1.toggle([=](){ _sorcerer2->moderate(true); });
   _cpuSpeedOp2.toggle([=](){ _sorcerer2->moderate(false); });
-}
+  
+  onPaint([](PicoPen *pen) {
+     pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
+     pen->printAt(0, 1, false, "on RP2040 Pico Pi");
+     pen->printAt(0, 2, false, "Menu System version 0.1");
 
-void Sorcerer2Menu::paint(PicoPen *pen) {
-  pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
-  pen->printAt(0, 1, false, "on RP2040 Pico Pi");
-  pen->printAt(0, 2, false, "Menu System version 0.1");
-
-  pen->printAt(0, 29, false, "F1 to exit menu");
+     pen->printAt(0, 29, false, "F1 to exit menu");
+   });
 }
 

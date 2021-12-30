@@ -48,6 +48,4 @@ private:
 public:
 
   Sorcerer2Menu(Sorcerer2 *sorcerer2);
-
-  virtual void paint(PicoPen *pen);
 };

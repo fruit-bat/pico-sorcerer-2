@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PicoWin.h"
-#include "PicoWinFunc.h"
 #include <vector>
 #include <string>
 
@@ -9,7 +8,7 @@ class PicoWiz : public PicoWin {
 private:
   std::vector<PicoWin *> _stages;  
   std::vector<std::string> _titles;
-  PicoWinFunc _title;
+  PicoWin _title;
   PicoWin _body;
 public:
   PicoWiz(int32_t x, int32_t y, int32_t w, int32_t bh);

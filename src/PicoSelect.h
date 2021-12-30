@@ -18,18 +18,11 @@ private:
   
 public:
 
-  PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h);
   PicoSelect(int32_t x, int32_t y, int32_t w, int32_t r, int32_t rh);
 
-  virtual void clear(PicoPen *pen) {};
-  virtual void paint(PicoPen *pen);
-  
   void addOption(PicoOption *option);
 
   void clearOptions();
   void deleteOptions();
-  
-  virtual void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
-  
   void enableQuickKeys() { _quickKeys = true; }
 };

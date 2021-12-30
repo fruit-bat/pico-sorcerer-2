@@ -19,8 +19,10 @@ class PicoWin {
   
   void paintSubTree(PicoPen *pen);
   
-  std::function<bool(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> _onkeydown;
+  std::function<void(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> _onkeydown;
   std::function<bool()> _onclose;
+  std::function<void(PicoPen *pen)> _paint;
+  std::function<void(PicoPen *pen)> _clear;
 
 public:
 
@@ -30,22 +32,18 @@ public:
   void addChild(PicoWin *child, bool focus);
   void removeChild(PicoWin *child);
   void focus();
-
   void repaint();
-
+  void paint(PicoPen *pen);
+  void clear(PicoPen *pen);
   void refresh(PicoPen *parentPen);
-
-  // TODO this should return a boolean and be passed to the display if not handled by a window
-  // TODO should probably not be virtual
-  virtual void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
-
-  virtual void clear(PicoPen *pen);
-  
-  virtual void paint(PicoPen *pen) {}
+  void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
  
   int32_t wx() { return _rect._x; }
   int32_t wy() { return _rect._y; }
   int32_t ww() { return _rect._w; }
   int32_t wh() { return _rect._h; }
-
+  
+  void onPaint(std::function<void(PicoPen *pen)> paint) { _paint = paint; }
+  void onClear(std::function<void(PicoPen *pen)> clear) { _clear = clear; }
+  void onKeydown(std::function<void(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> onkeydown) { _onkeydown = onkeydown; };
 };
