@@ -159,7 +159,8 @@ public:
   void reset(unsigned int address);
   void reset();
   void __not_in_flash_func(step)();
-  Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
+  Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; }
+  Sorcerer2DiskSystem *diskSystem() { return _diskSystem; }
   void saveMem();
   void loadMem();
   void moderate(bool on);
