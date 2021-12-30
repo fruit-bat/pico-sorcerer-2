@@ -7,11 +7,13 @@
 #include "PicoQuickKeyAscii.h"
 #include "PicoWiz.h" 
 #include "Sorcerer2.h"
+#include "SdCardFatFsSpi.h"
 
 class Sorcerer2;
 
 class Sorcerer2Menu : public PicoWin {
 private:
+  SdCardFatFsSpi *_sdCard;
   Sorcerer2 *_sorcerer2;
   Sorcerer2DiskDrive *_currentDiskUnit;
 
@@ -40,6 +42,8 @@ private:
   PicoOptionText _diskUnitOp1;
   PicoOptionText _diskUnitOp2;
   
+  PicoSelectFile _selectDisk;
+  
   PicoSelect _tapeUnits;
   PicoOptionText _tapeUnitsOp1;
   PicoOptionText _tapeUnitsOp2;
@@ -50,5 +54,5 @@ private:
 
 public:
 
-  Sorcerer2Menu(Sorcerer2 *sorcerer2);
+  Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2);
 };

@@ -93,5 +93,6 @@ void PicoSelect::paintRow(PicoPen *pen, bool focused, int32_t i) {
 
 void PicoSelect::toggleSelection(PicoOption *option) {
   option->toggle();
+  if (_toggle) _toggle(option);
   repaint();
 }

@@ -1,9 +1,12 @@
 #include "Sorcerer2Menu.h"
 #include "PicoPen.h"
+#include "Sorcerer2TapeUnitFatFsSpi.h"
+#include "Sorcerer2DiskFatFsSpi.h"
 
 
-Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
+Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
  PicoWin(0, 0, 80, 30),
+  _sdCard(sdCard),
   _sorcerer2(sorcerer2),
   _k0('0'), _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), 
   _wiz(5, 6, 54, 18),
@@ -20,7 +23,8 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
   _diskUnitsOp4("Drive D"),
   _diskUnit(0, 0, 54, 6, 3),
   _diskUnitOp1("Insert"),
-  _diskUnitOp2("Eject"),  
+  _diskUnitOp2("Eject"),
+  _selectDisk(sdCard, "/", 0, 0, 54, 12),
   _tapeUnits(0, 0, 54, 5, 3),
   _tapeUnitsOp1("Tape Player 1"),
   _tapeUnitsOp2("Tape Player 2"),
@@ -77,7 +81,22 @@ Sorcerer2Menu::Sorcerer2Menu(Sorcerer2 *sorcerer2) :
   _diskUnit.addOption(_diskUnitOp2.addQuickKey(&_k2));
   _diskUnit.addOption(&_backOp0);
   _diskUnit.enableQuickKeys();
-  
+  _diskUnitOp1.toggle([=]() {
+    _wiz.push(&_selectDisk, "Choose disk image", true);
+    _selectDisk.reload();
+   });
+  _diskUnitOp2.toggle([=]() {
+     // TODO Don't eject disk if drive is active
+     Sorcerer2Disk *disk = _currentDiskUnit->eject();
+     if (disk) delete disk;
+   });
+   _selectDisk.onToggle([=](PicoOption *option) {
+      PicoOptionText *textOption = (PicoOptionText *)option;
+      Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, textOption->text()));
+      if (disk) delete disk;
+      _wiz.pop(true);
+   });
+   
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
   _tapeUnits.addOption(&_backOp0);

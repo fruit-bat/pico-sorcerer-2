@@ -141,10 +141,6 @@ void core1_main() {
 
 static SdCardFatFsSpi sdCard0(0);
 static Sorcerer2TapeUnitFatFsSpi tapeUnit0(&sdCard0, "tapes");
-static Sorcerer2DiskFatFsSpi diskA(&sdCard0, "diskA.dsk");
-static Sorcerer2DiskFatFsSpi diskB(&sdCard0, "diskB.dsk");
-static Sorcerer2DiskFatFsSpi diskC(&sdCard0, "diskC.dsk");
-static Sorcerer2DiskFatFsSpi diskD(&sdCard0, "diskD.dsk");
 static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
 static Sorcerer2 sorcerer2(
@@ -152,7 +148,7 @@ static Sorcerer2 sorcerer2(
   &sorcerer2DiskSystem
 );
 static PicoCharScreen picoCharScreen((uint16_t *)&charScreen, PCS_COLS, PCS_ROWS);
-static Sorcerer2Menu picoRootWin(&sorcerer2);
+static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
 static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
@@ -193,10 +189,10 @@ extern "C" int __not_in_flash_func(main)() {
   memcpy(&charFont[32*8], MagneticFont, sizeof(MagneticFont));
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();
-  sorcerer2DiskSystem.drive(0)->insert(&diskA);
-  sorcerer2DiskSystem.drive(1)->insert(&diskB);
-  sorcerer2DiskSystem.drive(2)->insert(&diskC);
-  sorcerer2DiskSystem.drive(3)->insert(&diskD);
+  sorcerer2DiskSystem.drive(0)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskA.dsk"));
+  sorcerer2DiskSystem.drive(1)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskB.dsk"));
+  sorcerer2DiskSystem.drive(2)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskC.dsk"));
+  sorcerer2DiskSystem.drive(3)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskD.dsk"));
   sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
   sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
   

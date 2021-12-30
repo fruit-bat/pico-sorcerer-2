@@ -19,6 +19,10 @@ Sorcerer2DiskFatFsSpi::Sorcerer2DiskFatFsSpi(
 {
 }
 
+Sorcerer2DiskFatFsSpi::~Sorcerer2DiskFatFsSpi() {
+  close();
+}
+
 void Sorcerer2DiskFatFsSpi::seek(long p) {
   _offset = p;
   _sectorRead = false;
@@ -84,16 +88,18 @@ bool Sorcerer2DiskFatFsSpi::open() {
 }
 
 void Sorcerer2DiskFatFsSpi::close() {
-  printf("Drive close\n");
-  FRESULT fr = f_close(&_fil);
-  if (FR_OK != fr) {
-    printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
-  }
-  _open = false;
-  
-  // TODO flush any output
+  if (_open) {
+    printf("Drive close\n");
+    FRESULT fr = f_close(&_fil);
+    if (FR_OK != fr) {
+      printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
+    }
+    _open = false;
+    
+    // TODO flush any output
 
-  // Think about when we should unmount the SD card  
+    // Think about when we should unmount the SD card  
+  }
 }
 
 bool Sorcerer2DiskFatFsSpi::isOpen() {

@@ -15,7 +15,6 @@ protected:
 public:
 
   PicoOption();
-
   virtual ~PicoOption();
   
   PicoOption* addQuickKey(PicoQuickKey *quickKey);

@@ -1,11 +1,10 @@
 #include "PicoSelectFile.h"
 #include "PicoOptionText.h"
 
-PicoSelectFile::PicoSelectFile(SdCardFatFsSpi* sdCard, const char *folder, int32_t x, int32_t y, int32_t w, int32_t h, bool multiple) :
+PicoSelectFile::PicoSelectFile(SdCardFatFsSpi* sdCard, const char *folder, int32_t x, int32_t y, int32_t w, int32_t h) :
   PicoSelect(x, y, w, h, 1),
   _dir(sdCard, folder)
 {
-  
 }
 
 void PicoSelectFile::reload() {
