@@ -9,7 +9,7 @@ class PicoSelect : public PicoWin {
 private:
   std::vector<PicoOption *> _options;
 
-  int32_t _i;
+  int32_t _i, _r, _rh;
   bool _quickKeys;
 
   void paintRow(PicoPen *pen, bool focused, int32_t i);
@@ -19,7 +19,8 @@ private:
 public:
 
   PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h);
-  
+  PicoSelect(int32_t x, int32_t y, int32_t w, int32_t r, int32_t rh);
+
   virtual void clear(PicoPen *pen) {};
   virtual void paint(PicoPen *pen);
   

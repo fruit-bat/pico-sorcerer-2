@@ -52,6 +52,11 @@ public:
   inline void set(int32_t x, int32_t y, uint8_t c) {
     _screen.set(_rect._x + x, _rect._y + y, _attr | c);
   }
+  
+  inline void mov(int32_t x, int32_t y) {
+    _rect._x += x;
+    _rect._y += y;
+  }
 
   void setAttr(uint8_t attr) {
     _attr = ((uint16_t)attr) << 8;

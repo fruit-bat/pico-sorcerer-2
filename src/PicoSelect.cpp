@@ -4,7 +4,14 @@
 
 PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t h) :
   PicoWin(x,y,w,h),
-  _i(0),
+  _i(0), _r(h), _rh(1),
+  _quickKeys(false)
+{
+}
+
+PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t r, int32_t rh) :
+  PicoWin(x,y,w, r * rh),
+  _i(0), _r(r), _rh(rh),
   _quickKeys(false)
 {
 }
@@ -27,13 +34,14 @@ void PicoSelect::deleteOptions() {
 }
 
 void PicoSelect::paint(PicoPen *pen) {
-  const int32_t s0 = _i - (wh() >> 1);  
-  const int32_t s1 = optionCount() - wh();
+  const int32_t s0 = _i - (_r >> 1);  
+  const int32_t s1 = optionCount() - _r;
   const int32_t s = s0 <= 0 || s1 <= 0 ? 0 : (s0 > s1 ? s1 : s0);
-  printf("s0 = %ld, s = %ld\n", s0, s); 
-  for(int32_t r = 0; r < wh(); ++r) {
+  printf("s0 = %ld, s = %ld\n", s0, s);
+  int32_t y = 0;
+  for(int32_t r = 0; r < _r; ++r) {
     const int32_t i = r + s;
-    PicoPen rpen(pen, 0, r, ww(), 1);
+    PicoPen rpen(pen, 0, y, ww(), 1);
     if (!rpen.clipped()) {
       if (i < optionCount()) {
         paintRow(&rpen, r + s == _i, i);
@@ -42,6 +50,7 @@ void PicoSelect::paint(PicoPen *pen) {
         rpen.clear();
       }
     }
+    y += _rh;
   }
 }
 
