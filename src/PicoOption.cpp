@@ -33,3 +33,23 @@ void PicoOption::toggle() {
     _toggle();
   }
 }
+
+void PicoOption::paintRow(PicoPen *pen, bool focused, int32_t i, int32_t ww) {
+  pen->setAttr(selected() ? 1 : 0);
+
+  if (_quickKeys.size()) {
+    const char q = _quickKeys[0]->ascii();
+    const char c = q > 32 ? q : '.';
+    pen->printAtF(0, 0, false, " %c %c...", (focused ? '>' : ' '), c);
+  }
+  else {
+    pen->printAtF(0, 0, false, " %c     ", (focused ? '>' : ' '));
+  }
+  
+  if (_paint) {
+    PicoPen rpen(pen, 7, 0, pen->cw() - 7, 1);
+    _paint(&rpen);
+  }
+}
+
+

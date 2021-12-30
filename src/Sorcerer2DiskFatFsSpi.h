@@ -3,10 +3,11 @@
 #include "Sorcerer2Disk.h"
 #include "SdCardFatFsSpi.h"
 #include "Sorcerer2DiskConsts.h"
+#include <string>
 
 class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
   SdCardFatFsSpi* _sdCard;
-  const char* _name;
+  std::string _name;
   FIL _fil;
   uint8_t _sector[BYTES_PER_SECTOR];
   bool _sectorRead;
@@ -22,4 +23,5 @@ public:
   virtual bool open();
   virtual void close();
   virtual bool isOpen();
+  virtual const char *name() { return _name.c_str(); }  
 };

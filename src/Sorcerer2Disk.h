@@ -9,5 +9,6 @@ public:
   virtual bool open();
   virtual void close();
   virtual bool isOpen();
+  virtual const char *name();
 };
 

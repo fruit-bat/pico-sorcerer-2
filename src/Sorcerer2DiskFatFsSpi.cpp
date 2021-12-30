@@ -32,14 +32,14 @@ void Sorcerer2DiskFatFsSpi::readSector() {
   // printf("Disk seek %ld\n", p);
   FRESULT fr = f_lseek(&_fil, _offset);
   if (FR_OK != fr) {
-    printf("f_lseek(%s) error: %s (%d)\n", _name, FRESULT_str(fr), fr);
+    printf("f_lseek(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
     close();
   }
   // printf("Disk seek pos %lld\n", f_tell(&_fil));
   UINT br;
   fr = f_read(&_fil, _sector, sizeof(_sector), &br); 
   if (FR_OK != fr) {
-    printf("f_read(%s) error: %s (%d)\n", _name, FRESULT_str(fr), fr);
+    printf("f_read(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
     close();
   }
   _sectorRead = true;
@@ -57,14 +57,14 @@ void Sorcerer2DiskFatFsSpi::write(const int b, int sectorIndex) {
     // printf("Disk write complete sector\n");
     FRESULT fr = f_lseek(&_fil, _offset);
     if (FR_OK != fr) {
-      printf("f_lseek(%s) error: %s (%d)\n", _name, FRESULT_str(fr), fr);
+      printf("f_lseek(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
       close();
     }
     // printf("Disk seek pos %lld\n", f_tell(&_fil));
     UINT br;
     fr = f_write(&_fil, _sector, sizeof(_sector), &br); 
     if (FR_OK != fr) {
-      printf("f_write(%s) error: %s (%d)\n", _name, FRESULT_str(fr), fr);
+      printf("f_write(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
       close();
     }    
   }
@@ -76,9 +76,9 @@ bool Sorcerer2DiskFatFsSpi::open() {
   if (!_sdCard->mounted()) {
     if (!_sdCard->mount()) return false;
   }
-  FRESULT fr = f_open(&_fil, _name, FA_READ|FA_WRITE);
+  FRESULT fr = f_open(&_fil, name(), FA_READ|FA_WRITE);
   if (FR_OK != fr && FR_EXIST != fr) {
-    printf("f_open(%s) error: %s (%d)\n", _name, FRESULT_str(fr), fr);
+    printf("f_open(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
     return false;
   }
   _offset = 0;

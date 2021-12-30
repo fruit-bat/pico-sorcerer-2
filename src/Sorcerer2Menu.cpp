@@ -17,10 +17,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _mainOp4("CPU Speed"),
   _backOp0("Back"),
   _diskUnits(0, 0, 54, 6, 3),
-  _diskUnitsOp1("Drive A"),
-  _diskUnitsOp2("Drive B"),
-  _diskUnitsOp3("Drive C"),
-  _diskUnitsOp4("Drive D"),
   _diskUnit(0, 0, 54, 6, 3),
   _diskUnitOp1("Insert"),
   _diskUnitOp2("Eject"),
@@ -60,29 +56,45 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnits.addOption(_diskUnitsOp4.addQuickKey(&_k4));
   _diskUnits.addOption(&_backOp0);
   _diskUnits.enableQuickKeys();
+  PicoOption *du[] = {&_diskUnitsOp1, &_diskUnitsOp2, &_diskUnitsOp3, &_diskUnitsOp4};
+  for (int i = 0; i < 4; ++i) {
+    du[i]->onPaint([=](PicoPen *pen){
+      pen->clear();
+      pen->printAt(0,0,false,"Drive ");
+      pen->set(6,0,"ABCD"[i]);
+      Sorcerer2Disk *disk = _sorcerer2->diskSystem()->drive(i)->disk();
+      if (disk) {
+        pen->printAtF(8,0,false,"  [ %s ]", disk->name());
+      }
+      else {
+        pen->printAt(8,0,false,"  [  ]");
+      }
+    });
+  }
   _diskUnitsOp1.toggle([=]() {
-    _wiz.push(&_diskUnit, "Drive A:", true);
+    _wiz.push(&_diskUnit, "Drive A", true);
     _currentDiskUnit = _sorcerer2->diskSystem()->drive(0);
   });
   _diskUnitsOp2.toggle([=]() {
-    _wiz.push(&_diskUnit, "Drive B:", true);
+    _wiz.push(&_diskUnit, "Drive B", true);
     _currentDiskUnit = _sorcerer2->diskSystem()->drive(1);
   });
   _diskUnitsOp3.toggle([=]() {
-    _wiz.push(&_diskUnit, "Drive C:", true);
+    _wiz.push(&_diskUnit, "Drive C", true);
     _currentDiskUnit = _sorcerer2->diskSystem()->drive(2);
   });
   _diskUnitsOp4.toggle([=]() {
-    _wiz.push(&_diskUnit, "Drive D:", true);
+    _wiz.push(&_diskUnit, "Drive D", true);
     _currentDiskUnit = _sorcerer2->diskSystem()->drive(3);
   });
-  
+
   _diskUnit.addOption(_diskUnitOp1.addQuickKey(&_k1));
   _diskUnit.addOption(_diskUnitOp2.addQuickKey(&_k2));
   _diskUnit.addOption(&_backOp0);
   _diskUnit.enableQuickKeys();
   _diskUnitOp1.toggle([=]() {
     _wiz.push(&_selectDisk, "Choose disk image", true);
+    // TODO Filter out files mounted in other drives
     _selectDisk.reload();
    });
   _diskUnitOp2.toggle([=]() {
@@ -94,6 +106,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       PicoOptionText *textOption = (PicoOptionText *)option;
       Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, textOption->text()));
       if (disk) delete disk;
+      _wiz.pop(true);
       _wiz.pop(true);
    });
    

@@ -33,10 +33,10 @@ private:
   PicoOptionText _backOp0;
 
   PicoSelect _diskUnits;
-  PicoOptionText _diskUnitsOp1;
-  PicoOptionText _diskUnitsOp2;
-  PicoOptionText _diskUnitsOp3;
-  PicoOptionText _diskUnitsOp4;
+  PicoOption _diskUnitsOp1;
+  PicoOption _diskUnitsOp2;
+  PicoOption _diskUnitsOp3;
+  PicoOption _diskUnitsOp4;
 
   PicoSelect _diskUnit;
   PicoOptionText _diskUnitOp1;
