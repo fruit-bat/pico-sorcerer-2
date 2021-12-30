@@ -8,14 +8,14 @@ PicoWiz::PicoWiz(int32_t x, int32_t y, int32_t w, int32_t bh) :
 {
   _title.onPaint([=](PicoPen *pen) {
     if (_titles.size()) {
-      pen->printAt(0, 0, false, _titles.back().c_str());
+      _titles.back()(pen);
     }
   });
   addChild(&_title, false);
   addChild(&_body, false);
 }
 
-void PicoWiz::push(PicoWin *stage, const char *title, bool focus){
+void PicoWiz::push(PicoWin *stage, std::function<void(PicoPen *pen)> title, bool focus){
   if (_stages.size()) {
     _body.removeChild(_stages.back());
   }
