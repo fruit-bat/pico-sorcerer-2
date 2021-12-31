@@ -19,10 +19,12 @@ class PicoWin {
   
   void paintSubTree(PicoPen *pen);
   
-  std::function<void(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> _onkeydown;
+  std::function<bool(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> _onkeydown;
   std::function<bool()> _onclose;
   std::function<void(PicoPen *pen)> _paint;
   std::function<void(PicoPen *pen)> _clear;
+
+  bool bubbleKeyPress(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
 
 public:
 
@@ -36,7 +38,7 @@ public:
   void paint(PicoPen *pen);
   void clear(PicoPen *pen);
   void refresh(PicoPen *parentPen);
-  void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
+  bool keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
  
   int32_t wx() { return _rect._x; }
   int32_t wy() { return _rect._y; }
@@ -45,5 +47,5 @@ public:
   
   void onPaint(std::function<void(PicoPen *pen)> paint) { _paint = paint; }
   void onClear(std::function<void(PicoPen *pen)> clear) { _clear = clear; }
-  void onKeydown(std::function<void(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> onkeydown) { _onkeydown = onkeydown; };
+  void onKeydown(std::function<bool(uint8_t keycode, uint8_t modifiers, uint8_t ascii)> onkeydown) { _onkeydown = onkeydown; };
 };

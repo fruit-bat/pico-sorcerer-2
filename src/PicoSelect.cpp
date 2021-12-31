@@ -18,6 +18,7 @@ PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t r, int32_t rh) :
           printf("Toggling %d %d %d %c\n", keycode, modifiers, ascii, ascii);
           _i = i;
           toggleSelection(option);
+          return false;
         }
       }
     }
@@ -27,23 +28,25 @@ PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t r, int32_t rh) :
         if (_i >= 0 && _i < optionCount()) {
           toggleSelection(_options[_i]);
         }
-        break;
+        return false;
       }
       case 'q': case 'Q': {
         if (_i > 0) { 
           --_i;
           repaint();
         }
-        break;
+        return false;
       }
       case 'a': case 'A': {
         if (_i + 1 < optionCount()) {
           ++_i;
           repaint();
         }
-        break;
+        return false;
       }
     }
+    
+    return true;
   });
   
   onPaint([=](PicoPen *pen) {

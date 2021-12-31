@@ -18,9 +18,7 @@ void PicoDisplay::refresh() {
   }
 }
 
-void PicoDisplay::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
-  if (_root) {
-    _root->keyPressed(keycode, modifiers, ascii);
-  }
+bool PicoDisplay::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
+  return !_root || _root->keyPressed(keycode, modifiers, ascii);
 }
 

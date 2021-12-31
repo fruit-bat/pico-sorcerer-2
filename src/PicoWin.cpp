@@ -97,11 +97,10 @@ void PicoWin::paintSubTree(PicoPen *pen) {
   }
 }
 
-void PicoWin::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
-  if (_focus) {
-    _focus->keyPressed(keycode, modifiers, ascii);
-  }
-  else {
-    if (_onkeydown) _onkeydown(keycode, modifiers, ascii);
-  }
+bool PicoWin::bubbleKeyPress(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
+  return (!_onkeydown || _onkeydown(keycode, modifiers, ascii)) && (!_parent || _parent->bubbleKeyPress(keycode, modifiers, ascii));
+}
+
+bool PicoWin::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
+  return _focus ? _focus->keyPressed(keycode, modifiers, ascii) : bubbleKeyPress(keycode, modifiers, ascii);
 }

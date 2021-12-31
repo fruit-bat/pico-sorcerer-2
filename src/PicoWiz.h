@@ -15,5 +15,5 @@ private:
 public:
   PicoWiz(int32_t x, int32_t y, int32_t w, int32_t bh);
   void push(PicoWin *stage, std::function<void(PicoPen *pen)> title, bool focus);
-  void pop(bool focus);
+  bool pop(bool focus);
 };

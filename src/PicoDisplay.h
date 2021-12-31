@@ -16,7 +16,7 @@ public:
     PicoWin *root
   );
   
-  void keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
+  bool keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
 
   void refresh();
 };

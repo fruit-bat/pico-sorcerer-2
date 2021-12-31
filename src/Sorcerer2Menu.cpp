@@ -30,7 +30,10 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
-  
+  _wiz.onKeydown([=](uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
+     return (ascii != 27) || !_wiz.pop(true);
+   });
+   
   _main.addOption(_mainOp1.addQuickKey(&_k1));
   _main.addOption(_mainOp2.addQuickKey(&_k2));
   _main.addOption(_mainOp3.addQuickKey(&_k3));

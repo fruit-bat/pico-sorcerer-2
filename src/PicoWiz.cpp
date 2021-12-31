@@ -25,12 +25,14 @@ void PicoWiz::push(PicoWin *stage, std::function<void(PicoPen *pen)> title, bool
   repaint();
 }
 
-void PicoWiz::pop(bool focus){
+bool PicoWiz::pop(bool focus){
   if (_stages.size() > 1) {
     _body.removeChild(_stages.back());
     _stages.pop_back();
     _titles.pop_back();
     _body.addChild(_stages.back(), focus);
-    repaint();    
+    repaint();
+    return true;
   }
+  return false;
 }
