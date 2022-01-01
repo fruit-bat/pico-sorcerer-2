@@ -74,6 +74,12 @@ USB host mode required for keyboard input still seems to need a [patch to the Pi
 This allows usb reconnect: <br/>
 https://github.com/hathach/tinyusb/pull/1193/files<br/>
 
+## Try it
+A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
+```sh
+cp sorcerer2.uf2 /media/pi/RPI-RP2/
+```
+
 ## Build
 The latest version of [TinyUSB](https://github.com/hathach/tinyusb) contains some useful patches,
 in particular it allows the keyboard to be reconnected.
