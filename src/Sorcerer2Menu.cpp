@@ -53,7 +53,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _mainOp4.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"CPU Speed   [ %-12s]", _sorcerer2->moderate() ? "4 Mhz" : "Unmoderated");
+    pen->printAtF(0, 0, false,"CPU Speed       [ %-12s]", _sorcerer2->moderate() ? "4 Mhz" : "Unmoderated");
   });
   
   _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
@@ -106,7 +106,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     _wiz.pop(true);
     _wiz.pop(true);
   });
-   
+
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
   _tapeUnits.enableQuickKeys();

@@ -24,4 +24,6 @@ void FatFsSpiDirReader::foreach(std::function <void(const char* name)> cb) {
     cb(fno.fname);
     dfr = f_findnext(&dj, &fno); // Search for next item
   }
+  
+  // TODO anything to close?
 }
