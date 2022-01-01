@@ -12,6 +12,11 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 * 2 eumlated tape units with read from SD card
 * USB Keyboard input
 * PWM audio out
+* On screen menu system
+
+## Screen shots
+<img src="docs/chomp.jpg" width="300"/>
+<img src="docs/disk_menu.jpg" width="300"/>
 
 ## Prototype
 <img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
