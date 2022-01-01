@@ -29,7 +29,7 @@ private:
   PicoOptionText _mainOp1;
   PicoOptionText _mainOp2;
   PicoOptionText _mainOp3;
-  PicoOptionText _mainOp4;
+  PicoOption _mainOp4;
 
   PicoSelect _diskUnits;
   PicoOption _diskUnitsOp1;
@@ -46,10 +46,6 @@ private:
   PicoSelect _tapeUnits;
   PicoOptionText _tapeUnitsOp1;
   PicoOptionText _tapeUnitsOp2;
-  
-  PicoSelect _cpuSpeeds;
-  PicoOptionText _cpuSpeedOp1;
-  PicoOptionText _cpuSpeedOp2;
 
 public:
 

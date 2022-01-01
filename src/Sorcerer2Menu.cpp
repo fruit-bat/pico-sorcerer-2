@@ -14,7 +14,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _mainOp1("Disk drives"),
   _mainOp2("Tape players"),
   _mainOp3("ROM Pac"),
-  _mainOp4("CPU Speed"),
+  _mainOp4(),
   _diskUnits(0, 0, 70, 6, 3),
   _diskUnit(0, 0, 70, 6, 3),
   _diskUnitOp1("Insert"),
@@ -22,10 +22,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _selectDisk(sdCard, "/", 0, 0, 70, 12),
   _tapeUnits(0, 0, 70, 5, 3),
   _tapeUnitsOp1("Tape Player 1"),
-  _tapeUnitsOp2("Tape Player 2"),
-  _cpuSpeeds(0, 0, 70, 5, 3),
-  _cpuSpeedOp1("4 Mhz"),
-  _cpuSpeedOp2("Unmoderated")
+  _tapeUnitsOp2("Tape Player 2")
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -51,12 +48,14 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       true);
   });
   _mainOp4.toggle([=]() {
-    _wiz.push(
-      &_cpuSpeeds, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "CPU Speed"); }, 
-      true);
+    _sorcerer2->toggleModerate();
+    _main.repaint();
   });
-
+  _mainOp4.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"CPU Speed   [ %-12s]", _sorcerer2->moderate() ? "4 Mhz" : "Unmoderated");
+  });
+  
   _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
   _diskUnits.addOption(_diskUnitsOp2.addQuickKey(&_k2));
   _diskUnits.addOption(_diskUnitsOp3.addQuickKey(&_k3));
@@ -92,33 +91,25 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectDisk, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose disk image"); },
       true);
-     // TODO Filter out files mounted in other drives
-     _selectDisk.reload();
-   });
+    // TODO Filter out files mounted in other drives
+    _selectDisk.reload();
+  });
   _diskUnitOp2.toggle([=]() {
-     // TODO Don't eject disk if drive is active
-     Sorcerer2Disk *disk = _currentDiskUnit->eject();
-     if (disk) delete disk;
-   });
-   _selectDisk.onToggle([=](PicoOption *option) {
-      PicoOptionText *textOption = (PicoOptionText *)option;
-      Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, textOption->text()));
-      if (disk) delete disk;
-      _wiz.pop(true);
-      _wiz.pop(true);
-   });
+    // TODO Don't eject disk if drive is active
+    Sorcerer2Disk *disk = _currentDiskUnit->eject();
+    if (disk) delete disk;
+  });
+  _selectDisk.onToggle([=](PicoOption *option) {
+    PicoOptionText *textOption = (PicoOptionText *)option;
+    Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, textOption->text()));
+    if (disk) delete disk;
+    _wiz.pop(true);
+    _wiz.pop(true);
+  });
    
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
   _tapeUnits.enableQuickKeys();
-  
-  _cpuSpeeds.addOption(_cpuSpeedOp1.addQuickKey(&_k1));
-  _cpuSpeeds.addOption(_cpuSpeedOp2.addQuickKey(&_k2));
-  _cpuSpeeds.enableQuickKeys();
-  _cpuSpeedOp1.selected([=](){ return _sorcerer2->moderate(); });
-  _cpuSpeedOp2.selected([=](){ return !_sorcerer2->moderate(); });
-  _cpuSpeedOp1.toggle([=](){ _sorcerer2->moderate(true); });
-  _cpuSpeedOp2.toggle([=](){ _sorcerer2->moderate(false); });
   
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
