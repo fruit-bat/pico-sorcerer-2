@@ -15,7 +15,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _mainOp2("Tape players"),
   _mainOp3("ROM Pac"),
   _mainOp4("CPU Speed"),
-  _backOp0("Back"),
   _diskUnits(0, 0, 70, 6, 3),
   _diskUnit(0, 0, 70, 6, 3),
   _diskUnitOp1("Insert"),
@@ -57,16 +56,11 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       [](PicoPen *pen){ pen->printAt(0, 0, false, "CPU Speed"); }, 
       true);
   });
-  _backOp0.addQuickKey(&_k0);
-  _backOp0.toggle([=]() {
-    _wiz.pop(true);
-  });
-  
+
   _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
   _diskUnits.addOption(_diskUnitsOp2.addQuickKey(&_k2));
   _diskUnits.addOption(_diskUnitsOp3.addQuickKey(&_k3));
   _diskUnits.addOption(_diskUnitsOp4.addQuickKey(&_k4));
-  _diskUnits.addOption(&_backOp0);
   _diskUnits.enableQuickKeys();
   
   PicoOption *du[] = {&_diskUnitsOp1, &_diskUnitsOp2, &_diskUnitsOp3, &_diskUnitsOp4};
@@ -92,7 +86,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
   _diskUnit.addOption(_diskUnitOp1.addQuickKey(&_k1));
   _diskUnit.addOption(_diskUnitOp2.addQuickKey(&_k2));
-  _diskUnit.addOption(&_backOp0);
   _diskUnit.enableQuickKeys();
   _diskUnitOp1.toggle([=]() {
     _wiz.push(
@@ -117,12 +110,10 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
    
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
-  _tapeUnits.addOption(&_backOp0);
   _tapeUnits.enableQuickKeys();
   
   _cpuSpeeds.addOption(_cpuSpeedOp1.addQuickKey(&_k1));
   _cpuSpeeds.addOption(_cpuSpeedOp2.addQuickKey(&_k2));
-  _cpuSpeeds.addOption(&_backOp0);
   _cpuSpeeds.enableQuickKeys();
   _cpuSpeedOp1.selected([=](){ return _sorcerer2->moderate(); });
   _cpuSpeedOp2.selected([=](){ return !_sorcerer2->moderate(); });
@@ -135,6 +126,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
      pen->printAt(0, 2, false, "Menu System version 0.1");
 
      pen->printAt(0, 29, false, "F1 to exit menu");
+     pen->printAt(80-14, 29, false, "ESC to go back");
    });
 }
 

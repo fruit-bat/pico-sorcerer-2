@@ -118,8 +118,8 @@ PicoWinHidKeyboard::PicoWinHidKeyboard(PicoDisplay *display) :
 {
 }
 
-void PicoWinHidKeyboard::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
-  _display->keyPressed(keycode, modifiers, ascii);
+bool PicoWinHidKeyboard::keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
+  return _display->keyPressed(keycode, modifiers, ascii);
 }
 
 int PicoWinHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -144,7 +144,7 @@ int PicoWinHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hi
           // not existed in previous report means the current key is pressed
           bool const is_shift =  report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
           uint8_t ch = keycode2ascii[report->keycode[i]][is_shift ? 1 : 0];
-          keyPressed(hidKeyCode, report->modifier, ch);
+          if (keyPressed(hidKeyCode, report->modifier, ch) && (ch == 27)) r = 1;
         }
       }
     }
