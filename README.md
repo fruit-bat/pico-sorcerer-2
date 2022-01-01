@@ -69,10 +69,10 @@ The following components were chosen as I found them in a draw... but it sounds 
 </a>
                                                                                                         
 ## Issues
-USB host mode required for keyboard input still seems to need a [patch to the Pico SDK](https://github.com/raspberrypi/tinyusb/pull/7/files) version of TinyUSB. The patch seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
+USB hubs not working.
 
-This allows usb reconnect: <br/>
-https://github.com/hathach/tinyusb/pull/1193/files<br/>
+
+
 
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
