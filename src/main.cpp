@@ -222,7 +222,7 @@ extern "C" int __not_in_flash_func(main)() {
     tuh_task();
     for(int i=0; i < 100; ++i) {
       sorcerer2.stepCpu();
-      const uint32_t l = sorcerer2.getCentronics() >> 2;    
+      const uint32_t l = sorcerer2.getSound();    
       pwm_set_gpio_level(SPK_PIN, l);
     }
     sorcerer2.stepDisk();

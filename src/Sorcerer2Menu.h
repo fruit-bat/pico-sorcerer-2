@@ -16,7 +16,6 @@ private:
   Sorcerer2 *_sorcerer2;
   Sorcerer2DiskDrive *_currentDiskUnit;
 
-  PicoQuickKeyAscii _k0;
   PicoQuickKeyAscii _k1;
   PicoQuickKeyAscii _k2;
   PicoQuickKeyAscii _k3;
@@ -29,6 +28,7 @@ private:
   PicoOptionText _mainOp2;
   PicoOptionText _mainOp3;
   PicoOption _mainOp4;
+  PicoOption _muteOp;
 
   PicoSelect _diskUnits;
   PicoOption _diskUnitsOp1;

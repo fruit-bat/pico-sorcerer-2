@@ -9,7 +9,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
  PicoWin(0, 0, 80, 30),
   _sdCard(sdCard),
   _sorcerer2(sorcerer2),
-  _k0('0'), _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), 
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), 
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 5, 3),
   _mainOp1("Disk drives"),
@@ -35,6 +35,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _main.addOption(_mainOp2.addQuickKey(&_k2));
   _main.addOption(_mainOp3.addQuickKey(&_k3));
   _main.addOption(_mainOp4.addQuickKey(&_k4));
+  _main.addOption(_muteOp.addQuickKey(&_k5));
   _main.enableQuickKeys();
   _mainOp1.toggle([=]() {
     _wiz.push(
@@ -55,6 +56,14 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _mainOp4.onPaint([=](PicoPen *pen){
     pen->clear();
     pen->printAtF(0, 0, false,"CPU Speed       [ %-12s]", _sorcerer2->moderate() ? "4 Mhz" : "Unmoderated");
+  });
+  _muteOp.toggle([=]() {
+    _sorcerer2->toggleMute();
+    _main.repaint();
+  });
+  _muteOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"Audio           [ %-12s]", _sorcerer2->mute() ? "off" : "on");
   });
   
   _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
