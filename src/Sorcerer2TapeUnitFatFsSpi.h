@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Sorcerer2SdCardFatFsSpi.h"
+#include "SdCardFatFsSpi.h"
 #include "Sorcerer2TapeUnit.h"
 #include "f_util.h"
 #include "ff.h"
 #include "pico/stdlib.h"
 
 class Sorcerer2TapeUnitFatFsSpi : public Sorcerer2TapeUnit {
-  Sorcerer2SdCardFatFsSpi* _sdCard;
+  SdCardFatFsSpi* _sdCard;
   const char* _folderName;
   FRESULT dfr;    /* Return value for directory */
   DIR dj;         /* Directory object */
@@ -17,7 +17,7 @@ class Sorcerer2TapeUnitFatFsSpi : public Sorcerer2TapeUnit {
   bool nextFile();
   bool openFile();
 public:
-  Sorcerer2TapeUnitFatFsSpi(Sorcerer2SdCardFatFsSpi* sdCard, const char* folderName);
+  Sorcerer2TapeUnitFatFsSpi(SdCardFatFsSpi* sdCard, const char* folderName);
   
   virtual bool readyForRead();
   virtual bool readyForWrite();  

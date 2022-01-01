@@ -26,8 +26,9 @@ public:
   int readReg0();
   int readReg2();
   void writeReg2(const int b);
-  void insert(Sorcerer2Disk* disk);
+  Sorcerer2Disk* insert(Sorcerer2Disk* disk);
   Sorcerer2Disk* eject();
+  Sorcerer2Disk* disk() { return _disk; }
   char driveLetter();
   void reset();
 };

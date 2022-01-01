@@ -11,7 +11,6 @@ add_executable(sorcerer2
 	src/Sorcerer2DiskSystem.cpp
 	src/Sorcerer2DiskDrive.cpp
 	src/Sorcerer2DiskFatFsSpi.cpp
-	src/Sorcerer2SdCardFatFsSpi.cpp
 	src/Sorcerer2TapeSystem.cpp
 	src/Sorcerer2TapeUnit.cpp
 	src/Sorcerer2TapeUnitFatFsSpi.cpp
@@ -26,8 +25,15 @@ add_executable(sorcerer2
 	src/PicoWin.cpp
 	src/PicoDisplay.cpp
 	src/PicoWinBlock.cpp
-	src/PicoMenu.cpp
+	src/Sorcerer2Menu.cpp
 	src/PicoSelect.cpp
+	src/PicoOption.cpp
+	src/PicoOptionText.cpp
+	src/SdCardFatFsSpi.cpp
+	src/FatFsSpiDirReader.cpp
+	src/PicoQuickKey.cpp
+	src/PicoQuickKeyAscii.cpp
+	src/PicoWiz.cpp
 )
 
 target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
