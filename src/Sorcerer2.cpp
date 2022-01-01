@@ -21,25 +21,6 @@ Sorcerer2::Sorcerer2(
   }
 }
 
-void Sorcerer2::printAt(unsigned int x, unsigned int y, const char *s) {
-  const unsigned int m = 64 * 30;
-  const unsigned int p = x + (y<<6);
-  if (p >= m) return;
-  const unsigned int l = strlen(s);
-  for(unsigned int i=0; i<l; ++i) {
-    ((char *)screenPtr())[(p + i) % m] = s[i];
-  }
-}
-
-void Sorcerer2::printAtF(unsigned int x, unsigned int y, const char *fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  char buf[128];
-  vsnprintf(buf, 128, fmt, args );
-  printAt(x, y, buf);
-  va_end(args);
-}
-
 void Sorcerer2::reset(unsigned int address)
 {
   _Z80.reset();
@@ -82,6 +63,10 @@ void Sorcerer2::saveMem()
 void Sorcerer2::loadMem()
 {
   memcpy(_RAM + 0x100, _buf, 1<<15);
+}
+
+bool Sorcerer2::moderate() {
+  return _moderate;
 }
 
 void Sorcerer2::moderate(bool on) {

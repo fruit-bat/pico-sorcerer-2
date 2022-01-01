@@ -40,6 +40,12 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
 
+### Audio filter
+It's a good idea to filter out high frequencies from the PWM audio output.
+The following components were chosen as I found them in a draw... but it sounds ok.
+
+![image](docs/circuit.png)
+
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
 <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/P1043509-smol_1024x1024.jpg" width="200"/>
@@ -64,18 +70,26 @@ This allows usb reconnect: <br/>
 https://github.com/hathach/tinyusb/pull/1193/files<br/>
 
 ## Build
-### Compile the software
-Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
+The latest version of [TinyUSB](https://github.com/hathach/tinyusb) contains some useful patches,
+in particular it allows the keyboard to be reconnected.
+It is probably a good idea to update the version in [Pico SDK](https://github.com/raspberrypi/pico-sdk) to the latest.
+```sh
+cd $PICO_SDK_PATH/lib/tinyusb/
+git checkout master
+git pull
+```
 
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
 cd PicoDVI/software/apps
-git@github.com:fruit-bat/pico-sorcerer-2.git sorcerer2
+git clone git@github.com:fruit-bat/pico-sorcerer-2.git sorcerer2
+git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 ```
 
-In the 'apps' folder add the following line to CMakeLists.txt
+In the 'apps' folder add the following lines to CMakeLists.txt
 ```
 add_subdirectory(sorcerer2)
+add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
 In the build folder:
 ```
@@ -92,6 +106,7 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 
 | Key | Action |
 | --- | ------ |
+| F1 | Menu system |
 | F2 | Copy #0100-#8100 to side buffer |
 | F3 | Copy side buffer to #0100-#8100 |
 | F4 | Toggle Z80 4Mhz moderator |
@@ -110,15 +125,21 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 * Centronics interface
 * Serial interface (Uart 0 is currently used for debug) 
 
+## Debug
+```sh
+tio -m ODELBS /dev/ttyUSB0
+```
 ## Resources
 ### Sound card
-The Sorcerer had a sound card that plugged into the parallel port. It appears to be a single DAC, using the six most significant bits from the port.
+The Sorcerer had a [sound card](https://sw-ke.facebook.com/groups/AusVintage/permalink/1188402214859386/) that plugged into the parallel port. It appears to be a single DAC, using the six most significant bits from the port.
 
+<img src="docs/4-voice-top-2.jpg" width="200"/>
+<img src="docs/4-voice-bottom-2.jpg" width="200"/>
 <img src="docs/4-voice-top.jpg" width="200"/>
 <img src="docs/4-voice-bottom.jpg" width="200"/>
 
-
 ### Websites
+  [Magnetic font by DamienG](https://damieng.com/typography/zx-origins/)<br/>
   [Exidy Sorcerer Software Library](https://www.classic-computers.org.nz/blog/2017-01-23-software-for-real-sorcerers.htm)<br/>
   [Trailing Edge - Exidy Sorcerer monitor commands](http://www.trailingedge.com/exidy/exidymon.html)<br/>
   [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>

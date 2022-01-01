@@ -15,10 +15,12 @@ Sorcerer2DiskDrive::Sorcerer2DiskDrive(int unit) :
 {
 }
 
-void Sorcerer2DiskDrive::insert(Sorcerer2Disk* disk) {
+Sorcerer2Disk* Sorcerer2DiskDrive::insert(Sorcerer2Disk* disk) {
   if (_disk && _disk->isOpen()) _disk->close();
+  Sorcerer2Disk* r = _disk;
   _disk = disk;
   _dataReady = false;
+  return r;
 }
 
 Sorcerer2Disk* Sorcerer2DiskDrive::eject() {

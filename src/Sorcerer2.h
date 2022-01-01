@@ -17,7 +17,7 @@ private:
   uint32_t _tu4;
   int32_t _ta4;
   Sorcerer2TapeSystem _tapeSystem;
-  bool _moderate;
+  bool _moderate, _mute;
   uint8_t _centronicsOut;
   
   inline int readByte(int address)
@@ -159,15 +159,20 @@ public:
   void reset(unsigned int address);
   void reset();
   void __not_in_flash_func(step)();
-  void printAt(unsigned int x, unsigned int y, const char *str);
-  void printAtF(unsigned int x, unsigned int y, const char *fmt, ...);
-  Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; };
+  Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; }
+  Sorcerer2DiskSystem *diskSystem() { return _diskSystem; }
   void saveMem();
   void loadMem();
   void moderate(bool on);
+  bool moderate();
+  void mute(bool mute) { _mute = mute; }
+  void toggleMute() { _mute = !_mute; }
+  bool mute() { return _mute; }
+
   void toggleModerate();
   uint8_t inline getCentronics() { return _centronicsOut; }
-  
+  uint8_t inline getSound() { return _mute ? 0 : _centronicsOut >> 2; }
+
   inline void stepCpu()
   {
     // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 

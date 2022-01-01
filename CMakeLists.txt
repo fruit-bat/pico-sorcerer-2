@@ -3,23 +3,40 @@
 # add_definitions(-DRUN_FROM_CRYSTAL)
 
 add_executable(sorcerer2
-	main.cpp
-	Z80.cpp
-	Sorcerer2.cpp
-	Sorcerer2Keyboard.cpp
-	Sorcerer2HidKeyboard.cpp
-	Sorcerer2DiskSystem.cpp
-	Sorcerer2DiskDrive.cpp
-	Sorcerer2DiskFatFsSpi.cpp
-	Sorcerer2SdCardFatFsSpi.cpp
-	Sorcerer2TapeSystem.cpp
-	Sorcerer2TapeUnit.cpp
-	Sorcerer2TapeUnitFatFsSpi.cpp
-	hid_app.c
-	hw_config.c
+	src/main.cpp
+	src/Z80.cpp
+	src/Sorcerer2.cpp
+	src/Sorcerer2Keyboard.cpp
+	src/Sorcerer2HidKeyboard.cpp
+	src/Sorcerer2DiskSystem.cpp
+	src/Sorcerer2DiskDrive.cpp
+	src/Sorcerer2DiskFatFsSpi.cpp
+	src/Sorcerer2TapeSystem.cpp
+	src/Sorcerer2TapeUnit.cpp
+	src/Sorcerer2TapeUnitFatFsSpi.cpp
+	src/hid_app.c
+	src/hw_config.c
+	src/PicoRectXYWH.cpp
+	src/PicoRectXYXY.cpp
+	src/PicoCharScreen.cpp
+	src/PicoClippedScreen.cpp
+	src/PicoWinHidKeyboard.cpp
+	src/PicoPen.cpp
+	src/PicoWin.cpp
+	src/PicoDisplay.cpp
+	src/PicoWinBlock.cpp
+	src/Sorcerer2Menu.cpp
+	src/PicoSelect.cpp
+	src/PicoOption.cpp
+	src/PicoOptionText.cpp
+	src/SdCardFatFsSpi.cpp
+	src/FatFsSpiDirReader.cpp
+	src/PicoQuickKey.cpp
+	src/PicoQuickKeyAscii.cpp
+	src/PicoWiz.cpp
 )
 
-target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
 # TODO this should work ok with DVI_N_TMDS_BUFFERS=2 (perhaps need to
 # rearrange some pushes/pops) and also as we are monochrome the buffers are 3x
@@ -31,8 +48,6 @@ target_compile_definitions(sorcerer2 PRIVATE
 	DVI_MONOCHROME_TMDS=1
 	DVI_1BPP_BIT_REVERSE=1
 	)
-
-add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 
 target_link_libraries(sorcerer2
 	pico_stdlib

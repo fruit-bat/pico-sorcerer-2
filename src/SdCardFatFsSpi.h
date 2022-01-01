@@ -2,11 +2,11 @@
 
 #include "sd_card.h"
 
-class Sorcerer2SdCardFatFsSpi {
+class SdCardFatFsSpi {
   int _unit;
   sd_card_t *_sdcard;
 public:
-  Sorcerer2SdCardFatFsSpi(int unit);
+  SdCardFatFsSpi(int unit);
   bool mount();
   void unmount();
   bool mounted() { return !!_sdcard; }

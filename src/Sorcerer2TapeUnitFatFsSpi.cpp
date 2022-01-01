@@ -2,7 +2,7 @@
 #include <pico/printf.h>
 #include "pico/stdlib.h"
 
-Sorcerer2TapeUnitFatFsSpi::Sorcerer2TapeUnitFatFsSpi(Sorcerer2SdCardFatFsSpi* sdCard, const char* folderName) : 
+Sorcerer2TapeUnitFatFsSpi::Sorcerer2TapeUnitFatFsSpi(SdCardFatFsSpi* sdCard, const char* folderName) : 
   _sdCard(sdCard),
   _folderName(folderName),
   dfr(FR_NOT_READY),

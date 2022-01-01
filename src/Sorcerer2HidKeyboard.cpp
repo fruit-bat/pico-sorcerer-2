@@ -139,10 +139,10 @@ static unsigned char LOCK_KEYS[] = {
 //  HID_KEY_NUM_LOCK
 };
 
-void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+int Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   static bool lock_flags[sizeof(LOCK_KEYS)] = {false};
+  int r = 0;
   reset();
-  if (report->keycode[0] == 1) return;
   const unsigned char m = report->modifier;
   for (int i = 0; i < 8; ++i) {
     if (m & (1 << i)) {
@@ -166,6 +166,11 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     
     if (reset1 && reset2 && checkReset) {
       _sorcerer2->reset();
+    }
+
+    // F1 Open menu
+    if (hidKeyCode == HID_KEY_F1 && !isInReport(prev_report, HID_KEY_F1)) {
+      r = 1;
     }
     
     // F2 Copy lower mem
@@ -204,4 +209,5 @@ void Sorcerer2HidKeyboard::processHidReport(hid_keyboard_report_t const *report,
       if (k) press(k->line, k->key);
     }
   }
+  return r;
 }

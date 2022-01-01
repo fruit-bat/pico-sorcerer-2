@@ -137,8 +137,13 @@ void __not_in_flash_func(tuh_hid_report_received_cb)(uint8_t dev_addr, uint8_t i
         TU_LOG1("HID receive keyboard report\r\n");
         // Assume keyboard follow boot report layout
         hid_keyboard_report_t const* key_report = (hid_keyboard_report_t const*) report;
-        process_kbd_report( key_report,  &prev_key_report);
-        prev_key_report = *key_report;
+        if (key_report->keycode[0] == 1) {
+          // TODO not sure what to do here
+        }
+        else {
+          process_kbd_report( key_report,  &prev_key_report);
+          prev_key_report = *key_report;
+        }
         break;
       }
       case HID_USAGE_DESKTOP_MOUSE:
