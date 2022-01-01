@@ -30,14 +30,14 @@ PicoSelect::PicoSelect(int32_t x, int32_t y, int32_t w, int32_t r, int32_t rh) :
         }
         return false;
       }
-      case 'q': case 'Q': {
+      case 11: {
         if (_i > 0) { 
           --_i;
           repaint();
         }
         return false;
       }
-      case 'a': case 'A': {
+      case 10: {
         if (_i + 1 < optionCount()) {
           ++_i;
           repaint();
