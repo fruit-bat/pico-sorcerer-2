@@ -40,6 +40,12 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
 
+### Audio filter
+It's a good idea to filter out high frequencies from the PWM audio output.
+The following components were chosen as I found them in a draw... but it sounds ok.
+
+![image](docs/circuit.png)
+
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
 <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/P1043509-smol_1024x1024.jpg" width="200"/>
@@ -64,8 +70,14 @@ This allows usb reconnect: <br/>
 https://github.com/hathach/tinyusb/pull/1193/files<br/>
 
 ## Build
-### Compile the software
-Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
+The latest version of [TinyUSB](https://github.com/hathach/tinyusb) contains some useful patches,
+in particular it allows the keyboard to be reconnected.
+It is probably a good idea to update the version in [Pico SDK](https://github.com/raspberrypi/pico-sdk) to the latest.
+```sh
+cd $PICO_SDK_PATH/lib/tinyusb/
+git checkout master
+git pull
+```
 
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
