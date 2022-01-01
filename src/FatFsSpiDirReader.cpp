@@ -24,8 +24,8 @@ void FatFsSpiDirReader::foreach(std::function <void(const FILINFO* info)> cb) {
     cb(&fno);
     dfr = f_findnext(&dj, &fno); // Search for next item
   }
-  
-  // TODO anything to close?  
+
+  f_closedir(&dj);
 }
 
 void FatFsSpiDirReader::foreach(std::function <void(const char* name)> cb) {
