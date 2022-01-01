@@ -3,7 +3,6 @@
 #include "PicoWin.h"
 #include "PicoSelect.h"
 #include "PicoOptionText.h"
-#include "PicoSelectFile.h"
 #include "PicoQuickKeyAscii.h"
 #include "PicoWiz.h" 
 #include "Sorcerer2.h"
@@ -41,7 +40,7 @@ private:
   PicoOptionText _diskUnitOp1;
   PicoOptionText _diskUnitOp2;
   
-  PicoSelectFile _selectDisk;
+  PicoSelect _selectDisk;
   
   PicoSelect _tapeUnits;
   PicoOptionText _tapeUnitsOp1;

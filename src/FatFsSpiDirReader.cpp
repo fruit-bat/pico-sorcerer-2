@@ -7,7 +7,7 @@ FatFsSpiDirReader::FatFsSpiDirReader(SdCardFatFsSpi* sdCard, const char *folder)
 {
 }
 
-void FatFsSpiDirReader::foreach(std::function <void(const char* name)> cb) {
+void FatFsSpiDirReader::foreach(std::function <void(const FILINFO* info)> cb) {
   if (!_sdCard->mounted()) {   
     if (!_sdCard->mount()) {
       printf("Failed to mount SD card\n");
@@ -21,9 +21,13 @@ void FatFsSpiDirReader::foreach(std::function <void(const char* name)> cb) {
 
   while (dfr == FR_OK && fno.fname[0]) {
     printf("file %s\n", fno.fname);
-    cb(fno.fname);
+    cb(&fno);
     dfr = f_findnext(&dj, &fno); // Search for next item
   }
   
-  // TODO anything to close?
+  // TODO anything to close?  
+}
+
+void FatFsSpiDirReader::foreach(std::function <void(const char* name)> cb) {
+  foreach([=](const FILINFO* info){ cb(info->fname); });
 }

@@ -2,6 +2,7 @@
 #include "PicoPen.h"
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 #include "Sorcerer2DiskFatFsSpi.h"
+#include "FatFsSpiDirReader.h"
 
 
 Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
@@ -19,7 +20,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnit(0, 0, 70, 6, 3),
   _diskUnitOp1("Insert"),
   _diskUnitOp2("Eject"),
-  _selectDisk(sdCard, "/", 0, 0, 70, 12),
+  _selectDisk(0, 0, 70, 12, 1),
   _tapeUnits(0, 0, 70, 5, 3),
   _tapeUnitsOp1("Tape Player 1"),
   _tapeUnitsOp2("Tape Player 2")
@@ -91,13 +92,21 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectDisk, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose disk image"); },
       true);
-    // TODO Filter out files mounted in other drives
-    _selectDisk.reload();
-  });
+    FatFsSpiDirReader dirReader(_sdCard, "/");
+    _selectDisk.deleteOptions();
+    dirReader.foreach([=](const FILINFO* info){ 
+      for(int i = 0; i < 4; ++i) {
+        Sorcerer2Disk *disk = _sorcerer2->diskSystem()->drive(i)->disk();
+        if (disk && (strcmp(info->fname, disk->name()) == 0)) return;
+      }
+      _selectDisk.addOption(new PicoOptionText(info->fname));
+    });
+   });
   _diskUnitOp2.toggle([=]() {
     // TODO Don't eject disk if drive is active
     Sorcerer2Disk *disk = _currentDiskUnit->eject();
     if (disk) delete disk;
+    _wiz.pop(true);
   });
   _selectDisk.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
