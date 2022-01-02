@@ -1,5 +1,7 @@
 #pragma once
 
+class Sorcerer2Tape;
+
 class Sorcerer2TapeUnit {
   
 public:
@@ -9,4 +11,9 @@ public:
   virtual unsigned char readData();
   virtual void motor(bool on);
   virtual void setBaud1200(bool);
+  
+  // TODO
+  Sorcerer2Tape *tape() { return 0; }
+  Sorcerer2Tape *eject() { return 0; }
+
 };

@@ -15,6 +15,7 @@ private:
   SdCardFatFsSpi *_sdCard;
   Sorcerer2 *_sorcerer2;
   Sorcerer2DiskDrive *_currentDiskUnit;
+  Sorcerer2TapeUnit *_currentTapeUnit;
 
   PicoQuickKeyAscii _k1;
   PicoQuickKeyAscii _k2;
@@ -41,10 +42,16 @@ private:
   PicoOptionText _diskUnitOp2;
   
   PicoSelect _selectDisk;
-  
+
   PicoSelect _tapeUnits;
-  PicoOptionText _tapeUnitsOp1;
-  PicoOptionText _tapeUnitsOp2;
+  PicoOption _tapeUnitsOp1;
+  PicoOption _tapeUnitsOp2;
+  
+  PicoSelect _tapeUnit;
+  PicoOptionText _tapeUnitOp1;
+  PicoOptionText _tapeUnitOp2;
+  
+  PicoSelect _selectTape;
 
 public:
 

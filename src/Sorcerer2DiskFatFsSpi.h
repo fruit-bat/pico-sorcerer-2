@@ -6,6 +6,7 @@
 #include <string>
 
 class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
+private:
   SdCardFatFsSpi* _sdCard;
   std::string _name;
   FIL _fil;

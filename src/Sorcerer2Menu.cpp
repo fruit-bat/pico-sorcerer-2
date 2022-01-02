@@ -2,6 +2,7 @@
 #include "PicoPen.h"
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 #include "Sorcerer2DiskFatFsSpi.h"
+#include "Sorcerer2TapeFatFsSpi.h"
 #include "FatFsSpiDirReader.h"
 
 
@@ -22,8 +23,10 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnitOp2("Eject"),
   _selectDisk(0, 0, 70, 12, 1),
   _tapeUnits(0, 0, 70, 5, 3),
-  _tapeUnitsOp1("Tape Player 1"),
-  _tapeUnitsOp2("Tape Player 2")
+  _tapeUnit(0, 0, 70, 6, 3),
+  _tapeUnitOp1("Insert"),
+  _tapeUnitOp2("Eject"),
+  _selectTape(0, 0, 70, 12, 1)
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -128,6 +131,60 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
   _tapeUnits.enableQuickKeys();
+  
+  PicoOption *tu[] = {&_tapeUnitsOp1, &_tapeUnitsOp2};
+  for (int i = 0; i < 2; ++i) {
+    PicoOption *t = tu[i];
+    t->onPaint([=](PicoPen *pen){
+      Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
+      pen->clear();
+      pen->printAtF(0, 0, false,"Tape player %d   [ %-40s]", i + 1, tape ? tape->name(): "");
+    });
+    t->toggle([=]() {
+      _wiz.push(
+        &_tapeUnit, 
+        [=](PicoPen *pen){
+          Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
+          pen->printAtF(0, 0, false,"Tape player %d   [ %-40s]", i + 1, tape ? tape->name(): "");
+        },
+        true
+      );
+      _currentTapeUnit = _sorcerer2->tapeSystem()->unit(i);
+    });
+  }
+  
+  _tapeUnit.addOption(_tapeUnitOp1.addQuickKey(&_k1));
+  _tapeUnit.addOption(_tapeUnitOp2.addQuickKey(&_k2));
+  _tapeUnit.enableQuickKeys();
+  _tapeUnitOp1.toggle([=]() {
+    _wiz.push(
+      &_selectTape, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape"); },
+      true);
+    FatFsSpiDirReader dirReader(_sdCard, "/tapes");
+    _selectTape.deleteOptions();
+    dirReader.foreach([=](const FILINFO* info){ 
+      for(int i = 0; i < 2; ++i) {
+        Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
+        if (tape && (strcmp(info->fname, tape->name()) == 0)) return;
+      }
+      _selectTape.addOption(new PicoOptionText(info->fname));
+    });
+   });
+  _tapeUnitOp2.toggle([=]() {
+    // TODO Don't eject tape if drive is active
+    Sorcerer2Tape *tape = _currentTapeUnit->eject();
+    if (tape) delete tape;
+    _wiz.pop(true);
+  });
+  _selectTape.onToggle([=](PicoOption *option) {
+    PicoOptionText *textOption = (PicoOptionText *)option;
+    //Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, textOption->text()));
+    //if (disk) delete disk;
+    _wiz.pop(true);
+    _wiz.pop(true);
+  });
+  
   
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
