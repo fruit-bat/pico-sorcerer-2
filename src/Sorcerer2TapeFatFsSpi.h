@@ -2,12 +2,10 @@
 
 #include "Sorcerer2Tape.h"
 #include "SdCardFatFsSpi.h"
-#include <string>
 
 class Sorcerer2TapeFatFsSpi : public Sorcerer2Tape {
 private:
   SdCardFatFsSpi* _sdCard;
-  std::string _name;
   FIL _fil;
   bool _open;
   bool _writable;
@@ -20,5 +18,4 @@ public:
   virtual bool open();
   virtual void close();
   virtual bool isOpen();
-  virtual const char *name();
 };

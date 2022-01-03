@@ -140,7 +140,9 @@ void core1_main() {
 }
 
 static SdCardFatFsSpi sdCard0(0);
-static Sorcerer2TapeUnitFatFsSpi tapeUnit0(&sdCard0, "tapes");
+static Sorcerer2TapeUnitFatFsSpi tapeUnit1(&sdCard0, "tapes");
+static Sorcerer2TapeUnitFatFsSpi tapeUnit2(&sdCard0, "tapes");
+
 static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
 static Sorcerer2 sorcerer2(
@@ -193,7 +195,8 @@ extern "C" int __not_in_flash_func(main)() {
   sorcerer2DiskSystem.drive(1)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskB.dsk"));
   sorcerer2DiskSystem.drive(2)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskC.dsk"));
   sorcerer2DiskSystem.drive(3)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskD.dsk"));
-  sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
+  sorcerer2.tapeSystem()->attach(0, &tapeUnit1);
+  sorcerer2.tapeSystem()->attach(1, &tapeUnit2);
   sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
   
   printf("Configuring DVI\n");

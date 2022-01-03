@@ -179,8 +179,8 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _selectTape.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    //Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, textOption->text()));
-    //if (disk) delete disk;
+    Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, textOption->text(), true));
+    if (tape) delete tape;
     _wiz.pop(true);
     _wiz.pop(true);
   });
