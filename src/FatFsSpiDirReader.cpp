@@ -14,7 +14,8 @@ void FatFsSpiDirReader::foreach(std::function <void(const FILINFO* info)> cb) {
       return;
     }
   }
-  
+  printf("reading folder %s\n", _folder.c_str());
+
   DIR dj;         /* Directory object */
   FILINFO fno;    /* File information */
   FRESULT dfr = f_findfirst(&dj, &fno, _folder.c_str(), "*.*");
