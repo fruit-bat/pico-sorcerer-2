@@ -22,4 +22,5 @@ public:
   
   void reset();
 
+  Sorcerer2TapeUnit* unit(int unit) { return _units[unit]; }
 };

@@ -6,8 +6,10 @@
 #include <string>
 
 class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
+private:
   SdCardFatFsSpi* _sdCard;
   std::string _name;
+  std::string _folder;  
   FIL _fil;
   uint8_t _sector[BYTES_PER_SECTOR];
   bool _sectorRead;
@@ -15,7 +17,7 @@ class Sorcerer2DiskFatFsSpi : public Sorcerer2Disk {
   bool _open;
   void readSector();
 public:
-  Sorcerer2DiskFatFsSpi(SdCardFatFsSpi* sdCard, const char* name);
+  Sorcerer2DiskFatFsSpi(SdCardFatFsSpi* sdCard, const char* folder, const char* name);
   virtual ~Sorcerer2DiskFatFsSpi();
   virtual void seek(long p);
   virtual int read(int sectorIndex);

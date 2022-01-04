@@ -22,7 +22,7 @@ extern "C" {
 #include "Sorcerer2.h"
 #include "Sorcerer2HidKeyboard.h"
 #include "Sorcerer2DiskFatFsSpi.h"
-#include "Sorcerer2TapeUnitFatFsSpi.h"
+#include "Sorcerer2TapeUnit.h"
 #include "Sorcerer2Menu.h"
 
 #include "MagneticFont.h"
@@ -140,7 +140,9 @@ void core1_main() {
 }
 
 static SdCardFatFsSpi sdCard0(0);
-static Sorcerer2TapeUnitFatFsSpi tapeUnit0(&sdCard0, "tapes");
+static Sorcerer2TapeUnit tapeUnit1;
+static Sorcerer2TapeUnit tapeUnit2;
+
 static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
 static Sorcerer2 sorcerer2(
@@ -189,11 +191,12 @@ extern "C" int __not_in_flash_func(main)() {
   memcpy(&charFont[32*8], MagneticFont, sizeof(MagneticFont));
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();
-  sorcerer2DiskSystem.drive(0)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskA.dsk"));
-  sorcerer2DiskSystem.drive(1)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskB.dsk"));
-  sorcerer2DiskSystem.drive(2)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskC.dsk"));
-  sorcerer2DiskSystem.drive(3)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "diskD.dsk"));
-  sorcerer2.tapeSystem()->attach(0, &tapeUnit0);
+  sorcerer2DiskSystem.drive(0)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "/sorcerer2/disks/", "diskA.dsk"));
+  sorcerer2DiskSystem.drive(1)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "/sorcerer2/disks/", "diskB.dsk"));
+  sorcerer2DiskSystem.drive(2)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "/sorcerer2/disks/", "diskC.dsk"));
+  sorcerer2DiskSystem.drive(3)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "/sorcerer2/disks/", "diskD.dsk"));
+  sorcerer2.tapeSystem()->attach(0, &tapeUnit1);
+  sorcerer2.tapeSystem()->attach(1, &tapeUnit2);
   sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
   
   printf("Configuring DVI\n");

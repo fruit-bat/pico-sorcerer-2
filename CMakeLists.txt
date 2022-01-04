@@ -14,6 +14,8 @@ add_executable(sorcerer2
 	src/Sorcerer2TapeSystem.cpp
 	src/Sorcerer2TapeUnit.cpp
 	src/Sorcerer2TapeUnitFatFsSpi.cpp
+	src/Sorcerer2Tape.cpp
+	src/Sorcerer2TapeFatFsSpi.cpp
 	src/hid_app.c
 	src/hw_config.c
 	src/PicoRectXYWH.cpp
