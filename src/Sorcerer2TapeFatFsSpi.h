@@ -6,12 +6,13 @@
 class Sorcerer2TapeFatFsSpi : public Sorcerer2Tape {
 private:
   SdCardFatFsSpi* _sdCard;
+  std::string _folder;
   FIL _fil;
   bool _open;
   bool _writable;
 public:
-  Sorcerer2TapeFatFsSpi(SdCardFatFsSpi* sdCard, const char* name, bool writable);
-  virtual ~Sorcerer2TapeFatFsSpi() {}
+  Sorcerer2TapeFatFsSpi(SdCardFatFsSpi* sdCard, const char* folder, const char* name, bool writable);
+  virtual ~Sorcerer2TapeFatFsSpi();
   virtual uint8_t read();
   virtual void write(uint8_t data);
   virtual bool writable();

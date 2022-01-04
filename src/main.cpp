@@ -22,7 +22,7 @@ extern "C" {
 #include "Sorcerer2.h"
 #include "Sorcerer2HidKeyboard.h"
 #include "Sorcerer2DiskFatFsSpi.h"
-#include "Sorcerer2TapeUnitFatFsSpi.h"
+#include "Sorcerer2TapeUnit.h"
 #include "Sorcerer2Menu.h"
 
 #include "MagneticFont.h"
@@ -140,8 +140,8 @@ void core1_main() {
 }
 
 static SdCardFatFsSpi sdCard0(0);
-static Sorcerer2TapeUnitFatFsSpi tapeUnit1(&sdCard0, "tapes");
-static Sorcerer2TapeUnitFatFsSpi tapeUnit2(&sdCard0, "tapes");
+static Sorcerer2TapeUnit tapeUnit1;
+static Sorcerer2TapeUnit tapeUnit2;
 
 static Sorcerer2DiskSystem sorcerer2DiskSystem;
 static Sorcerer2HidKeyboard sorcerer2HidKeyboard;
