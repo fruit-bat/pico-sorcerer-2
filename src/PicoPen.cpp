@@ -34,8 +34,6 @@ void PicoPen::printAtF(int32_t x, int32_t y, bool wrap, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   char buf[128];
-      printf("Print buf %s\n", buf);
-
   vsnprintf(buf, 128, fmt, args );
   printAt(x, y, wrap, buf);
   va_end(args);

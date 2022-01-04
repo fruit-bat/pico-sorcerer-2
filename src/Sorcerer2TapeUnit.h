@@ -3,6 +3,8 @@
 class Sorcerer2Tape;
 
 class Sorcerer2TapeUnit {
+private: 
+  
   Sorcerer2Tape *_tape;
   bool _motorOn;
   

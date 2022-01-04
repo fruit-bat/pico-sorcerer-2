@@ -104,7 +104,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectDisk, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose disk image"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, "/");
+    FatFsSpiDirReader dirReader(_sdCard, "/sorcerer2/disks");
     _selectDisk.deleteOptions();
     dirReader.foreach([=](const FILINFO* info){ 
       for(int i = 0; i < 4; ++i) {
@@ -122,7 +122,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _selectDisk.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, textOption->text()));
+    Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", textOption->text()));
     if (disk) delete disk;
     _wiz.pop(true);
     _wiz.pop(true);
@@ -161,7 +161,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectTape, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, "/tapes");
+    FatFsSpiDirReader dirReader(_sdCard, "/sorcerer2/tapes");
     _selectTape.deleteOptions();
     dirReader.foreach([=](const FILINFO* info){ 
       for(int i = 0; i < 2; ++i) {
@@ -179,7 +179,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _selectTape.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, "/tapes/", textOption->text(), true));
+    Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", textOption->text(), true));
     if (tape) delete tape;
     _wiz.pop(true);
     _wiz.pop(true);

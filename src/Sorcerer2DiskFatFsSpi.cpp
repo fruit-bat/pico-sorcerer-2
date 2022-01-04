@@ -9,10 +9,12 @@
 
 Sorcerer2DiskFatFsSpi::Sorcerer2DiskFatFsSpi(
   SdCardFatFsSpi* sdCard,
+  const char* folder,
   const char* name
 ) :
   _sdCard(sdCard),
   _name(name),
+  _folder(folder),
   _sectorRead(false),
   _offset(0),
   _open(false)
@@ -71,14 +73,16 @@ void Sorcerer2DiskFatFsSpi::write(const int b, int sectorIndex) {
 }
 
 bool Sorcerer2DiskFatFsSpi::open() {
-  printf("Drive open\n");
+  std::string fname(_folder);
+  fname.append(name());  
+  printf("Drive open %s\n", fname.c_str());
   if (_open) return true;
   if (!_sdCard->mounted()) {
     if (!_sdCard->mount()) return false;
   }
-  FRESULT fr = f_open(&_fil, name(), FA_READ|FA_WRITE);
+  FRESULT fr = f_open(&_fil, fname.c_str(), FA_READ|FA_WRITE);
   if (FR_OK != fr && FR_EXIST != fr) {
-    printf("f_open(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
+    printf("f_open(%s) error: %s (%d)\n", fname.c_str(), FRESULT_str(fr), fr);
     return false;
   }
   _offset = 0;
