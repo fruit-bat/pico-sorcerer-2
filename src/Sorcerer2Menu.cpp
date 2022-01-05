@@ -3,6 +3,7 @@
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 #include "Sorcerer2DiskFatFsSpi.h"
 #include "Sorcerer2TapeFatFsSpi.h"
+#include "Sorcerer2RomPac.h"
 #include "FatFsSpiDirReader.h"
 
 
@@ -57,14 +58,16 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       true);
   });
   _mainOp3.toggle([=]() {
+    Sorcerer2RomPac *rompac = _sorcerer2->romPac();
     _wiz.push(
       &_rompacUnit,
-      [](PicoPen *pen){ pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", ""); }, 
+      [=](PicoPen *pen){ pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", rompac ? rompac->name() : ""); }, 
       true);
   });
   _mainOp3.onPaint([=](PicoPen *pen){
+    Sorcerer2RomPac *rompac = _sorcerer2->romPac();
     pen->clear();
-    pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", "");
+    pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", rompac ? rompac->name() : "");
   }); 
   
   _mainOp4.toggle([=]() {
@@ -211,23 +214,19 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       true);
     FatFsSpiDirReader dirReader(_sdCard, "/sorcerer2/rompacs");
     _selectRompac.deleteOptions();
-    dirReader.foreach([=](const FILINFO* info){ 
-//      for(int i = 0; i < 2; ++i) {
-//        Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
-//        if (tape && (strcmp(info->fname, tape->name()) == 0)) return;
-//      }
+    dirReader.foreach([=](const FILINFO* info) {
       _selectRompac.addOption(new PicoOptionText(info->fname));
     });
    });
   _rompacUnitOp2.toggle([=]() {
-//    Sorcerer2Tape *tape = _currentTapeUnit->eject();
-//    if (tape) delete tape;
+     Sorcerer2RomPac *rompac = _sorcerer2->ejectRomPac();
+     if (rompac) delete rompac;
     _wiz.pop(true);
   });
   _selectRompac.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    //Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", textOption->text(), true));
-    //if (tape) delete tape;
+    Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPac(/*_sdCard, "/sorcerer2/rompacs/", */ textOption->text()));
+    if (rompac) delete rompac;
     _wiz.pop(true);
     _wiz.pop(true);
   });

@@ -83,3 +83,17 @@ void Sorcerer2::moderate(bool on) {
 void Sorcerer2::toggleModerate() {
   moderate(!_moderate);
 }
+
+Sorcerer2RomPac* Sorcerer2::insertRomPac(Sorcerer2RomPac* rompac) {
+  Sorcerer2RomPac* r = _rompac;
+  _rompac = rompac;
+  return r;
+}
+
+Sorcerer2RomPac* Sorcerer2::ejectRomPac() {
+  Sorcerer2RomPac* r = _rompac;
+  _rompac = 0;
+  return r;  
+}
+
+

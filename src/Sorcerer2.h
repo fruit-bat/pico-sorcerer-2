@@ -5,6 +5,7 @@
 #include "Sorcerer2Keyboard.h"
 #include "Sorcerer2DiskSystem.h"
 #include "Sorcerer2TapeSystem.h"
+#include "Sorcerer2RomPac.h"
 #include <pico/printf.h>
 #include <pico/stdlib.h>
 
@@ -19,6 +20,7 @@ private:
   Sorcerer2TapeSystem _tapeSystem;
   bool _moderate, _mute;
   uint8_t _centronicsOut;
+  Sorcerer2RomPac *_rompac;
   
   inline int readByte(int address)
   {
@@ -168,6 +170,10 @@ public:
   void mute(bool mute) { _mute = mute; }
   void toggleMute() { _mute = !_mute; }
   bool mute() { return _mute; }
+  Sorcerer2RomPac* insertRomPac(Sorcerer2RomPac* rompac);
+  Sorcerer2RomPac* ejectRomPac();
+  Sorcerer2RomPac* romPac() { return _rompac; }
+
 
   void toggleModerate();
   uint8_t inline getCentronics() { return _centronicsOut; }
