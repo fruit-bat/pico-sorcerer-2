@@ -52,6 +52,12 @@ private:
   PicoOptionText _tapeUnitOp2;
   
   PicoSelect _selectTape;
+  
+  PicoSelect _rompacUnit;
+  PicoOptionText _rompacUnitOp1;
+  PicoOptionText _rompacUnitOp2;
+  
+  PicoSelect _selectRompac;
 
 public:
 
