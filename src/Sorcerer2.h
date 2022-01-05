@@ -34,6 +34,7 @@ private:
   {
     if (address >= 0xBC00) {
         if (address >= 0xC000) {
+          if (_rompac && address < 0xE000) return;
           if (address >= 0xF800) {
             if (address < 0xFC00) return;
           }

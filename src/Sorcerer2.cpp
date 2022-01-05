@@ -86,12 +86,24 @@ void Sorcerer2::toggleModerate() {
 
 Sorcerer2RomPac* Sorcerer2::insertRomPac(Sorcerer2RomPac* rompac) {
   Sorcerer2RomPac* r = _rompac;
-  _rompac = rompac;
+  if (rompac->open()) {
+    for (int i = 0; i < 1024 * 8; ++i) {
+      _RAM[0xC000 + i] = rompac->read();
+    }
+    rompac->close();
+    _rompac = rompac;
+  }
+  else {
+    _rompac = 0;
+  }
   return r;
 }
 
 Sorcerer2RomPac* Sorcerer2::ejectRomPac() {
   Sorcerer2RomPac* r = _rompac;
+  for (int i = 0; i < 1024 * 8; ++i) {
+    _RAM[0xC000 + i] = 0;
+  }
   _rompac = 0;
   return r;  
 }

@@ -3,7 +3,7 @@
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 #include "Sorcerer2DiskFatFsSpi.h"
 #include "Sorcerer2TapeFatFsSpi.h"
-#include "Sorcerer2RomPac.h"
+#include "Sorcerer2RomPacFatFsSpi.h"
 #include "FatFsSpiDirReader.h"
 
 
@@ -225,12 +225,11 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _selectRompac.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPac(/*_sdCard, "/sorcerer2/rompacs/", */ textOption->text()));
+    Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPacFatFsSpi(_sdCard, "/sorcerer2/rompacs/", textOption->text()));
     if (rompac) delete rompac;
     _wiz.pop(true);
     _wiz.pop(true);
   });
-  
   
   
   onPaint([](PicoPen *pen) {
