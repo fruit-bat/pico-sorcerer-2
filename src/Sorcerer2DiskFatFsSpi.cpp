@@ -110,3 +110,15 @@ bool Sorcerer2DiskFatFsSpi::isOpen() {
   // printf("Disk isOpen %c\n", _open ? 'y':'n');
   return _open;
 }
+
+
+bool Sorcerer2DiskFatFsSpi::exists() {
+  std::string fname(_folder);
+  fname.append(name());
+    
+  FILINFO fno;
+  FRESULT fr = f_stat(fname.c_str(), &fno);
+
+  // check if it already exists
+  return fr == FR_OK;
+}

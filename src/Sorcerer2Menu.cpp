@@ -22,7 +22,9 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnit(0, 0, 70, 6, 3),
   _diskUnitOp1("Insert"),
   _diskUnitOp2("Eject"),
+  _diskUnitOp3("New"),
   _selectDisk(0, 0, 70, 12, 1),
+  _diskName(0, 0,70, 64),
   _tapeUnits(0, 0, 70, 5, 3),
   _tapeUnit(0, 0, 70, 6, 3),
   _tapeUnitOp1("Insert"),
@@ -119,6 +121,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
   _diskUnit.addOption(_diskUnitOp1.addQuickKey(&_k1));
   _diskUnit.addOption(_diskUnitOp2.addQuickKey(&_k2));
+  _diskUnit.addOption(_diskUnitOp3.addQuickKey(&_k3));
   _diskUnit.enableQuickKeys();
   _diskUnitOp1.toggle([=]() {
     _wiz.push(
@@ -141,6 +144,45 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     if (disk) delete disk;
     _wiz.pop(true);
   });
+  _diskUnitOp3.toggle([=]() {
+    _wiz.push(
+      &_diskName, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "New disk"); },
+      true);
+  });
+  _diskName.onenter([=](const char* dnr) {
+
+    // Add extension if missing
+    std::string dn(dnr);
+    auto l = strlen(dnr);
+    
+    // Should not be case sensitive
+    if (l < 4 || !strncmp(dnr + l - 4, ".dsk", 4) == 0) {
+      dn.append(".dsk");
+    }
+
+    Sorcerer2DiskFatFsSpi *ndisk = new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", dn.c_str());
+
+    // check if it already exists
+    if (ndisk->exists()) {
+      _wiz.push(
+        &_message, 
+        [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
+        true);
+      _message.onPaint([=](PicoPen *pen){
+        pen->printAtF(0, 0, true, "'%s' already exists", dn.c_str());
+      });
+      delete ndisk;
+    }
+    else {
+    Sorcerer2Disk *disk = _currentDiskUnit->insert(ndisk);
+    if (disk) delete disk;
+    _diskName.clear();
+    _wiz.pop(true);
+    _wiz.pop(true);
+    }
+  });
+  
   _selectDisk.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", textOption->text()));
@@ -214,7 +256,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     _wiz.pop(true);
   });
   _tapeName.onenter([=](const char* tnr) {
-    printf("New tape name %s\n" ,tnr);
 
     // Add extension if missing
     std::string tn(tnr);
@@ -224,7 +265,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     if (l < 5 || !strncmp(tnr + l - 5, ".tape", 5) == 0) {
       tn.append(".tape");
     }
-    printf("New tape name %s\n" ,tn.c_str());
+
     Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", tn.c_str(), true);
 
     // check if it already exists

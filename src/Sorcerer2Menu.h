@@ -41,8 +41,11 @@ private:
   PicoSelect _diskUnit;
   PicoOptionText _diskUnitOp1;
   PicoOptionText _diskUnitOp2;
-  
+  PicoOptionText _diskUnitOp3;
+
   PicoSelect _selectDisk;
+
+  PicoTextField _diskName;
 
   PicoSelect _tapeUnits;
   PicoOption _tapeUnitsOp1;
