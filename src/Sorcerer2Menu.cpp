@@ -33,7 +33,8 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _rompacUnit(0, 0, 70, 6, 3),
   _rompacUnitOp1("Insert"),
   _rompacUnitOp2("Eject"),
-  _selectRompac(0, 0, 70, 12, 1)
+  _selectRompac(0, 0, 70, 12, 1),
+  _message(0, 0, 70, 12)
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -214,16 +215,36 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _tapeName.onenter([=](const char* tnr) {
     printf("New tape name %s\n" ,tnr);
-    // TODO add extension if missing
-     
-    // TODO check if it already exists
-     
-    // TODO create new tape file & clear name from _tapeName
-     
-    // TODO insert new tape file
 
-    // TODO For now just exit 
-    _wiz.pop(true);
+    // Add extension if missing
+    std::string tn(tnr);
+    auto l = strlen(tnr);
+    
+    // Should not be case sensitive
+    if (l < 5 || !strncmp(tnr + l - 5, ".tape", 5) == 0) {
+      tn.append(".tape");
+    }
+    printf("New tape name %s\n" ,tn.c_str());
+    Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", tn.c_str(), true);
+
+    // check if it already exists
+    if (ntape->exists()) {
+      _wiz.push(
+        &_message, 
+        [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
+        true);
+      _message.onPaint([=](PicoPen *pen){
+        pen->printAtF(0, 0, true, "'%s' already exists", tn.c_str());
+      });
+      delete ntape;
+    }
+    else {
+       Sorcerer2Tape *tape = _currentTapeUnit->insert(ntape);
+       if (tape) delete tape;
+       _tapeName.clear();
+       _wiz.pop(true);
+       _wiz.pop(true);
+    }
   });
 
   _rompacUnit.addOption(_rompacUnitOp1.addQuickKey(&_k1));

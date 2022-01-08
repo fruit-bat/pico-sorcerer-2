@@ -19,4 +19,5 @@ public:
   virtual bool open();
   virtual void close();
   virtual bool isOpen();
+  bool exists();
 };

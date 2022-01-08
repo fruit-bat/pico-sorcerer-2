@@ -63,6 +63,8 @@ private:
   
   PicoSelect _selectRompac;
 
+  PicoWin _message;
+  
 public:
 
   Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2);
