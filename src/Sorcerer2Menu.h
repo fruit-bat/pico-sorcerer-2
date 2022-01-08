@@ -24,7 +24,8 @@ private:
   PicoQuickKeyAscii _k3;
   PicoQuickKeyAscii _k4;
   PicoQuickKeyAscii _k5;
-  
+  PicoQuickKeyAscii _k6;
+
   PicoWiz _wiz;
   PicoSelect _main;
   PicoOptionText _mainOp1;
@@ -32,6 +33,7 @@ private:
   PicoOptionText _mainOp3;
   PicoOption _mainOp4;
   PicoOption _muteOp;
+  PicoOptionText _resetOp;
 
   PicoSelect _diskUnits;
   PicoOption _diskUnitsOp1;
@@ -68,10 +70,21 @@ private:
   PicoSelect _selectRompac;
 
   PicoWin _message;
+
+  PicoSelect _confirm;
+  PicoOptionText _confirmNo;
+  PicoOptionText _confirmYes;
   
 public:
 
   Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2);
   
   void showError(std::function<void(PicoPen *pen)> message);
+  
+  void confirm(
+    std::function<void(PicoPen *pen)> message,
+    std::function<void()> no,
+    std::function<void()> yes
+  );
+
 };

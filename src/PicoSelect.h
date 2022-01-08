@@ -26,4 +26,5 @@ public:
   void deleteOptions();
   void enableQuickKeys() { _quickKeys = true; }
   void onToggle(std::function<void(PicoOption *option)> toggle) { _toggle = toggle; }
+  void focus(int32_t i);
 };

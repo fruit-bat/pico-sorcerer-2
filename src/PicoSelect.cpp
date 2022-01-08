@@ -99,3 +99,11 @@ void PicoSelect::toggleSelection(PicoOption *option) {
   if (_toggle) _toggle(option);
   repaint();
 }
+
+void PicoSelect::focus(int32_t i) {
+  if (i >= 0 && i < optionCount() && i != _i) {
+    _i = i;
+    repaint();
+  }
+}
+

@@ -11,13 +11,14 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
  PicoWin(0, 0, 80, 30),
   _sdCard(sdCard),
   _sorcerer2(sorcerer2),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), 
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
   _wiz(5, 6, 70, 18),
-  _main(0, 0, 70, 5, 3),
+  _main(0, 0, 70, 6, 3),
   _mainOp1("Disk drives"),
   _mainOp2("Tape players"),
   _mainOp3("ROM Pack"),
   _mainOp4(),
+  _resetOp("Reset"),
   _diskUnits(0, 0, 70, 6, 3),
   _diskUnit(0, 0, 70, 6, 3),
   _diskUnitOp1("Insert"),
@@ -36,7 +37,10 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _rompacUnitOp1("Insert"),
   _rompacUnitOp2("Eject"),
   _selectRompac(0, 0, 70, 12, 1),
-  _message(0, 0, 70, 12)
+  _message(0, 0, 70, 12),
+  _confirm(0, 0, 70, 6, 3),
+  _confirmNo("No"),
+  _confirmYes("Yes")
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -49,6 +53,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _main.addOption(_mainOp3.addQuickKey(&_k3));
   _main.addOption(_mainOp4.addQuickKey(&_k4));
   _main.addOption(_muteOp.addQuickKey(&_k5));
+  _main.addOption(_resetOp.addQuickKey(&_k6));
   _main.enableQuickKeys();
   _mainOp1.toggle([=]() {
     _wiz.push(
@@ -63,10 +68,9 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       true);
   });
   _mainOp3.toggle([=]() {
-    Sorcerer2RomPac *rompac = _sorcerer2->romPac();
     _wiz.push(
       &_rompacUnit,
-      [=](PicoPen *pen){ pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", rompac ? rompac->name() : ""); }, 
+      [=](PicoPen *pen){ pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", _sorcerer2->romPac() ? _sorcerer2->romPac()->name() : ""); }, 
       true);
   });
   _mainOp3.onPaint([=](PicoPen *pen){
@@ -89,6 +93,18 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _muteOp.onPaint([=](PicoPen *pen){
     pen->clear();
     pen->printAtF(0, 0, false,"Audio           [ %-12s]", _sorcerer2->mute() ? "off" : "on");
+  });
+  _resetOp.toggle([=]() {
+    confirm(
+      [=](PicoPen *pen){
+        pen->printAtF(0, 0, false, "Reset Sorcerer 2 ?");
+      },
+      [=]() {
+      },
+      [=]() {
+        _sorcerer2->reset();
+      }
+    );
   });
   
   _diskUnits.addOption(_diskUnitsOp1.addQuickKey(&_k1));
@@ -138,10 +154,21 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     });
    });
   _diskUnitOp2.toggle([=]() {
-    // TODO Don't eject disk if drive is active
-    Sorcerer2Disk *disk = _currentDiskUnit->eject();
-    if (disk) delete disk;
-    _wiz.pop(true);
+    Sorcerer2Disk *disk = _currentDiskUnit->disk();
+    if (disk) {
+      // TODO Don't eject disk if drive is active
+      confirm(
+        [=](PicoPen *pen){
+          pen->printAtF(0, 0, false, "Eject disk [ %s ] from %c: ?", disk->name(), _currentDiskUnit->driveLetter());
+        },
+        [=]() {
+        },
+        [=]() {
+          _currentDiskUnit->eject();
+          delete disk;
+        }
+      );
+    }
   });
   _diskUnitOp3.toggle([=]() {
     _wiz.push(
@@ -180,7 +207,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       if (disk) delete disk;
       _diskName.clear();
       _wiz.pop(true);
-      _wiz.pop(true);
     }
   });
   
@@ -188,7 +214,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", textOption->text()));
     if (disk) delete disk;
-    _wiz.pop(true);
     _wiz.pop(true);
   });
 
@@ -237,10 +262,22 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     });
    });
   _tapeUnitOp2.toggle([=]() {
+    Sorcerer2Tape *tape = _currentTapeUnit->tape();
     // TODO Don't eject tape if drive is active
-    Sorcerer2Tape *tape = _currentTapeUnit->eject();
-    if (tape) delete tape;
-    _wiz.pop(true);
+    if (tape) {
+      confirm(
+        [=](PicoPen *pen){
+          // TODO Say from which tape player
+          pen->printAtF(0, 0, false,"Eject tape [ %s ] ?",  tape->name());
+        },
+        []() {
+        },
+        [=]() {
+          _currentTapeUnit->eject();
+          delete tape;
+        }
+      );
+    }
   });
   _tapeUnitOp3.toggle([=]() {
     _wiz.push(
@@ -253,7 +290,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", textOption->text(), true));
     if (tape) delete tape;
-    _wiz.pop(true);
     _wiz.pop(true);
   });
   _tapeName.onenter([=](const char* tnr) {
@@ -281,7 +317,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
        if (tape) delete tape;
        _tapeName.clear();
        _wiz.pop(true);
-       _wiz.pop(true);
     }
   });
 
@@ -300,19 +335,32 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     });
    });
   _rompacUnitOp2.toggle([=]() {
-     Sorcerer2RomPac *rompac = _sorcerer2->ejectRomPac();
-     if (rompac) delete rompac;
-    _wiz.pop(true);
+    Sorcerer2RomPac *rompac = _sorcerer2->romPac();
+    if (rompac) {
+      confirm(
+        [=](PicoPen *pen){
+          pen->printAtF(0, 0, false, "Eject ROM Pack [ %s ] ?", rompac->name());
+        },
+        [=]() {
+        },
+        [=]() {
+          _sorcerer2->ejectRomPac();
+          delete rompac;
+        }
+      );
+    }
   });
   _selectRompac.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPacFatFsSpi(_sdCard, "/sorcerer2/rompacs/", textOption->text()));
     if (rompac) delete rompac;
     _wiz.pop(true);
-    _wiz.pop(true);
   });
   
-  
+  _confirm.addOption(_confirmNo.addQuickKey(&_k1));
+  _confirm.addOption(_confirmYes.addQuickKey(&_k2));
+  _confirm.enableQuickKeys();
+
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
      pen->printAt(0, 1, false, "on RP2040 Pico Pi");
@@ -330,3 +378,24 @@ void Sorcerer2Menu::showError(std::function<void(PicoPen *pen)> message) {
     true);
   _message.onPaint(message);
 }
+
+void Sorcerer2Menu::confirm(
+  std::function<void(PicoPen *pen)> message,
+  std::function<void()> no,
+  std::function<void()> yes
+) {
+  _confirm.focus(0);
+  _wiz.push(
+    &_confirm, 
+    message,
+    true);
+  _confirmNo.toggle([=]() {
+    _wiz.pop(true);
+    if (no) no();
+  });
+  _confirmYes.toggle([=]() {
+    _wiz.pop(true);
+    if (yes) yes();
+  });
+}
+
