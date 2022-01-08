@@ -76,15 +76,15 @@ static uint8_t const keycode2ascii[128][2] =  {
     {0     , 0      }, /* 0x47 */ 
     {0     , 0      }, /* 0x48 */ 
     {0     , 0      }, /* 0x49 */ 
-    {0     , 0      }, /* 0x4a */ 
+    {2     , 2      }, /* 0x4a Home */ 
     {0     , 0      }, /* 0x4b */ 
-    {0     , 0      }, /* 0x4c */ 
-    {0     , 0      }, /* 0x4d */ 
+    {127   , 127    }, /* 0x4c Del */ 
+    {3     , 3      }, /* 0x4d End */ 
     {0     , 0      }, /* 0x4e */ 
-    {9     , 9      }, /* 0x4f Right */ 
-    {8     , 8      }, /* 0x50 Left */ 
-    {10    , 10     }, /* 0x51 Down */ 
-    {11    , 11     }, /* 0x52 Up */ 
+    {128   , 128    }, /* 0x4f Right */ 
+    {129   , 129    }, /* 0x50 Left */ 
+    {130   , 130    }, /* 0x51 Down */ 
+    {131   , 131    }, /* 0x52 Up */ 
     {0     , 0      }, /* 0x53 */ 
                                   
     {'/'   , '/'    }, /* 0x54 */ 
@@ -128,7 +128,7 @@ int PicoWinHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hi
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
     if (hidKeyCode) {
-      const bool isInPrev = isInReport(prev_report, HID_KEY_F1);
+      const bool isInPrev = isInReport(prev_report, hidKeyCode);
       
       // F1 Close menu
       if (hidKeyCode == HID_KEY_F1) {
@@ -141,8 +141,11 @@ int PicoWinHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hi
           // exist in previous report means the current key is holding
         }
         else {
+          // TODO Turn CAPS light on/off
+          if (hidKeyCode == HID_KEY_CAPS_LOCK) _capslock = !_capslock;
+          
           // not existed in previous report means the current key is pressed
-          bool const is_shift =  report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
+          bool const is_shift =  _capslock || (report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT));
           uint8_t ch = keycode2ascii[report->keycode[i]][is_shift ? 1 : 0];
           if (keyPressed(hidKeyCode, report->modifier, ch) && (ch == 27)) r = 1;
         }

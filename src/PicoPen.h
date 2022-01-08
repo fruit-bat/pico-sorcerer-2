@@ -53,8 +53,17 @@ public:
     _screen.set(_rect._x + x, _rect._y + y, _attr | c);
   }
   
+  // TODO make private or remove
   void setAttr(uint8_t attr) {
     _attr = ((uint16_t)attr) << 8;
+  }
+  
+  void setAttrInverse(bool inverse) {
+    if (inverse) _attr |= 1 << 8; else _attr &= ~(1 << 8);
+  }
+
+  void setAttrFlash(bool flash) {
+    if (flash) _attr |= 1 << 9; else _attr &= ~(1 << 9);
   }
 
   void clear() {

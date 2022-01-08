@@ -27,7 +27,9 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _tapeUnit(0, 0, 70, 6, 3),
   _tapeUnitOp1("Insert"),
   _tapeUnitOp2("Eject"),
+  _tapeUnitOp3("New"),
   _selectTape(0, 0, 70, 12, 1),
+  _tapeName(0, 0,70, 64),
   _rompacUnit(0, 0, 70, 6, 3),
   _rompacUnitOp1("Insert"),
   _rompacUnitOp2("Eject"),
@@ -173,6 +175,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   
   _tapeUnit.addOption(_tapeUnitOp1.addQuickKey(&_k1));
   _tapeUnit.addOption(_tapeUnitOp2.addQuickKey(&_k2));
+  _tapeUnit.addOption(_tapeUnitOp3.addQuickKey(&_k3));
   _tapeUnit.enableQuickKeys();
   _tapeUnitOp1.toggle([=]() {
     _wiz.push(
@@ -195,6 +198,13 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     if (tape) delete tape;
     _wiz.pop(true);
   });
+  _tapeUnitOp3.toggle([=]() {
+    _wiz.push(
+      &_tapeName, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "New tape"); },
+      true);
+  });
+  
   _selectTape.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", textOption->text(), true));
@@ -202,8 +212,20 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     _wiz.pop(true);
     _wiz.pop(true);
   });
-  
-  
+  _tapeName.onenter([=](const char* tnr) {
+    printf("New tape name %s\n" ,tnr);
+    // TODO add extension if missing
+     
+    // TODO check if it already exists
+     
+    // TODO create new tape file & clear name from _tapeName
+     
+    // TODO insert new tape file
+
+    // TODO For now just exit 
+    _wiz.pop(true);
+  });
+
   _rompacUnit.addOption(_rompacUnitOp1.addQuickKey(&_k1));
   _rompacUnit.addOption(_rompacUnitOp2.addQuickKey(&_k2));
   _rompacUnit.enableQuickKeys();

@@ -6,7 +6,6 @@
 
 void PicoPen::printAt(int32_t x, int32_t y, bool wrap, const char *str) {
   if (_screen._clip.empty()) {
-    printf("Empty clip\n");
     return;
   }
   int32_t xc = x, yc = y;

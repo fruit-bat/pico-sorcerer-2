@@ -5,6 +5,7 @@
 class PicoWinHidKeyboard {
 private:
   PicoDisplay *_display;
+  bool _capslock;
 
   bool keyPressed(uint8_t keycode, uint8_t modifiers, uint8_t ascii);
 public:

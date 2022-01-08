@@ -7,6 +7,7 @@
 #include "PicoWiz.h" 
 #include "Sorcerer2.h"
 #include "SdCardFatFsSpi.h"
+#include "PicoTextField.h"
 
 class Sorcerer2;
 
@@ -50,8 +51,11 @@ private:
   PicoSelect _tapeUnit;
   PicoOptionText _tapeUnitOp1;
   PicoOptionText _tapeUnitOp2;
+  PicoOptionText _tapeUnitOp3;
   
   PicoSelect _selectTape;
+  
+  PicoTextField _tapeName;
   
   PicoSelect _rompacUnit;
   PicoOptionText _rompacUnitOp1;
