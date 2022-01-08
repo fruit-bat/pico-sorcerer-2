@@ -60,6 +60,17 @@ PicoTextField::PicoTextField(int32_t x, int32_t y, int32_t w, int32_t maxchars) 
         }
         return false;
       }
+      case '\b': { // backspace
+        if (_cursor > 0) {
+          _cursor--;
+          if (_cursor < _start) {
+            _start = _cursor;
+          }
+          _text.erase(_cursor, 1);
+          repaint();
+        }
+        return false;
+      }
       default: {
         if (ascii >= 32 && ascii < 127 && textlen() < _maxchars) {
           _text.insert(_cursor, 1, ascii);
