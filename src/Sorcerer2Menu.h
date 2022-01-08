@@ -8,6 +8,7 @@
 #include "Sorcerer2.h"
 #include "SdCardFatFsSpi.h"
 #include "PicoTextField.h"
+#include <functional>
 
 class Sorcerer2;
 
@@ -71,4 +72,6 @@ private:
 public:
 
   Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2);
+  
+  void showError(std::function<void(PicoPen *pen)> message);
 };

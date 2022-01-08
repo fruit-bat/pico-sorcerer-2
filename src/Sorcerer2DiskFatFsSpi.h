@@ -27,5 +27,6 @@ public:
   virtual bool isOpen();
   virtual const char *name() { return _name.c_str(); } 
   bool exists();
+  bool create();
 
 };

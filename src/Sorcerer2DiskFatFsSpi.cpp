@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include "rtc.h"
 #include "hw_config.h"
+#include <cstring>
 
 #include "Sorcerer2DiskFatFsSpi.h"
 
@@ -113,6 +114,10 @@ bool Sorcerer2DiskFatFsSpi::isOpen() {
 
 
 bool Sorcerer2DiskFatFsSpi::exists() {
+  if (!_sdCard->mounted()) {
+    if (!_sdCard->mount()) return false;
+  }
+  
   std::string fname(_folder);
   fname.append(name());
     
@@ -122,3 +127,45 @@ bool Sorcerer2DiskFatFsSpi::exists() {
   // check if it already exists
   return fr == FR_OK;
 }
+
+bool Sorcerer2DiskFatFsSpi::create() {
+ 
+  if (_open) return false;
+
+  if (!_sdCard->mounted()) {
+    if (!_sdCard->mount()) return false;
+  }
+  
+  std::string fname(_folder);
+  fname.append(name());  
+  printf("Create disk %s\n", fname.c_str());
+  
+  FIL fil;
+  FRESULT fr = f_open(&fil, fname.c_str(), FA_CREATE_NEW|FA_READ|FA_WRITE);
+  if (FR_OK != fr) {
+    printf("f_open(%s) error: %s (%d)\n", fname.c_str(), FRESULT_str(fr), fr);
+    return false;
+  }
+
+  memset(_sector, 0, sizeof(_sector));
+  
+  for (int i = 0; i < (NUMBER_OF_TRACKS * SECTORS_PER_TRACK); ++i) {
+    UINT br;
+    fr = f_write(&fil, _sector, sizeof(_sector), &br); 
+    if (FR_OK != fr) {
+      printf("f_write(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
+      f_close(&fil);
+      return false;
+    }   
+  }
+  
+  fr = f_close(&fil);
+  if (FR_OK != fr) {
+    printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
+    return false;
+  }
+  
+  return true;
+}
+
+

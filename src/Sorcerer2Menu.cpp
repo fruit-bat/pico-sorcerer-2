@@ -73,8 +73,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     Sorcerer2RomPac *rompac = _sorcerer2->romPac();
     pen->clear();
     pen->printAtF(0, 0, false,"ROM Pack        [ %-40s]", rompac ? rompac->name() : "");
-  }); 
-  
+  });
   _mainOp4.toggle([=]() {
     _sorcerer2->toggleModerate();
     _main.repaint();
@@ -165,21 +164,23 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
     // check if it already exists
     if (ndisk->exists()) {
-      _wiz.push(
-        &_message, 
-        [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
-        true);
-      _message.onPaint([=](PicoPen *pen){
+      showError([=](PicoPen *pen){
         pen->printAtF(0, 0, true, "'%s' already exists", dn.c_str());
       });
       delete ndisk;
     }
+    else if (!ndisk->create()) {
+      showError([=](PicoPen *pen){
+        pen->printAtF(0, 0, true, "Failed to create '%s'", dn.c_str());
+      });
+      delete ndisk;
+    }
     else {
-    Sorcerer2Disk *disk = _currentDiskUnit->insert(ndisk);
-    if (disk) delete disk;
-    _diskName.clear();
-    _wiz.pop(true);
-    _wiz.pop(true);
+      Sorcerer2Disk *disk = _currentDiskUnit->insert(ndisk);
+      if (disk) delete disk;
+      _diskName.clear();
+      _wiz.pop(true);
+      _wiz.pop(true);
     }
   });
   
@@ -270,11 +271,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
     // check if it already exists
     if (ntape->exists()) {
-      _wiz.push(
-        &_message, 
-        [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
-        true);
-      _message.onPaint([=](PicoPen *pen){
+      showError([=](PicoPen *pen){
         pen->printAtF(0, 0, true, "'%s' already exists", tn.c_str());
       });
       delete ntape;
@@ -326,3 +323,10 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
    });
 }
 
+void Sorcerer2Menu::showError(std::function<void(PicoPen *pen)> message) {
+  _wiz.push(
+    &_message, 
+    [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
+    true);
+  _message.onPaint(message);
+}
