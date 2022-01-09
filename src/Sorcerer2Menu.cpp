@@ -23,11 +23,12 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _mainOp4(),
   _resetOp("Reset"),
   _diskUnits(0, 0, 70, 6, 3),
-  _diskUnitsOp5("Delete a disk"),
+  _diskUnitsOp5("Create a disk"),
+  _diskUnitsOp6("Delete a disk"),
   _diskUnit(0, 0, 70, 6, 3),
-  _diskUnitOp1("Insert"),
-  _diskUnitOp2("Eject"),
-  _diskUnitOp3("New"),
+  _diskUnitOp1("Insert a saved disk"),
+  _diskUnitOp2("Insert a new disk"),
+  _diskUnitOp3("Eject disk"),
   _selectDisk(0, 0, 70, 15, 1),
   _diskName(0, 0,70, 64),
   _tapeUnits(0, 0, 70, 5, 3),
@@ -65,13 +66,13 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _mainOp1.toggle([=]() {
     _wiz.push(
       &_diskUnits, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Disk drives"); }, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Disk system"); }, 
       true);
   });
   _mainOp2.toggle([=]() {
     _wiz.push(
       &_tapeUnits,
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Tape players"); }, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Tape system"); }, 
       true);
   });
   _mainOp3.toggle([=]() {
@@ -117,6 +118,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnits.addOption(_diskUnitsOp3.addQuickKey(&_k3));
   _diskUnits.addOption(_diskUnitsOp4.addQuickKey(&_k4));
   _diskUnits.addOption(_diskUnitsOp5.addQuickKey(&_k5));
+  _diskUnits.addOption(_diskUnitsOp6.addQuickKey(&_k6));
   _diskUnits.enableQuickKeys();
   
   PicoOption *du[] = {&_diskUnitsOp1, &_diskUnitsOp2, &_diskUnitsOp3, &_diskUnitsOp4};
@@ -138,8 +140,15 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       );
       _currentDiskUnit = _sorcerer2->diskSystem()->drive(i);
     });
-  }
+  }  
   _diskUnitsOp5.toggle([=]() {
+    _currentDiskUnit = 0;
+    _wiz.push(
+      &_diskName, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "New disk name:"); },
+      true);
+  });
+  _diskUnitsOp6.toggle([=]() {
     _wiz.push(
       &_selectDelete, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose a saved disk to delete:"); },
@@ -166,11 +175,17 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnitOp1.toggle([=]() {
     _wiz.push(
       &_selectDisk, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose disk image"); },
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose disk image:"); },
       true);
     loadSavedDisks(&_selectDisk);
    });
   _diskUnitOp2.toggle([=]() {
+    _wiz.push(
+      &_diskName, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "New disk name:"); },
+      true);
+  });
+  _diskUnitOp3.toggle([=]() {
     Sorcerer2Disk *disk = _currentDiskUnit->disk();
     if (disk) {
       // TODO Don't eject disk if drive is active
@@ -185,43 +200,8 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       );
     }
   });
-  _diskUnitOp3.toggle([=]() {
-    _wiz.push(
-      &_diskName, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "New disk"); },
-      true);
-  });
   _diskName.onenter([=](const char* dnr) {
-
-    // Add extension if missing
-    std::string dn(dnr);
-    auto l = strlen(dnr);
-    
-    // Should not be case sensitive
-    if (l < 4 || !strncmp(dnr + l - 4, ".dsk", 4) == 0) {
-      dn.append(".dsk");
-    }
-
-    Sorcerer2DiskFatFsSpi *ndisk = new Sorcerer2DiskFatFsSpi(_sdCard, SAVED_DISKS_DIR, dn.c_str());
-
-    if (ndisk->exists()) {
-      showError([=](PicoPen *pen){
-        pen->printAtF(0, 0, true, "'%s' already exists", dn.c_str());
-      });
-      delete ndisk;
-    }
-    else if (!ndisk->create()) {
-      showError([=](PicoPen *pen){
-        pen->printAtF(0, 0, true, "Failed to create '%s'", dn.c_str());
-      });
-      delete ndisk;
-    }
-    else {
-      Sorcerer2Disk *disk = _currentDiskUnit->insert(ndisk);
-      if (disk) delete disk;
-      _diskName.clear();
-      _wiz.pop(true);
-    }
+    createDisk(dnr);
   });
   
   _selectDisk.onToggle([=](PicoOption *option) {
@@ -513,4 +493,41 @@ bool Sorcerer2Menu::deleteSave(const char *folder, const char *file) {
   return f_unlink(fname.c_str()) == FR_OK;
 }
 
+bool Sorcerer2Menu::createDisk(const char* dnr) {
+  // Add extension if missing
+  std::string dn(dnr);
+  auto l = strlen(dnr);
+  
+  // Should not be case sensitive
+  if (l < 4 || !strncmp(dnr + l - 4, ".dsk", 4) == 0) {
+    dn.append(".dsk");
+  }
 
+  Sorcerer2DiskFatFsSpi *ndisk = new Sorcerer2DiskFatFsSpi(_sdCard, SAVED_DISKS_DIR, dn.c_str());
+
+  if (ndisk->exists()) {
+    showError([=](PicoPen *pen){
+      pen->printAtF(0, 0, true, "'%s' already exists", dn.c_str());
+    });
+    delete ndisk;
+  }
+  else if (!ndisk->create()) {
+    showError([=](PicoPen *pen){
+      pen->printAtF(0, 0, true, "Failed to create '%s'", dn.c_str());
+    });
+    delete ndisk;
+  }
+  else {
+    if (_currentDiskUnit) {
+      Sorcerer2Disk *disk = _currentDiskUnit->insert(ndisk);
+      if (disk) delete disk;
+    }
+    else {
+      delete ndisk;
+    }
+    _diskName.clear();
+    _wiz.pop(true);
+    return true;
+  }
+  return false;
+}

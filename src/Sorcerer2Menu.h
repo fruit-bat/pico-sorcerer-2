@@ -41,6 +41,7 @@ private:
   PicoOption _diskUnitsOp3;
   PicoOption _diskUnitsOp4;
   PicoOptionText _diskUnitsOp5;
+  PicoOptionText _diskUnitsOp6;
 
   PicoSelect _diskUnit;
   PicoOptionText _diskUnitOp1;
@@ -82,6 +83,7 @@ private:
  
   void showError(std::function<void(PicoPen *pen)> message);
   bool deleteSave(const char *folder, const char *file);
+  bool createDisk(const char* dnr);
   
   void loadSavedDisks(PicoSelect* select);
   void loadSavedTapes(PicoSelect* select);
