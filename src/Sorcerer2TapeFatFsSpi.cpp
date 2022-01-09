@@ -55,6 +55,7 @@ bool Sorcerer2TapeFatFsSpi::writable(){
 
 bool Sorcerer2TapeFatFsSpi::open(){
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());
   printf("Tape open %s\n", fname.c_str());
   if (_open) return true;
