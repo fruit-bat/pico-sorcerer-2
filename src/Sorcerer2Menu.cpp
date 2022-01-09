@@ -32,11 +32,12 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _selectDisk(0, 0, 70, 15, 1),
   _diskName(0, 0,70, 64),
   _tapeUnits(0, 0, 70, 5, 3),
-  _tapeUnitsOp3("Delete a tape"),
+  _tapeUnitsOp3("Create a tape"),
+  _tapeUnitsOp4("Delete a tape"),
   _tapeUnit(0, 0, 70, 6, 3),
-  _tapeUnitOp1("Insert"),
-  _tapeUnitOp2("Eject"),
-  _tapeUnitOp3("New"),
+  _tapeUnitOp1("Insert a saved tape"),
+  _tapeUnitOp2("Insert a new tape"),
+  _tapeUnitOp3("Eject tape"),
   _tapeUnitRec(),
   _selectTape(0, 0, 70, 15, 1),
   _tapeName(0, 0,70, 64),
@@ -214,6 +215,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
   _tapeUnits.addOption(_tapeUnitsOp3.addQuickKey(&_k3));
+  _tapeUnits.addOption(_tapeUnitsOp4.addQuickKey(&_k4));
   _tapeUnits.enableQuickKeys();
   
   PicoOption *tu[] = {&_tapeUnitsOp1, &_tapeUnitsOp2};
@@ -237,6 +239,13 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     });
   }
   _tapeUnitsOp3.toggle([=]() {
+    _currentTapeUnit =  0;
+    _wiz.push(
+      &_tapeName, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "New tape name:"); },
+      true);
+  });
+  _tapeUnitsOp4.toggle([=]() {
     _wiz.push(
       &_selectDelete, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose a saved tape to delete:"); },
@@ -265,11 +274,11 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _tapeUnitOp1.toggle([=]() {
     _wiz.push(
       &_selectTape, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape"); },
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
       true);
     loadSavedTapes(&_selectTape);
    });
-  _tapeUnitOp2.toggle([=]() {
+  _tapeUnitOp3.toggle([=]() {
     Sorcerer2Tape *tape = _currentTapeUnit->tape();
     // TODO Don't eject tape if drive is active
     if (tape) {
@@ -285,10 +294,10 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       );
     }
   });
-  _tapeUnitOp3.toggle([=]() {
+  _tapeUnitOp2.toggle([=]() {
     _wiz.push(
       &_tapeName, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "New tape"); },
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "New tape name:"); },
       true);
   });
   _tapeUnitRec.onPaint([=](PicoPen *pen){
@@ -338,36 +347,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     _wiz.pop(true);
   });
   _tapeName.onenter([=](const char* tnr) {
-
-    // Add extension if missing
-    std::string tn(tnr);
-    auto l = strlen(tnr);
-    
-    // Should not be case sensitive
-    if (l < 5 || !strncmp(tnr + l - 5, ".tape", 5) == 0) {
-      tn.append(".tape");
-    }
-
-    Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, SAVED_TAPES_DIR, tn.c_str(), true);
-
-    if (ntape->exists()) {
-      showError([=](PicoPen *pen){
-        pen->printAtF(0, 0, true, "'%s' already exists", tn.c_str());
-      });
-      delete ntape;
-    }
-    else if (!ntape->create()) {
-      showError([=](PicoPen *pen){
-        pen->printAtF(0, 0, true, "Failed to create '%s'", tn.c_str());
-      });
-      delete ntape;
-    }    
-    else {
-       Sorcerer2Tape *tape = _currentTapeUnit->insert(ntape);
-       if (tape) delete tape;
-       _tapeName.clear();
-       _wiz.pop(true);
-    }
+    createTape(tnr);
   });
 
   _rompacUnit.addOption(_rompacUnitOp1.addQuickKey(&_k1));
@@ -412,7 +392,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
      pen->printAt(0, 1, false, "on RP2040 Pico Pi");
-     pen->printAt(0, 2, false, "Menu System version 0.1");
+     pen->printAt(0, 2, false, "Menu System version 0.2");
 
      pen->printAt(0, 29, false, "F1 to exit menu");
      pen->printAt(80-14, 29, false, "ESC to go back");
@@ -491,6 +471,46 @@ bool Sorcerer2Menu::deleteSave(const char *folder, const char *file) {
   fname.append("/");
   fname.append(file);
   return f_unlink(fname.c_str()) == FR_OK;
+}
+
+bool Sorcerer2Menu::createTape(const char* tnr) {
+
+  // Add extension if missing
+  std::string tn(tnr);
+  auto l = strlen(tnr);
+  
+  // Should not be case sensitive
+  if (l < 5 || !strncmp(tnr + l - 5, ".tape", 5) == 0) {
+    tn.append(".tape");
+  }
+
+  Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, SAVED_TAPES_DIR, tn.c_str(), true);
+
+  if (ntape->exists()) {
+    showError([=](PicoPen *pen){
+      pen->printAtF(0, 0, true, "'%s' already exists", tn.c_str());
+    });
+    delete ntape;
+  }
+  else if (!ntape->create()) {
+    showError([=](PicoPen *pen){
+      pen->printAtF(0, 0, true, "Failed to create '%s'", tn.c_str());
+    });
+    delete ntape;
+  }    
+  else {
+    if (_currentTapeUnit) {
+     Sorcerer2Tape *tape = _currentTapeUnit->insert(ntape);
+     if (tape) delete tape;
+    }
+    else {
+      delete ntape;
+    }
+    _tapeName.clear();
+    _wiz.pop(true);
+    return true;
+  }
+  return false;
 }
 
 bool Sorcerer2Menu::createDisk(const char* dnr) {

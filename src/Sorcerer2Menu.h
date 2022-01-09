@@ -56,7 +56,8 @@ private:
   PicoOption _tapeUnitsOp1;
   PicoOption _tapeUnitsOp2;
   PicoOptionText _tapeUnitsOp3;
-  
+  PicoOptionText _tapeUnitsOp4;
+
   PicoSelect _tapeUnit;
   PicoOptionText _tapeUnitOp1;
   PicoOptionText _tapeUnitOp2;
@@ -84,6 +85,7 @@ private:
   void showError(std::function<void(PicoPen *pen)> message);
   bool deleteSave(const char *folder, const char *file);
   bool createDisk(const char* dnr);
+  bool createTape(const char* tnr);
   
   void loadSavedDisks(PicoSelect* select);
   void loadSavedTapes(PicoSelect* select);
