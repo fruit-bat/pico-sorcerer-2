@@ -10,7 +10,8 @@ Sorcerer2TapeFatFsSpi::Sorcerer2TapeFatFsSpi(SdCardFatFsSpi* sdCard, const char*
   _sdCard(sdCard),
   _folder(folder),
   _open(false),
-  _writable(writable)
+  _writable(writable),
+  _recording(false)
 {
 }
 
@@ -19,18 +20,18 @@ Sorcerer2TapeFatFsSpi::~Sorcerer2TapeFatFsSpi() {
 }
 
 uint8_t Sorcerer2TapeFatFsSpi::read(){
-  if (!_open) return 0;
+  if (!_open || _recording) return 0;
   
   UINT br = 0;
   BYTE d;
-  FRESULT _fr = f_read(&_fil, &d, 1, &br);
+  FRESULT fr = f_read(&_fil, &d, 1, &br);
   if (br == 0) {
     printf("eof\n");
     close();
     return 0;
   }
-  if (_fr != FR_OK) {
-    printf("f_read(%s) error: (%d)\n", FRESULT_str(_fr), _fr);
+  if (fr != FR_OK) {
+    printf("f_read(%s) error: (%d)\n", FRESULT_str(fr), fr);
     close();
     return 0;
   }
@@ -38,8 +39,14 @@ uint8_t Sorcerer2TapeFatFsSpi::read(){
 }
 
 void Sorcerer2TapeFatFsSpi::write(uint8_t data){
-  printf("writing to tape (%d)\n", data);
+  if (!_open || !_recording) return;
 
+  UINT br;
+  FRESULT fr = f_write(&_fil, &data, 1, &br); 
+  if (FR_OK != fr) {
+    printf("f_write(%s) error: %s (%d)\n", name(), FRESULT_str(fr), fr);
+    close();
+  }
 }
 
 bool Sorcerer2TapeFatFsSpi::writable(){
@@ -54,7 +61,7 @@ bool Sorcerer2TapeFatFsSpi::open(){
   if (!_sdCard->mounted()) {
     if (!_sdCard->mount()) return false;
   }
-  BYTE mode = FA_READ | FA_OPEN_ALWAYS; // |FA_WRITE
+  BYTE mode = _recording ? FA_WRITE | FA_OPEN_APPEND : FA_READ;
   FRESULT fr = f_open(&_fil, fname.c_str(), mode);
   if (FR_OK != fr && FR_EXIST != fr) {
     printf("f_open(%s) error: %s (%d)\n", fname.c_str(), FRESULT_str(fr), fr);
@@ -65,6 +72,7 @@ bool Sorcerer2TapeFatFsSpi::open(){
 }
 
 void Sorcerer2TapeFatFsSpi::close(){
+  _recording = false;
   if (_open) {
     printf("Tape close\n");
     FRESULT fr = f_close(&_fil);
@@ -72,7 +80,7 @@ void Sorcerer2TapeFatFsSpi::close(){
       printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
     }
     _open = false;
-  }  
+  }
 }
 
 bool Sorcerer2TapeFatFsSpi::isOpen(){
@@ -89,3 +97,37 @@ bool Sorcerer2TapeFatFsSpi::exists() {
   // check if it already exists
   return fr == FR_OK;
 }
+
+bool Sorcerer2TapeFatFsSpi::create() {
+ 
+  if (_open) return false;
+
+  if (!_sdCard->mounted()) {
+    if (!_sdCard->mount()) return false;
+  }
+  
+  std::string fname(_folder);
+  fname.append(name());  
+  printf("Create tape %s\n", fname.c_str());
+  
+  FIL fil;
+  FRESULT fr = f_open(&fil, fname.c_str(), FA_CREATE_NEW|FA_READ|FA_WRITE);
+  if (FR_OK != fr) {
+    printf("f_open(%s) error: %s (%d)\n", fname.c_str(), FRESULT_str(fr), fr);
+    return false;
+  }
+
+  fr = f_close(&fil);
+  if (FR_OK != fr) {
+    printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
+    return false;
+  }
+  
+  return true;
+}
+
+bool Sorcerer2TapeFatFsSpi::record() {
+  _recording = _writable && !_open;
+  return _recording;
+}
+

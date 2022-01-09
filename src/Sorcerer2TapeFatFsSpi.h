@@ -10,6 +10,7 @@ private:
   FIL _fil;
   bool _open;
   bool _writable;
+  bool _recording;
 public:
   Sorcerer2TapeFatFsSpi(SdCardFatFsSpi* sdCard, const char* folder, const char* name, bool writable);
   virtual ~Sorcerer2TapeFatFsSpi();
@@ -20,4 +21,7 @@ public:
   virtual void close();
   virtual bool isOpen();
   bool exists();
+  bool create();
+  virtual bool isRecording() { return _recording; }
+  virtual bool record();
 };

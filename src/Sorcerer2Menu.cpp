@@ -31,6 +31,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _tapeUnitOp1("Insert"),
   _tapeUnitOp2("Eject"),
   _tapeUnitOp3("New"),
+  _tapeUnitRec(),
   _selectTape(0, 0, 70, 12, 1),
   _tapeName(0, 0,70, 64),
   _rompacUnit(0, 0, 70, 6, 3),
@@ -100,8 +101,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
         pen->printAtF(0, 0, false, "Reset Sorcerer 2 ?");
       },
       [=]() {
-      },
-      [=]() {
         _sorcerer2->reset();
       }
     );
@@ -162,8 +161,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
           pen->printAtF(0, 0, false, "Eject disk [ %s ] from %c: ?", disk->name(), _currentDiskUnit->driveLetter());
         },
         [=]() {
-        },
-        [=]() {
           _currentDiskUnit->eject();
           delete disk;
         }
@@ -189,7 +186,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
     Sorcerer2DiskFatFsSpi *ndisk = new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", dn.c_str());
 
-    // check if it already exists
     if (ndisk->exists()) {
       showError([=](PicoPen *pen){
         pen->printAtF(0, 0, true, "'%s' already exists", dn.c_str());
@@ -245,7 +241,9 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _tapeUnit.addOption(_tapeUnitOp1.addQuickKey(&_k1));
   _tapeUnit.addOption(_tapeUnitOp2.addQuickKey(&_k2));
   _tapeUnit.addOption(_tapeUnitOp3.addQuickKey(&_k3));
+  _tapeUnit.addOption(_tapeUnitRec.addQuickKey(&_k4));
   _tapeUnit.enableQuickKeys();
+
   _tapeUnitOp1.toggle([=]() {
     _wiz.push(
       &_selectTape, 
@@ -270,8 +268,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
           // TODO Say from which tape player
           pen->printAtF(0, 0, false,"Eject tape [ %s ] ?",  tape->name());
         },
-        []() {
-        },
         [=]() {
           _currentTapeUnit->eject();
           delete tape;
@@ -284,6 +280,45 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_tapeName, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "New tape"); },
       true);
+  });
+  _tapeUnitRec.onPaint([=](PicoPen *pen){
+    Sorcerer2Tape *tape = _currentTapeUnit->tape();
+    pen->clear();
+    pen->printAtF(0, 0, false, "Record [ %s ]", tape && tape->isRecording() ? "on" : "off");
+  });
+  _tapeUnitRec.toggle([=]() {
+    Sorcerer2Tape *tape = _currentTapeUnit->tape();
+    if (tape) {
+      if (tape->isRecording()) {
+        // TODO Check for errors
+        
+        confirm(
+          [=](PicoPen *pen){
+            // TODO Say from which tape player
+            pen->printAtF(0, 0, false,"Stop recording tape [ %s ] ?",  tape->name());
+          },
+          [=]() {
+            tape->close();
+            tape->open();
+          }
+        );        
+      }
+      else {
+        
+        // TODO Check for errors
+
+        confirm(
+          [=](PicoPen *pen){
+            // TODO Say from which tape player
+            pen->printAtF(0, 0, false,"Record to tape [ %s ] ?",  tape->name());
+          },
+          [=]() {
+            tape->record();
+          }
+        );
+      }
+      repaint();
+    }
   });
   
   _selectTape.onToggle([=](PicoOption *option) {
@@ -305,13 +340,18 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
     Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", tn.c_str(), true);
 
-    // check if it already exists
     if (ntape->exists()) {
       showError([=](PicoPen *pen){
         pen->printAtF(0, 0, true, "'%s' already exists", tn.c_str());
       });
       delete ntape;
     }
+    else if (!ntape->create()) {
+      showError([=](PicoPen *pen){
+        pen->printAtF(0, 0, true, "Failed to create '%s'", tn.c_str());
+      });
+      delete ntape;
+    }    
     else {
        Sorcerer2Tape *tape = _currentTapeUnit->insert(ntape);
        if (tape) delete tape;
@@ -340,8 +380,6 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       confirm(
         [=](PicoPen *pen){
           pen->printAtF(0, 0, false, "Eject ROM Pack [ %s ] ?", rompac->name());
-        },
-        [=]() {
         },
         [=]() {
           _sorcerer2->ejectRomPac();
@@ -377,6 +415,21 @@ void Sorcerer2Menu::showError(std::function<void(PicoPen *pen)> message) {
     [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
     true);
   _message.onPaint(message);
+}
+
+void Sorcerer2Menu::confirm(
+  std::function<void(PicoPen *pen)> message,
+  std::function<void()> yes
+) {
+  _confirm.focus(0);
+  _wiz.push(
+    &_confirm, 
+    message,
+    true);
+  _confirmYes.toggle([=]() {
+    _wiz.pop(true);
+    if (yes) yes();
+  });
 }
 
 void Sorcerer2Menu::confirm(

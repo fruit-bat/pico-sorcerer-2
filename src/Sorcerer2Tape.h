@@ -12,7 +12,9 @@ public:
   virtual void write(uint8_t data) {}
   virtual bool writable() { return false; }
   virtual bool open() { return false; }
+  virtual bool record() { return false; }
   virtual void close() {}
   virtual bool isOpen()  { return false; }
+  virtual bool isRecording()  { return false; }
   const char *name();
 };

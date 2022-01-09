@@ -58,7 +58,8 @@ private:
   PicoOptionText _tapeUnitOp1;
   PicoOptionText _tapeUnitOp2;
   PicoOptionText _tapeUnitOp3;
-  
+  PicoOption _tapeUnitRec;
+
   PicoSelect _selectTape;
   
   PicoTextField _tapeName;
@@ -86,5 +87,9 @@ public:
     std::function<void()> no,
     std::function<void()> yes
   );
-
+  
+  void confirm(
+    std::function<void(PicoPen *pen)> message,
+    std::function<void()> yes
+  );
 };
