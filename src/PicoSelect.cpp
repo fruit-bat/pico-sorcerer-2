@@ -80,6 +80,7 @@ void PicoSelect::addOption(PicoOption *option) {
 
 void PicoSelect::clearOptions() {
   _options.clear();
+  _i = 0;
   repaint();
 }
 
