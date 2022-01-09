@@ -6,6 +6,9 @@
 #include "Sorcerer2RomPacFatFsSpi.h"
 #include "FatFsSpiDirReader.h"
 
+#define SAVED_DISKS_DIR "/sorcerer2/disks"
+#define SAVED_TAPES_DIR "/sorcerer2/tapes"
+#define SAVED_ROMPACS_DIR "/sorcerer2/rompacs"
 
 Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
  PicoWin(0, 0, 80, 30),
@@ -14,25 +17,27 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
-  _mainOp1("Disk drives"),
-  _mainOp2("Tape players"),
+  _mainOp1("Disk system"),
+  _mainOp2("Tape system"),
   _mainOp3("ROM Pack"),
   _mainOp4(),
   _resetOp("Reset"),
   _diskUnits(0, 0, 70, 6, 3),
+  _diskUnitsOp5("Delete a disk"),
   _diskUnit(0, 0, 70, 6, 3),
   _diskUnitOp1("Insert"),
   _diskUnitOp2("Eject"),
   _diskUnitOp3("New"),
-  _selectDisk(0, 0, 70, 12, 1),
+  _selectDisk(0, 0, 70, 15, 1),
   _diskName(0, 0,70, 64),
   _tapeUnits(0, 0, 70, 5, 3),
+  _tapeUnitsOp3("Delete a tape"),
   _tapeUnit(0, 0, 70, 6, 3),
   _tapeUnitOp1("Insert"),
   _tapeUnitOp2("Eject"),
   _tapeUnitOp3("New"),
   _tapeUnitRec(),
-  _selectTape(0, 0, 70, 12, 1),
+  _selectTape(0, 0, 70, 15, 1),
   _tapeName(0, 0,70, 64),
   _rompacUnit(0, 0, 70, 6, 3),
   _rompacUnitOp1("Insert"),
@@ -41,7 +46,8 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _message(0, 0, 70, 12),
   _confirm(0, 0, 70, 6, 3),
   _confirmNo("No"),
-  _confirmYes("Yes")
+  _confirmYes("Yes"),
+  _selectDelete(0, 0, 70, 15, 1)
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -110,6 +116,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _diskUnits.addOption(_diskUnitsOp2.addQuickKey(&_k2));
   _diskUnits.addOption(_diskUnitsOp3.addQuickKey(&_k3));
   _diskUnits.addOption(_diskUnitsOp4.addQuickKey(&_k4));
+  _diskUnits.addOption(_diskUnitsOp5.addQuickKey(&_k5));
   _diskUnits.enableQuickKeys();
   
   PicoOption *du[] = {&_diskUnitsOp1, &_diskUnitsOp2, &_diskUnitsOp3, &_diskUnitsOp4};
@@ -132,7 +139,26 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       _currentDiskUnit = _sorcerer2->diskSystem()->drive(i);
     });
   }
-
+  _diskUnitsOp5.toggle([=]() {
+    _wiz.push(
+      &_selectDelete, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose a saved disk to delete:"); },
+      true);
+    loadSavedDisks(&_selectDelete);
+    _selectDelete.onToggle([=](PicoOption *option) {
+      PicoOptionText *textOption = (PicoOptionText *)option;
+      confirm(
+        [=](PicoPen *pen){
+          pen->printAtF(0, 0, false, "Delete saved disk [ %s ] ?", textOption->text());
+        },
+        [=]() {
+          deleteSave(SAVED_DISKS_DIR, textOption->text());
+          loadSavedDisks(&_selectDelete);
+        }
+      );
+    });
+  });
+  
   _diskUnit.addOption(_diskUnitOp1.addQuickKey(&_k1));
   _diskUnit.addOption(_diskUnitOp2.addQuickKey(&_k2));
   _diskUnit.addOption(_diskUnitOp3.addQuickKey(&_k3));
@@ -142,15 +168,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectDisk, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose disk image"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, "/sorcerer2/disks");
-    _selectDisk.deleteOptions();
-    dirReader.foreach([=](const FILINFO* info){ 
-      for(int i = 0; i < 4; ++i) {
-        Sorcerer2Disk *disk = _sorcerer2->diskSystem()->drive(i)->disk();
-        if (disk && (strcmp(info->fname, disk->name()) == 0)) return;
-      }
-      _selectDisk.addOption(new PicoOptionText(info->fname));
-    });
+    loadSavedDisks(&_selectDisk);
    });
   _diskUnitOp2.toggle([=]() {
     Sorcerer2Disk *disk = _currentDiskUnit->disk();
@@ -184,7 +202,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       dn.append(".dsk");
     }
 
-    Sorcerer2DiskFatFsSpi *ndisk = new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", dn.c_str());
+    Sorcerer2DiskFatFsSpi *ndisk = new Sorcerer2DiskFatFsSpi(_sdCard, SAVED_DISKS_DIR, dn.c_str());
 
     if (ndisk->exists()) {
       showError([=](PicoPen *pen){
@@ -208,13 +226,14 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   
   _selectDisk.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, "/sorcerer2/disks/", textOption->text()));
+    Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, SAVED_DISKS_DIR, textOption->text()));
     if (disk) delete disk;
     _wiz.pop(true);
   });
 
   _tapeUnits.addOption(_tapeUnitsOp1.addQuickKey(&_k1));
   _tapeUnits.addOption(_tapeUnitsOp2.addQuickKey(&_k2));
+  _tapeUnits.addOption(_tapeUnitsOp3.addQuickKey(&_k3));
   _tapeUnits.enableQuickKeys();
   
   PicoOption *tu[] = {&_tapeUnitsOp1, &_tapeUnitsOp2};
@@ -237,6 +256,25 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       _currentTapeUnit = _sorcerer2->tapeSystem()->unit(i);
     });
   }
+  _tapeUnitsOp3.toggle([=]() {
+    _wiz.push(
+      &_selectDelete, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose a saved tape to delete:"); },
+      true);
+    loadSavedTapes(&_selectDelete);
+    _selectDelete.onToggle([=](PicoOption *option) {
+      PicoOptionText *textOption = (PicoOptionText *)option;
+      confirm(
+        [=](PicoPen *pen){
+          pen->printAtF(0, 0, false, "Delete saved tape [ %s ] ?", textOption->text());
+        },
+        [=]() {
+          deleteSave(SAVED_TAPES_DIR, textOption->text());
+          loadSavedTapes(&_selectDelete);
+        }
+      );
+    });
+  });  
   
   _tapeUnit.addOption(_tapeUnitOp1.addQuickKey(&_k1));
   _tapeUnit.addOption(_tapeUnitOp2.addQuickKey(&_k2));
@@ -249,15 +287,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectTape, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, "/sorcerer2/tapes");
-    _selectTape.deleteOptions();
-    dirReader.foreach([=](const FILINFO* info){ 
-      for(int i = 0; i < 2; ++i) {
-        Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
-        if (tape && (strcmp(info->fname, tape->name()) == 0)) return;
-      }
-      _selectTape.addOption(new PicoOptionText(info->fname));
-    });
+    loadSavedTapes(&_selectTape);
    });
   _tapeUnitOp2.toggle([=]() {
     Sorcerer2Tape *tape = _currentTapeUnit->tape();
@@ -323,7 +353,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   
   _selectTape.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", textOption->text(), true));
+    Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, SAVED_TAPES_DIR, textOption->text(), true));
     if (tape) delete tape;
     _wiz.pop(true);
   });
@@ -338,7 +368,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       tn.append(".tape");
     }
 
-    Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, "/sorcerer2/tapes/", tn.c_str(), true);
+    Sorcerer2TapeFatFsSpi *ntape = new Sorcerer2TapeFatFsSpi(_sdCard, SAVED_TAPES_DIR, tn.c_str(), true);
 
     if (ntape->exists()) {
       showError([=](PicoPen *pen){
@@ -368,7 +398,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectRompac, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose ROM Pack"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, "/sorcerer2/rompacs");
+    FatFsSpiDirReader dirReader(_sdCard, SAVED_ROMPACS_DIR);
     _selectRompac.deleteOptions();
     dirReader.foreach([=](const FILINFO* info) {
       _selectRompac.addOption(new PicoOptionText(info->fname));
@@ -390,7 +420,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _selectRompac.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
-    Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPacFatFsSpi(_sdCard, "/sorcerer2/rompacs/", textOption->text()));
+    Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPacFatFsSpi(_sdCard, SAVED_ROMPACS_DIR, textOption->text()));
     if (rompac) delete rompac;
     _wiz.pop(true);
   });
@@ -415,6 +445,30 @@ void Sorcerer2Menu::showError(std::function<void(PicoPen *pen)> message) {
     [](PicoPen *pen){ pen->printAt(0, 0, false, "Error:"); },
     true);
   _message.onPaint(message);
+}
+
+void Sorcerer2Menu::loadSavedTapes(PicoSelect* select) {
+  FatFsSpiDirReader dirReader(_sdCard, SAVED_TAPES_DIR);
+  select->deleteOptions();
+  dirReader.foreach([=](const FILINFO* info){ 
+    for(int i = 0; i < 2; ++i) {
+      Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
+      if (tape && (strcmp(info->fname, tape->name()) == 0)) return;
+    }
+    select->addOption(new PicoOptionText(info->fname));
+  });
+}
+
+void Sorcerer2Menu::loadSavedDisks(PicoSelect* select) {
+  FatFsSpiDirReader dirReader(_sdCard, SAVED_DISKS_DIR);
+  select->deleteOptions();
+  dirReader.foreach([=](const FILINFO* info){ 
+    for(int i = 0; i < 4; ++i) {
+      Sorcerer2Disk *disk = _sorcerer2->diskSystem()->drive(i)->disk();
+      if (disk && (strcmp(info->fname, disk->name()) == 0)) return;
+    }
+    select->addOption(new PicoOptionText(info->fname));
+  });
 }
 
 void Sorcerer2Menu::confirm(
@@ -451,4 +505,12 @@ void Sorcerer2Menu::confirm(
     if (yes) yes();
   });
 }
+
+bool Sorcerer2Menu::deleteSave(const char *folder, const char *file) {
+  std::string fname(folder);
+  fname.append("/");
+  fname.append(file);
+  return f_unlink(fname.c_str()) == FR_OK;
+}
+
 

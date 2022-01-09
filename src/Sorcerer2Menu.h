@@ -40,6 +40,7 @@ private:
   PicoOption _diskUnitsOp2;
   PicoOption _diskUnitsOp3;
   PicoOption _diskUnitsOp4;
+  PicoOptionText _diskUnitsOp5;
 
   PicoSelect _diskUnit;
   PicoOptionText _diskUnitOp1;
@@ -53,6 +54,7 @@ private:
   PicoSelect _tapeUnits;
   PicoOption _tapeUnitsOp1;
   PicoOption _tapeUnitsOp2;
+  PicoOptionText _tapeUnitsOp3;
   
   PicoSelect _tapeUnit;
   PicoOptionText _tapeUnitOp1;
@@ -75,13 +77,15 @@ private:
   PicoSelect _confirm;
   PicoOptionText _confirmNo;
   PicoOptionText _confirmYes;
-  
-public:
 
-  Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2);
-  
+  PicoSelect _selectDelete;
+ 
   void showError(std::function<void(PicoPen *pen)> message);
+  bool deleteSave(const char *folder, const char *file);
   
+  void loadSavedDisks(PicoSelect* select);
+  void loadSavedTapes(PicoSelect* select);
+
   void confirm(
     std::function<void(PicoPen *pen)> message,
     std::function<void()> no,
@@ -92,4 +96,10 @@ public:
     std::function<void(PicoPen *pen)> message,
     std::function<void()> yes
   );
+  
+public:
+
+  Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2);
+  
+
 };

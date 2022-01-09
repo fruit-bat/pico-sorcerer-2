@@ -38,6 +38,7 @@ uint8_t Sorcerer2RomPacFatFsSpi::read(){
 
 bool Sorcerer2RomPacFatFsSpi::open(){
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());
   printf("Rompac open %s\n", fname.c_str());
   if (_open) return true;

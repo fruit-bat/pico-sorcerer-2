@@ -89,6 +89,7 @@ bool Sorcerer2TapeFatFsSpi::isOpen(){
 
 bool Sorcerer2TapeFatFsSpi::exists() {
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());
     
   FILINFO fno;
@@ -107,6 +108,7 @@ bool Sorcerer2TapeFatFsSpi::create() {
   }
   
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());  
   printf("Create tape %s\n", fname.c_str());
   

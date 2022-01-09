@@ -75,6 +75,7 @@ void Sorcerer2DiskFatFsSpi::write(const int b, int sectorIndex) {
 
 bool Sorcerer2DiskFatFsSpi::open() {
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());  
   printf("Drive open %s\n", fname.c_str());
   if (_open) return true;
@@ -119,6 +120,7 @@ bool Sorcerer2DiskFatFsSpi::exists() {
   }
   
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());
     
   FILINFO fno;
@@ -137,6 +139,7 @@ bool Sorcerer2DiskFatFsSpi::create() {
   }
   
   std::string fname(_folder);
+  fname.append("/");
   fname.append(name());  
   printf("Create disk %s\n", fname.c_str());
   
