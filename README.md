@@ -132,7 +132,6 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 ## Missing features
 * Read/Write WAV files
 * Audio input
-* Audio Output
 * Centronics interface
 * Serial interface (Uart 0 is currently used for debug) 
 
