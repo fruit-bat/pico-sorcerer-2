@@ -130,7 +130,6 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 | F11 + F12 | Reset |
 
 ## Missing features
-* Write 'tape' format
 * Read/Write WAV files
 * Audio input
 * Audio Output
