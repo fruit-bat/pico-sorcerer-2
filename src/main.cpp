@@ -25,13 +25,13 @@ extern "C" {
 #include "Sorcerer2TapeUnit.h"
 #include "Sorcerer2Menu.h"
 
-#include "PicoFontCushion.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
+#include "PicoCharRenderer.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -40,9 +40,6 @@ extern "C" {
 // datasheet for information on which other pins can be used.
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
-
-#define FONT_CHAR_WIDTH 8
-#define FONT_CHAR_HEIGHT 8
 
 // DVDD 1.2V (1.1V seems ok too)
 #define FRAME_WIDTH 640
@@ -65,33 +62,11 @@ struct semaphore dvi_start_sem;
 static uint8_t* charbuf;
 static uint8_t* exchr;
 
-#define PCS_COLS 80
-#define PCS_ROWS 30
-static uint16_t charScreen[PCS_COLS * PCS_ROWS];
-static uint8_t charFont[256 * 8];
 static bool showMenu = true;
 static bool toggleMenu = false;
 
 // Menu handler
 static volatile uint _frames = 0;
-static uint __not_in_flash_func(prepare_scanline_80)(const uint16_t *chars, const uint y, const uint ys) {
-  static uint8_t scanbuf[PCS_COLS];
-	const uint16_t m = (_frames >> 5) & 1;
-  const uint cr = y & 7;
-  for (uint i = 0; i < PCS_COLS; ++i) {
-    const uint16_t ca = chars[i + ys];
-    const uint8_t cf = charFont[((ca & 0xff) << 3) + cr];
-    // bit 8 inverse video
-    // bit 9 flash
-    const uint16_t z = ((ca >> 8) ^ ((ca >> 9) & m)) & 1; 
-    scanbuf[i] = cf ^ __mul_instruction(z, 0xff);
-  }
-  uint32_t *tmdsbuf;
-  queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
-  tmds_encode_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
-  queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
-  return PCS_COLS;
-}
 
 // Screen handler
 static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const uint y, const uint ys) {
@@ -111,7 +86,7 @@ static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
-  uint rs = showMenu ? prepare_scanline_80((const uint16_t *)&charScreen, y++, ys) : prepare_scanline_64(charbuf, y++, ys);
+  uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y++, ys, _frames) : prepare_scanline_64(charbuf, y++, ys);
   if (0 == (y & 7)) {
     ys += rs;
   }
@@ -149,9 +124,8 @@ static Sorcerer2 sorcerer2(
   &sorcerer2HidKeyboard,
   &sorcerer2DiskSystem
 );
-static PicoCharScreen picoCharScreen((uint16_t *)&charScreen, PCS_COLS, PCS_ROWS);
 static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
-static PicoDisplay picoDisplay(&picoCharScreen, &picoRootWin);
+static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -188,7 +162,9 @@ extern "C" int __not_in_flash_func(main)() {
   pwm_config_set_wrap(&config, PWM_WRAP);
   pwm_init(audio_pin_slice, &config, true);
 
-  memcpy(&charFont[32*8], PicoFontCushion, sizeof(PicoFontCushion));
+  // Initialise the menu renderer
+  pcw_init_renderer();
+  
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();
   sorcerer2DiskSystem.drive(0)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "/sorcerer2/disks/", "diskA.dsk"));
