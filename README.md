@@ -136,6 +136,16 @@ There is more information about which card to choose on [CarlK's no OS FAT FS fo
 * Serial interface (Uart 0 is currently used for debug) 
 
 ## Debug
+<a href="https://shop.pimoroni.com/products/usb-to-uart-serial-console-cable">
+<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/USB_UART_1_of_2_630x630.JPG" width="200"/>
+</a>
+
+| Pico pin | Pico GPIO | Adapter wire |
+| -------- | --------- | ------------ |
+| 1        | GP0       | White        |
+| 2        | GP1       | Green        |
+| 3        | GND       | Black        |
+
 ```sh
 tio -m ODELBS /dev/ttyUSB0
 ```
