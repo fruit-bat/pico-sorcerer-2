@@ -69,40 +69,73 @@ The following components were chosen as I found them in a draw... but it sounds 
 <img src="https://cdn.shopify.com/s/files/1/0176/3274/products/4682-01_dcdcf68d-19aa-4deb-b758-471e8e7baf62_600x.jpg" width="200"/>
 </a>
                                                                                                         
-## Issues
-USB hubs not working.
-
-
-
-
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
 cp sorcerer2.uf2 /media/pi/RPI-RP2/
 ```
 
-## Build
-The latest version of [TinyUSB](https://github.com/hathach/tinyusb) contains some useful patches,
-in particular it allows the keyboard to be reconnected.
-It is probably a good idea to update the version in [Pico SDK](https://github.com/raspberrypi/pico-sdk) to the latest.
-```sh
-cd $PICO_SDK_PATH/lib/tinyusb/
-git checkout master
-git pull
+From the Sorcerer monitor enter CP/M by typing:
+```
+GO BC00
 ```
 
-This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
+The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
+will need to be replaced with a version containing a HID report parser and USB hub support.
+
+Using *git* protocol:
+```sh
+cd $PICO_SDK_PATH/lib/
+mv tinyusb tinyusb.orig
+git clone git@github.com:fruit-bat/tinyusb.git
+cd tinyusb
+git checkout hid_micro_parser
 ```
+...or using *https* protocol:
+```sh
+cd $PICO_SDK_PATH/lib/
+mv tinyusb tinyusb.orig
+git clone https://github.com/fruit-bat/tinyusb.git
+cd tinyusb
+git checkout hid_micro_parser
+```
+
+The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library.
+
+Using *git* protocol:
+```sh
 cd PicoDVI/software/apps
-git clone git@github.com:fruit-bat/pico-sorcerer-2.git sorcerer2
+git clone git@github.com:fruit-bat/pico-sorcerer2.git sorcerer2
 git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:fruit-bat/pico-dvi-menu
+git clone git@github.com:fruit-bat/pico-emu-utils
+
+```
+...or using *https* protocol:
+```sh
+cd PicoDVI/software/apps
+git clone https://github.com/fruit-bat/pico-sorcerer2.git sorcerer2
+git clone https://github.com/fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/fruit-bat/pico-dvi-menu
+git clone https://github.com/fruit-bat/pico-emu-utils
 ```
 
 In the 'apps' folder add the following lines to CMakeLists.txt
 ```
+add_subdirectory(pico-dvi-menu)
+add_subdirectory(pico-emu-utils)
 add_subdirectory(sorcerer2)
 add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
+If your board does not include SD card detect change the following line in the file "sorcerer2/src/hw_config.c":
+```
+.card_detected_true = 1
+```
+to:
+```
+.card_detected_true = -1
+```
+
 In the build folder:
 ```
 cmake -DPICO_COPY_TO_RAM=0 ..
