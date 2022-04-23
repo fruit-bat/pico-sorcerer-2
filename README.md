@@ -75,11 +75,25 @@ A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi wit
 cp sorcerer2.uf2 /media/pi/RPI-RP2/
 ```
 
-From the Sorcerer monitor enter CP/M by typing:
+If everything is wired up correctly you should see the monitor boot screen:
 ```
-GO BC00
+EXIDY STANDARD MONITOR
+
+VERSION 1.0
+COPYRIGHT (C) 1978 BY EXIDY INC.
+
+THE TOP OF RAM IS BBFF HEX.
+STACK BEGINS FROM BB90 HEX.
+
+>_
 ```
 
+At the prompt type 'GO BC00' to enter CP/M:
+```
+>GO BC00
+```
+
+## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
 
