@@ -205,6 +205,13 @@ The Sorcerer had a [sound card](https://sw-ke.facebook.com/groups/AusVintage/per
 <img src="docs/4-voice-top.jpg" width="200"/>
 <img src="docs/4-voice-bottom.jpg" width="200"/>
 
+## Thanks to
+[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
+[Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
+[Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
+[hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
+[Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
+
 ### Websites
   [Magnetic font by DamienG](https://damieng.com/typography/zx-origins/)<br/>
   [Exidy Sorcerer Software Library](https://www.classic-computers.org.nz/blog/2017-01-23-software-for-real-sorcerers.htm)<br/>
