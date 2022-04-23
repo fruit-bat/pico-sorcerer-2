@@ -8,7 +8,7 @@ Sorcerer2::Sorcerer2(
   Sorcerer2Keyboard *keyboard,
   Sorcerer2DiskSystem *diskSystem
 ) : 
-  _moderate(false),
+  _moderate(true),
   _RAM{0},
   _keyboard(keyboard),
   _diskSystem(diskSystem)
