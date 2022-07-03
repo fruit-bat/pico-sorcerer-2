@@ -54,7 +54,7 @@ The following components were chosen as I found them in a draw... but it sounds 
 
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
-<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/P1043509-smol_1024x1024.jpg" width="200"/>
+<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/PICOBOARDWHITEANGLE2_768x768.jpg" width="200"/>
 </a>
 
 <a href="https://buyzero.de/products/raspberry-pi-pico-dvi-sock-videoausgabe-fur-den-pico">
