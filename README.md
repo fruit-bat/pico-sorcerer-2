@@ -50,7 +50,7 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 It's a good idea to filter out high frequencies from the PWM audio output.
 The following components were chosen as I found them in a draw... but it sounds ok.
 
-![image](docs/circuit.png)
+![image](docs/pi_pico_sorcerer2_pwm_audio_filter.png)
 
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
