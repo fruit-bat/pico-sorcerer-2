@@ -160,12 +160,6 @@ Copy the relevant version to your board:
 cp ./bin/breadboard_hdmi/sorcerer2_hdmi.uf2 /media/pi/RPI-RP2/
 ```
 
-In the build folder:
-```
-cmake -DPICO_COPY_TO_RAM=0 ..
-make -j4 sorcerer2
-cp apps/sorcerer2/sorcerer2.uf2 /media/pi/RPI-RP2/
-```
 ### Prepare an SD card
 Copy the contents of [SD card](sdcard/) onto a card.
 
