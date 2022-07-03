@@ -130,7 +130,7 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-Sorcerer2HidKeyboard::Sorcerer2HidKeyboard() {
+Sorcerer2HidKeyboard::Sorcerer2HidKeyboard() : _sorcerer2(0), _mounted(0) {
   sort_keys();
 }
 

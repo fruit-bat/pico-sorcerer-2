@@ -1,52 +1,29 @@
-# Replace TMDS with 10 bit UART (same baud rate):
-# add_definitions(-DDVI_SERIAL_DEBUG=1)
-# add_definitions(-DRUN_FROM_CRYSTAL)
+cmake_minimum_required(VERSION 3.12)
+include(pico_sdk_import.cmake)
+include(pico_extras_import.cmake)
 
-add_executable(sorcerer2
-	src/main.cpp
-	src/Z80.cpp
-	src/Sorcerer2.cpp
-	src/Sorcerer2Keyboard.cpp
-	src/Sorcerer2HidKeyboard.cpp
-	src/Sorcerer2DiskSystem.cpp
-	src/Sorcerer2DiskDrive.cpp
-	src/Sorcerer2DiskFatFsSpi.cpp
-	src/Sorcerer2TapeSystem.cpp
-	src/Sorcerer2TapeUnit.cpp
-	src/Sorcerer2TapeUnitFatFsSpi.cpp
-	src/Sorcerer2Tape.cpp
-	src/Sorcerer2RomPac.cpp
-	src/Sorcerer2RomPacFatFsSpi.cpp
-	src/Sorcerer2TapeFatFsSpi.cpp
-	src/hw_config.c
-	src/Sorcerer2Menu.cpp
+project(picodvi C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+pico_sdk_init()
+
+add_compile_options(-Wall)
+
+
+set(DVI_DEFAULT_SERIAL_CONFIG "pico_sock_cfg" CACHE STRING
+	"Select a default pin configuration from common_dvi_pin_configs.h")
+
+get_filename_component(PICO_FOLDER ${CMAKE_CURRENT_LIST_DIR}/.. ABSOLUTE)
+
+include_directories(
+	${PICO_FOLDER}/PicoDVI/software/include
 )
 
-target_include_directories(sorcerer2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
+add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libdvi "${CMAKE_CURRENT_BINARY_DIR}/libdvi")
+add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libsprite "${CMAKE_CURRENT_BINARY_DIR}/libsprite")
+add_subdirectory(${PICO_FOLDER}/pico-vga-332/ "${CMAKE_CURRENT_BINARY_DIR}/pico-vga-332")
+add_subdirectory(${PICO_FOLDER}/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI "${CMAKE_CURRENT_BINARY_DIR}/FatFs_SPI")
+add_subdirectory(${PICO_FOLDER}/pico-dvi-menu "${CMAKE_CURRENT_BINARY_DIR}/pico-dvi-menu")
+add_subdirectory(${PICO_FOLDER}/pico-emu-utils "${CMAKE_CURRENT_BINARY_DIR}/pico-emu-utils")
 
-# TODO this should work ok with DVI_N_TMDS_BUFFERS=2 (perhaps need to
-# rearrange some pushes/pops) and also as we are monochrome the buffers are 3x
-# as big as they need to be 
-target_compile_definitions(sorcerer2 PRIVATE
-	DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
-	DVI_VERTICAL_REPEAT=2
-	DVI_N_TMDS_BUFFERS=3
-	DVI_MONOCHROME_TMDS=1
-	DVI_1BPP_BIT_REVERSE=1
-	)
-
-target_link_libraries(sorcerer2
-	pico_stdlib
-	pico_multicore
-	pico_util
-	libdvi
-	tinyusb_host
-	tinyusb_board
-	FatFs_SPI
-	pico_dvi_menu
-	pico_emu_utils	
-)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(sorcerer2)
-
+add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")

@@ -72,7 +72,7 @@ The following components were chosen as I found them in a draw... but it sounds 
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
-cp sorcerer2.uf2 /media/pi/RPI-RP2/
+cp sorcerer2_hdmi.uf2 /media/pi/RPI-RP2/
 ```
 
 If everything is wired up correctly you should see the monitor boot screen:
@@ -94,6 +94,7 @@ At the prompt type 'GO BC00' to enter CP/M:
 ```
 
 ## Build
+## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
 
@@ -114,40 +115,49 @@ cd tinyusb
 git checkout hid_micro_parser
 ```
 
-The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library.
+Make a folder in which to clone the required projects e.g.
+```sh
+mkdir ~/pico
+cd ~/pico
+```
+
+Clone the projects from github:
 
 Using *git* protocol:
 ```sh
-cd PicoDVI/software/apps
-git clone git@github.com:fruit-bat/pico-sorcerer2.git sorcerer2
-git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:raspberrypi/pico-extras.git
+git clone git@github.com:Wren6991/PicoDVI.git
+git clone git@github.com:fruit-bat/pico-vga-332.git
+git clone git@github.com:fruit-bat/pico-sorcerer2.git
+git clone git@github.com:carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 
 ```
 ...or using *https* protocol:
 ```sh
-cd PicoDVI/software/apps
-git clone https://github.com/fruit-bat/pico-sorcerer2.git sorcerer2
-git clone https://github.com/fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/raspberrypi/pico-extras.git
+git clone https://github.com/Wren6991/PicoDVI.git
+git clone https://github.com/fruit-bat/pico-vga-332.git
+git clone https://github.com/fruit-bat/pico-sorcerer2.git
+git clone https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 ```
 
-In the 'apps' folder add the following lines to CMakeLists.txt
+Perform the build:
+```sh
+cd pico-sorcerer2
+mkdir build
+cd build
+cmake -DPICO_COPY_TO_RAM=0 ..
+make clean
+make -j4
 ```
-add_subdirectory(pico-dvi-menu)
-add_subdirectory(pico-emu-utils)
-add_subdirectory(sorcerer2)
-add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
-```
-If your board does not include SD card detect change the following line in the file "sorcerer2/src/hw_config.c":
-```
-.card_detected_true = 1
-```
-to:
-```
-.card_detected_true = -1
+
+Copy the relevant version to your board:
+```sh
+cp ./bin/breadboard_hdmi/sorcerer2_hdmi.uf2 /media/pi/RPI-RP2/
 ```
 
 In the build folder:
