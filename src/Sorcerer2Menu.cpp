@@ -5,6 +5,7 @@
 #include "Sorcerer2TapeFatFsSpi.h"
 #include "Sorcerer2RomPacFatFsSpi.h"
 #include "FatFsSpiDirReader.h"
+#include "hardware/clocks.h"
 
 #define SAVED_DISKS_DIR "/sorcerer2/disks"
 #define SAVED_TAPES_DIR "/sorcerer2/tapes"
@@ -391,7 +392,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
 
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "Exidy Sorcerer 2 emulator");
-     pen->printAt(0, 1, false, "on RP2040 Pico Pi");
+     pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
      pen->printAt(0, 2, false, "Menu System version 0.2");
 
      pen->printAt(0, 29, false, "F1 to exit menu");
