@@ -2,7 +2,7 @@
 Exidy Sorcerer for Raspberry Pi Pico RP2040 
 
 <a href="http://oldcomputers.net/sorcerer.html">
-<img src="http://oldcomputers.net/pics/sorcerer.jpg" width="400"/>
+<img src="docs/sorcerer2.png" width="400"/>
 </a>
 
 ## Features
