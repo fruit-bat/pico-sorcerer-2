@@ -94,7 +94,6 @@ At the prompt type 'GO BC00' to enter CP/M:
 ```
 
 ## Build
-## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
 
