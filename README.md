@@ -7,13 +7,26 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 
 ## Features
 * CP/M 1.4
-* DVI over HDMI output<br/>
+* DVI over HDMI<br/>
+* RGB 332 222 & 1111 over VGA<br/>
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read/write to SD card
 * ROM Pac read from SD card
 * USB Keyboard input
 * PWM audio out
 * On screen menu system
+
+## Supported Boards
+* Breadboard
+* [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
+
+<img src="docs/breadboard.png" width="200"/><a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
+<img src="docs/retrovga.png" width="200"/>
+</a>
+Currently, only the UBS keyboard is working on the RetroVGA.
+
+## Updates
+* 06/07/22 - Added support for RGB332, RGB222 and RGBY1111 over VGA
 
 ## Screen shots
 <img src="docs/chomp.jpg" width="300"/>

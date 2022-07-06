@@ -18,9 +18,9 @@ set(sorcerer2_common_src
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2Menu.cpp
 )
 
-#set(sorcerer2_rgb_src
-#	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareRgbScanline.cpp
-#)
+set(sorcerer2_rgb_src
+	${CMAKE_CURRENT_LIST_DIR}/Sorcerer2PrepareRgbScanline.cpp
+)
 
 set(sorcerer2_common_libs
 	pico_stdlib
@@ -31,4 +31,4 @@ set(sorcerer2_common_libs
 )
 
 add_subdirectory(breadboard_hdmi)
-#add_subdirectory(picomputer)
+add_subdirectory(picomputer)
