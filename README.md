@@ -23,7 +23,8 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 <img src="docs/breadboard.png" width="200"/><a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
 <img src="docs/retrovga.png" width="200"/>
 </a>
-Currently, only the UBS keyboard is working on the RetroVGA.
+
+Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
 * 06/07/22 - Added support for RGB332, RGB222 and RGBY1111 over VGA
