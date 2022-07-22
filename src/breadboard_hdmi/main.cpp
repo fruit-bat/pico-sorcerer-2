@@ -11,7 +11,8 @@
 #include "hardware/structs/ssi.h"
 #include "hardware/dma.h"
 #include "hardware/uart.h"
-#include "hardware/pwm.h"  // pwm 
+#include "hardware/pwm.h"
+#include "ps2kbd.h"
 #include "pico/sem.h"
 extern "C" {
 #include "dvi.h"
@@ -127,6 +128,12 @@ static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
+void print(hid_keyboard_report_t const *report) {
+	printf("HID key report modifiers %2.2X report ", report->modifier);
+	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+	printf("\n");
+}
+
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
 	sorcerer2HidKeyboard.mount();
 }
@@ -136,6 +143,12 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 }
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+#if 0
+  // Some help debugging keyboard input/drivers
+	printf("PREV ");print(prev_report);
+	printf("CURR ");print(report);
+#endif
+
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -145,6 +158,12 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   }
   if (r == 1) toggleMenu = true;
 }
+
+static Ps2Kbd ps2kbd(
+  pio1,
+  6,
+  process_kbd_report
+);
 
 extern "C" int __not_in_flash_func(main)() {
   vreg_set_voltage(VREG_VSEL);
@@ -157,8 +176,12 @@ extern "C" int __not_in_flash_func(main)() {
 #endif
 
   setup_default_uart();
+  sleep_ms(1000);
+  
+  printf("Starting TinyUSB\n");
   tusb_init();
-    
+  ps2kbd.init_gpio();
+
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
@@ -206,6 +229,7 @@ extern "C" int __not_in_flash_func(main)() {
   uint frames = 0;
   while (1) {
     tuh_task();
+    ps2kbd.tick();    
     for(int i=0; i < 100; ++i) {
       sorcerer2.stepCpu();
       const uint32_t l = sorcerer2.getSound();    
