@@ -155,9 +155,6 @@ extern "C" int __not_in_flash_func(main)() {
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
-  // Don't use the same DMA channel as the screen  
-  set_spi_dma_irq_channel(true, true);
-
   tusb_init();
 
   gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);

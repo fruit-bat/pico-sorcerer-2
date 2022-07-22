@@ -1,6 +1,7 @@
 #include "Sorcerer2TapeUnitFatFsSpi.h"
 #include <pico/printf.h>
 #include "pico/stdlib.h"
+#include "ff_util.h"
 
 Sorcerer2TapeUnitFatFsSpi::Sorcerer2TapeUnitFatFsSpi(SdCardFatFsSpi* sdCard, const char* folderName) : 
   _sdCard(sdCard),

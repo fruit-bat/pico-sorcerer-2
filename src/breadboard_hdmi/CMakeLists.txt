@@ -1,7 +1,6 @@
 
 set(sorcerer2_hdmi_src
   main.cpp
-  hw_config.c
 )
 
 add_executable(sorcerer2_hdmi
@@ -19,8 +18,15 @@ target_compile_definitions(sorcerer2_hdmi PRIVATE
 	DVI_MONOCHROME_TMDS=1
 	DVI_1BPP_BIT_REVERSE=1
   PCS_COLS=80
-  PCS_ROWS=30  
-	)
+  PCS_ROWS=30
+  LED_PIN=25
+  FF_USE_FIND=1
+  SDCARD_SPI_BUS=spi0
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=2
+  SDCARD_PIN_SPI0_MOSI=3
+  SDCARD_PIN_SPI0_MISO=4  
+)
 
 set(sorcerer2_hdmi_libs
   libdvi

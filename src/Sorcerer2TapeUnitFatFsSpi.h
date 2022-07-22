@@ -2,7 +2,6 @@
 
 #include "SdCardFatFsSpi.h"
 #include "Sorcerer2TapeUnit.h"
-#include "f_util.h"
 #include "ff.h"
 #include "pico/stdlib.h"
 

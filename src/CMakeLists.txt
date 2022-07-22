@@ -26,8 +26,10 @@ set(sorcerer2_common_libs
 	pico_stdlib
 	pico_multicore
 	pico_util
-	FatFs_SPI
 	pico_emu_utils
+  sdcard
+  fatfs
+  hardware_dma
 )
 
 add_subdirectory(breadboard_hdmi)
