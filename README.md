@@ -19,14 +19,19 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 ## Supported Boards
 * Breadboard
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
+* Pimoroni Pico DV Demo Base 
 
-<img src="docs/breadboard.png" width="200"/><a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
-<img src="docs/retrovga.png" width="200"/>
+<img src="docs/breadboard.png" width="200"/>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_192x192.webp" /></a>
 </a>
 
 Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
+* 23/07/22 - Added target for Pico DV board
+* 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
+* 23/07/22 - Added support for PS/2 keyboard on HDMI breadboard target
 * 06/07/22 - Added support for RGB332, RGB222 and RGBY1111 over VGA
 
 ## Screen shots
@@ -239,6 +244,7 @@ The Sorcerer had a [sound card](https://sw-ke.facebook.com/groups/AusVintage/per
   [FAT FS Documentation](http://www.elm-chan.org/fsw/ff/00index_e.html)<br/>
   [USB HID Keycodes](https://gist.github.com/MightyPork/6da26e382a7ad91b5496ee55fdc73db2)<br/>
   [4 Voice sound](https://sw-ke.facebook.com/groups/AusVintage/permalink/1188402214859386/)<br/>
-  
-  
+  [PS/2 vs HID keyboard codes](docs/ps2-hid.pdf)<br/>
+  [PCM 5100A DAC](PCM510xA.pdf)<br/>
+  [RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)</br>
   

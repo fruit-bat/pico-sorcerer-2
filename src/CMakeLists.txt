@@ -34,3 +34,4 @@ set(sorcerer2_common_libs
 
 add_subdirectory(breadboard_hdmi)
 add_subdirectory(picomputer)
+add_subdirectory(demo_dv)
