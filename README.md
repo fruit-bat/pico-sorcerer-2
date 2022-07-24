@@ -7,13 +7,13 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 
 ## Features
 * CP/M 1.4
-* DVI over HDMI<br/>
+* DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * RGB 332 222 & 1111 over VGA<br/>
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read/write to SD card
 * ROM Pac read from SD card
 * USB Keyboard input
-* PWM audio out
+* PWM/I2S DAC audio out
 * On screen menu system
 
 ## Supported Boards
@@ -21,10 +21,9 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * Pimoroni Pico DV Demo Base 
 
-<img src="docs/breadboard.png" width="200"/>
+<a><img src="docs/breadboard.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_192x192.webp" /></a>
-</a>
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 Currently, only the USB keyboard is working on the RetroVGA.
 
@@ -33,6 +32,11 @@ Currently, only the USB keyboard is working on the RetroVGA.
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 23/07/22 - Added support for PS/2 keyboard on HDMI breadboard target
 * 06/07/22 - Added support for RGB332, RGB222 and RGBY1111 over VGA
+
+The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
+[Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
+[Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) do not match up with the
+RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which gets around the problem.
 
 ## Screen shots
 <img src="docs/chomp.jpg" width="300"/>
@@ -147,7 +151,7 @@ git clone git@github.com:raspberrypi/pico-extras.git
 git clone git@github.com:Wren6991/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-sorcerer2.git
-git clone git@github.com:carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 
@@ -158,10 +162,19 @@ git clone https://github.com/raspberrypi/pico-extras.git
 git clone https://github.com/Wren6991/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-sorcerer2.git
-git clone https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 ```
+Edit:
+```sh
+pimoroni-pico/drivers/fatfs/ffconf.h
+```
+and set FF_USE_FIND to 1
+```
+#define FF_USE_FIND            1
+```
+
 
 Perform the build:
 ```sh
