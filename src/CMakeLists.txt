@@ -16,10 +16,15 @@ set(sorcerer2_common_src
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2RomPacFatFsSpi.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2TapeFatFsSpi.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2Menu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2Audio.cpp
 )
 
 set(sorcerer2_rgb_src
 	${CMAKE_CURRENT_LIST_DIR}/Sorcerer2PrepareRgbScanline.cpp
+)
+
+set(sorcerer2_audio_i2s_pio
+  ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio
 )
 
 set(sorcerer2_common_libs

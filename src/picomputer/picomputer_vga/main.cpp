@@ -30,6 +30,7 @@
 #include "tusb.h"
 #include <pico/printf.h>
 #include "PicoCharRenderer.h"
+#include "Sorcerer2Audio.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -157,12 +158,8 @@ extern "C" int __not_in_flash_func(main)() {
 
   tusb_init();
 
-  gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
-  const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
-  pwm_config config = pwm_get_default_config();
-  pwm_config_set_clkdiv(&config, 1.0f); 
-  pwm_config_set_wrap(&config, PWM_WRAP);
-  pwm_init(audio_pin_slice, &config, true);
+  // Initialise the audio
+  Sorcerer2AudioInit();
 
   // Initialise the menu renderer
   pcw_init_renderer();
@@ -189,13 +186,16 @@ extern "C" int __not_in_flash_func(main)() {
   uint frames = 0;
   while (1) {
     tuh_task();
-    for(int i=0; i < 100; ++i) {
-      sorcerer2.stepCpu();
-      const uint32_t l = sorcerer2.getSound();    
-      pwm_set_gpio_level(SPK_PIN, l);
+    if (!showMenu) {
+      for(int i=0; i < 100; ++i) {
+        sorcerer2.stepCpu();
+        if (Sorcerer2AudioReady()) {
+          Sorcerer2AudioToGpio(sorcerer2);
+        }
+      }
+      sorcerer2.stepDisk();
     }
-    sorcerer2.stepDisk();
-    if (showMenu && frames != _frames) {
+    else if (frames != _frames) {
       frames = _frames;
       picoDisplay.refresh();
     }
