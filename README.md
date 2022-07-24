@@ -63,7 +63,7 @@ Currently, only the USB keyboard is working on the RetroVGA.
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
 | GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
 
-![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
+![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
 ### Audio filter
 It's a good idea to filter out high frequencies from the PWM audio output.
