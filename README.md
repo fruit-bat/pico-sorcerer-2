@@ -93,7 +93,7 @@ The following components were chosen as I found them in a draw... but it sounds 
 </a>
                                                                                                         
 ## Try it
-A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
+Pre-built binaries, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
 cp sorcerer2_hdmi.uf2 /media/pi/RPI-RP2/
 ```
