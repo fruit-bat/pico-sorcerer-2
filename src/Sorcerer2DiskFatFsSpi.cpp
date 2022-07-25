@@ -1,9 +1,7 @@
 #include <pico/printf.h>
-#include "f_util.h"
+#include "ff_util.h"
 #include "ff.h"
 #include "pico/stdlib.h"
-#include "rtc.h"
-#include "hw_config.h"
 #include <cstring>
 
 #include "Sorcerer2DiskFatFsSpi.h"

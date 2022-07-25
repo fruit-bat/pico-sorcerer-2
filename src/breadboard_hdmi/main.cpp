@@ -11,7 +11,8 @@
 #include "hardware/structs/ssi.h"
 #include "hardware/dma.h"
 #include "hardware/uart.h"
-#include "hardware/pwm.h"  // pwm 
+#include "hardware/pwm.h"
+#include "ps2kbd.h"
 #include "pico/sem.h"
 extern "C" {
 #include "dvi.h"
@@ -32,6 +33,7 @@ extern "C" {
 #include "tusb.h"
 #include <pico/printf.h>
 #include "PicoCharRenderer.h"
+#include "Sorcerer2Audio.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -46,11 +48,6 @@ extern "C" {
 #define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
 #define DVI_TIMING dvi_timing_640x480p_60hz
-
-// Should be 25 for pico ?
-// #define LED_PIN 16
-#define SPK_PIN 20
-#define PWM_WRAP 63
 
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
@@ -127,6 +124,12 @@ static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
+void print(hid_keyboard_report_t const *report) {
+	printf("HID key report modifiers %2.2X report ", report->modifier);
+	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+	printf("\n");
+}
+
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
 	sorcerer2HidKeyboard.mount();
 }
@@ -136,6 +139,12 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 }
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+#if 0
+  // Some help debugging keyboard input/drivers
+	printf("PREV ");print(prev_report);
+	printf("CURR ");print(report);
+#endif
+
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -145,6 +154,12 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   }
   if (r == 1) toggleMenu = true;
 }
+
+static Ps2Kbd ps2kbd(
+  pio1,
+  6,
+  process_kbd_report
+);
 
 extern "C" int __not_in_flash_func(main)() {
   vreg_set_voltage(VREG_VSEL);
@@ -157,17 +172,17 @@ extern "C" int __not_in_flash_func(main)() {
 #endif
 
   setup_default_uart();
+  sleep_ms(1000);
+  
+  printf("Starting TinyUSB\n");
   tusb_init();
-    
+  ps2kbd.init_gpio();
+
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
-  gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
-  const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
-  pwm_config config = pwm_get_default_config();
-  pwm_config_set_clkdiv(&config, 1.0f); 
-  pwm_config_set_wrap(&config, PWM_WRAP);
-  pwm_init(audio_pin_slice, &config, true);
+  // Initialise the audio
+  Sorcerer2AudioInit();
 
   // Initialise the menu renderer
   pcw_init_renderer();
@@ -198,7 +213,6 @@ extern "C" int __not_in_flash_func(main)() {
   hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
   multicore_launch_core1(core1_main);
 
-
   sem_release(&dvi_start_sem);
 
   sorcerer2.reset();
@@ -206,13 +220,17 @@ extern "C" int __not_in_flash_func(main)() {
   uint frames = 0;
   while (1) {
     tuh_task();
-    for(int i=0; i < 100; ++i) {
-      sorcerer2.stepCpu();
-      const uint32_t l = sorcerer2.getSound();    
-      pwm_set_gpio_level(SPK_PIN, l);
+    ps2kbd.tick();
+    if (!showMenu) {
+      for(int i=0; i < 100; ++i) {
+        sorcerer2.stepCpu();
+        if (Sorcerer2AudioReady()) {
+          Sorcerer2AudioToGpio(sorcerer2);
+        }
+      }
+      sorcerer2.stepDisk();
     }
-    sorcerer2.stepDisk();
-    if (showMenu && frames != _frames) {
+    else if (frames != _frames) {
       frames = _frames;
       picoDisplay.refresh();
     }

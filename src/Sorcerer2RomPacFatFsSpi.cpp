@@ -1,9 +1,7 @@
 #include "Sorcerer2RomPacFatFsSpi.h"
-#include "f_util.h"
 #include "ff.h"
+#include "ff_util.h"
 #include "pico/stdlib.h"
-#include "rtc.h"
-#include "hw_config.h"
 
 Sorcerer2RomPacFatFsSpi::Sorcerer2RomPacFatFsSpi(SdCardFatFsSpi* sdCard, const char* folder, const char* name) :
   Sorcerer2RomPac(name),

@@ -85,6 +85,7 @@ target_compile_definitions(sorcerer2_picomputer_vga_332 PRIVATE
   SPK_PIN=9
   VGA_ENC_RGB_332
   PICOMPUTER_VGA
+  FF_USE_FIND=1
 )
 
 target_link_libraries(sorcerer2_picomputer_vga_332

@@ -13,16 +13,18 @@
 #include "hardware/uart.h"
 #include "hardware/pwm.h"
 #include "pico/sem.h"
-#include "vga.h"
-#include "Sorcerer2PrepareRgbScanline.h"
-
+extern "C" {
+#include "dvi.h"
+#include "dvi_serialiser.h"
+#include "common_dvi_pin_configs.h"
+#include "tmds_encode.h"
+}
 #include "Sorcerer2.h"
 #include "Sorcerer2HidKeyboard.h"
 #include "Sorcerer2DiskFatFsSpi.h"
 #include "Sorcerer2TapeUnit.h"
 #include "Sorcerer2Menu.h"
 
-#include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 
@@ -46,14 +48,11 @@
 #define VREG_VSEL VREG_VOLTAGE_1_20
 #define DVI_TIMING dvi_timing_640x480p_60hz
 
-#define LED_PIN 25
-#define SPK_PIN 9
-// Very loud!
-// #define PWM_WRAP 63 
-#define PWM_WRAP 256
-
+struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
-static const sVmode* vmode = NULL;
+
+#define CHAR_COLS 64
+#define CHAR_ROWS 30
 
 static uint8_t* charbuf;
 static uint8_t* exchr;
@@ -64,46 +63,49 @@ static bool toggleMenu = false;
 // Menu handler
 static volatile uint _frames = 0;
 
-void core1_main() {
-  sem_acquire_blocking(&dvi_start_sem);
-  printf("Core 1 running...\n");
+// Screen handler
+static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const uint y, const uint ys) {
+  static uint8_t scanbuf[FRAME_WIDTH / 8];
 
-  // TODO fetch the resolution from the mode ?
-  VgaInit(vmode,640,480);
-
-  while (1) {
-
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      prepare_rgb_scanline(
-        buf, 
-        y, 
-        charbuf,
-        exchr
-      );
-    }
-      
-//    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-           
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-//        picomputerJoystick.enabled(!showMenu);
-      }
-      
-      _frames = linebuf->frame;
-    }    
+  const uint cr = y & 7;
+  for (uint i = 0; i < CHAR_COLS; ++i) {
+    scanbuf[i + 8] = exchr[(chars[i + ys] << 3) + cr];
   }
+  uint32_t *tmdsbuf;
+  queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
+  tmds_encode_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
+  queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
+  return CHAR_COLS;
+}
+
+void __not_in_flash_func(core1_scanline_callback)() {
+  static uint y = 1;
+  static uint ys = 0;
+  uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y++, ys, _frames) : prepare_scanline_64(charbuf, y++, ys);
+  if (0 == (y & 7)) {
+    ys += rs;
+  }
+  if (y == FRAME_HEIGHT) {
+    _frames++;
+    y = 0;
+    ys = 0;
+    if (toggleMenu) {
+      showMenu = !showMenu;
+      toggleMenu = false;
+    }
+  }
+}
+
+void core1_main() {
+  dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
+  sem_acquire_blocking(&dvi_start_sem);
+
+  dvi_start(&dvi0);
+
+  // The text display is completely IRQ driven (takes up around 30% of cycles @
+  // VGA). We could do something useful, or we could just take a nice nap
+  while (1) 
+    __wfi();
   __builtin_unreachable();
 }
 
@@ -121,6 +123,12 @@ static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
+void print(hid_keyboard_report_t const *report) {
+	printf("HID key report modifiers %2.2X report ", report->modifier);
+	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+	printf("\n");
+}
+
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
 	sorcerer2HidKeyboard.mount();
 }
@@ -129,7 +137,13 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 	sorcerer2HidKeyboard.unmount();
 }
 
-extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+#if 0
+  // Some help debugging keyboard input/drivers
+	printf("PREV ");print(prev_report);
+	printf("CURR ");print(report);
+#endif
+
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -140,27 +154,28 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   if (r == 1) toggleMenu = true;
 }
 
-void __not_in_flash_func(main_loop)(){
-  // TODO
-}
-
 extern "C" int __not_in_flash_func(main)() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  vmode = Video(DEV_VGA, RES_HVGA);
-  sleep_ms(100);
+#ifdef RUN_FROM_CRYSTAL
+  set_sys_clock_khz(12000, true);
+#else
+  // Run system at TMDS bit clock
+  set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
+#endif
 
-  //Initialise I/O
-  stdio_init_all();
-     
-  gpio_init(LED_PIN);
-  gpio_set_dir(LED_PIN, GPIO_OUT);
-
+  setup_default_uart();
+  sleep_ms(1000);
+  
+  printf("Starting TinyUSB\n");
   tusb_init();
 
+  gpio_init(LED_PIN);
+  gpio_set_dir(LED_PIN, GPIO_OUT);
+  
   // Initialise the audio
   Sorcerer2AudioInit();
-
+  
   // Initialise the menu renderer
   pcw_init_renderer();
   
@@ -174,10 +189,22 @@ extern "C" int __not_in_flash_func(main)() {
   sorcerer2.tapeSystem()->attach(1, &tapeUnit2);
   sorcerer2HidKeyboard.setSorcerer2(&sorcerer2);
   
+  printf("Configuring DVI\n");
+
+  dvi0.timing = &DVI_TIMING;
+  dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
+  dvi0.scanline_callback = core1_scanline_callback;
+  dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
+
+  printf("Prepare first scanline\n");
+
+  prepare_scanline_64(charbuf, 0, 0);
+
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
-
+  hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
   multicore_launch_core1(core1_main);
+
 
   sem_release(&dvi_start_sem);
 
@@ -201,6 +228,4 @@ extern "C" int __not_in_flash_func(main)() {
     }
   }
   __builtin_unreachable();
-  
-// TODO   main_loop();
 }
