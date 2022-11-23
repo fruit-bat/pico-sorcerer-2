@@ -68,6 +68,9 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
 | GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
+| GP6   |       | 6     | 9     |           |           |           | PS/2 data (RP_PS2_DATA)|
+| GP7   |       | 7     | 10    |           |           |           | PS/2 clk  (RP_PS2_CLK) |
+
 
 ![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
@@ -76,6 +79,20 @@ It's a good idea to filter out high frequencies from the PWM audio output.
 The following components were chosen as I found them in a draw... but it sounds ok.
 
 ![image](docs/pi_pico_sorcerer2_pwm_audio_filter.png)
+
+### PS/2 Keyboards
+The emulator targets can accept input from a PS/2 keyboard wired to RP_PS2_DATA and RP_PS2_CLK.
+A suggested circuit is shown below:
+
+![image](docs/Pico%20PS2%20interface.png)
+
+The resistors and Zeners are there in case the keyboard contains a pull-up resistor to 5v on either the data or clock lines;
+the data and clock lines are, in theory, open-collector with no pull-up.
+
+I'm told most PS/2 keyboards can be run at 3.3v and the the extra components become redundant... but I've not tried with mine. 
+You may find the Pico struggles to deliver enough power at 3.3v for the SD card writes and running a keyboard.
+
+Currently there is no toggling on the lock keys (caps/num lock) and the indicator leds are not used.
 
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
