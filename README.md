@@ -12,7 +12,8 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read/write to SD card
 * ROM Pac read from SD card
-* USB Keyboard input
+* USB Keyboard
+* PS/2 keyboard
 * PWM/I2S DAC audio out
 * On screen menu system
 
