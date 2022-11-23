@@ -1,7 +1,6 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(sorcerer2_common_src
-  ${CMAKE_CURRENT_LIST_DIR}/Z80.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2Keyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2HidKeyboard.cpp
@@ -35,6 +34,8 @@ set(sorcerer2_common_libs
   sdcard
   fatfs
   hardware_dma
+  Zeta
+  Z80
 )
 
 add_subdirectory(breadboard_hdmi)

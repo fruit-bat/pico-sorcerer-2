@@ -28,6 +28,7 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
+* 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 23/07/22 - Added support for PS/2 keyboard on HDMI breadboard target
@@ -154,6 +155,8 @@ git clone git@github.com:fruit-bat/pico-sorcerer2.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
+git clone git@github.com:redcode/Z80.git
+git clone git@github.com:redcode/Zeta.git
 
 ```
 ...or using *https* protocol:
@@ -165,6 +168,8 @@ git clone https://github.com/fruit-bat/pico-sorcerer2.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
+git clone https://github.com/redcode/Z80.git
+git clone https://github.com/redcode/Zeta.git
 ```
 Edit:
 ```sh
@@ -246,6 +251,8 @@ The Sorcerer had a [sound card](https://sw-ke.facebook.com/groups/AusVintage/per
 [Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
 [Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
+[Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
+[redcode](https://github.com/redcode/Z80) for the [Z80 emulator](https://github.com/redcode/Z80)<br/>
 
 ### Websites
   [Magnetic font by DamienG](https://damieng.com/typography/zx-origins/)<br/>
@@ -260,4 +267,5 @@ The Sorcerer had a [sound card](https://sw-ke.facebook.com/groups/AusVintage/per
   [PS/2 vs HID keyboard codes](docs/ps2-hid.pdf)<br/>
   [PCM 5100A DAC](PCM510xA.pdf)<br/>
   [RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)</br>
-  
+  [Z80 Instruction set with XYH](https://wikiti.brandonw.net/?title=Z80_Instruction_Set)</br>
+  [Z80 Instruction set](https://clrhome.org/table/)</br>

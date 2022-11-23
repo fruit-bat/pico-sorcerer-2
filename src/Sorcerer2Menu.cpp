@@ -156,7 +156,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose a saved disk to delete:"); },
       true);
     loadSavedDisks(&_selectDelete);
-    _selectDelete.onToggle([=](PicoOption *option) {
+    _selectDelete.onToggle([=](PicoOption *option, int32_t i) {
       PicoOptionText *textOption = (PicoOptionText *)option;
       confirm(
         [=](PicoPen *pen){
@@ -206,7 +206,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     createDisk(dnr);
   });
   
-  _selectDisk.onToggle([=](PicoOption *option) {
+  _selectDisk.onToggle([=](PicoOption *option, int32_t i) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2Disk *disk = _currentDiskUnit->insert(new Sorcerer2DiskFatFsSpi(_sdCard, SAVED_DISKS_DIR, textOption->text()));
     if (disk) delete disk;
@@ -252,7 +252,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose a saved tape to delete:"); },
       true);
     loadSavedTapes(&_selectDelete);
-    _selectDelete.onToggle([=](PicoOption *option) {
+    _selectDelete.onToggle([=](PicoOption *option, int32_t i) {
       PicoOptionText *textOption = (PicoOptionText *)option;
       confirm(
         [=](PicoPen *pen){
@@ -341,7 +341,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     }
   });
   
-  _selectTape.onToggle([=](PicoOption *option) {
+  _selectTape.onToggle([=](PicoOption *option, int32_t i) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2Tape *tape = _currentTapeUnit->insert(new Sorcerer2TapeFatFsSpi(_sdCard, SAVED_TAPES_DIR, textOption->text(), true));
     if (tape) delete tape;
@@ -379,7 +379,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       );
     }
   });
-  _selectRompac.onToggle([=](PicoOption *option) {
+  _selectRompac.onToggle([=](PicoOption *option, int32_t i) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     Sorcerer2RomPac *rompac = _sorcerer2->insertRomPac(new Sorcerer2RomPacFatFsSpi(_sdCard, SAVED_ROMPACS_DIR, textOption->text()));
     if (rompac) delete rompac;

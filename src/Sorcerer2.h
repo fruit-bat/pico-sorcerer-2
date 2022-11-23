@@ -14,7 +14,7 @@
 class Sorcerer2 {
 private:
   Z80 _Z80;
-  int _cycles;
+  int32_t _cycles;
   uint32_t _tu4;
   int32_t _ta4;
   Sorcerer2TapeSystem _tapeSystem;
@@ -22,16 +22,26 @@ private:
   uint8_t _centronicsOut;
   Sorcerer2RomPac *_rompac;
   
-  inline int readByte(int address)
-  {
+  inline uint32_t z80Step(uint32_t tstates) {
+    return z80_run(&_Z80, tstates);
+  }
+  
+  inline void z80Power(bool state) {
+    z80_power(&_Z80, true);
+  }
+  
+  inline void z80Reset() {
+    z80_instant_reset(&_Z80);
+  }
+
+  inline uint8_t readByte(uint16_t address) {
     if (address >= 0xBE00 && address < 0xBE10 && _diskSystem) {
       return _diskSystem->readByte(address);
     }
     return _RAM[address];
   }
 
-  inline void writeByte(int address, int value)
-  {
+  inline void writeByte(uint16_t address, uint8_t value) {
     if (address >= 0xBC00) {
         if (address >= 0xC000) {
           if (_rompac && address < 0xE000) return;
@@ -72,8 +82,7 @@ private:
     * */
   }
   
-  inline int readIO(int address)
-  {
+  inline uint8_t readIO(uint16_t address) {
     switch(address & 0xFF) {
       case 0xFE: return _keyboard->read(address);
       case 0xFC: return _tapeSystem.readData();
@@ -83,8 +92,7 @@ private:
     }
   }
 
-  inline void writeIO(int address, int value)
-  {
+  inline void writeIO(uint16_t address, uint8_t value) {
     switch(address & 0xFF) {
       case 0xFE: {
         _keyboard->write(address, value);
@@ -103,45 +111,25 @@ private:
     }
   }
 
-  inline int readWord(int addr) { 
-    return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
-  }
-  
-  inline void writeWord(int addr, int value) { 
-    writeByte(addr, value & 0xFF); 
-    writeByte((addr + 1) & 0xffff, value >> 8);
-  }
-  
-  static inline int readByte(void * context, int address) {
+  static uint8_t __not_in_flash_func(readByte)(void * context, uint16_t address) {
     return ((Sorcerer2*)context)->readByte(address);
   }
-
-  static inline void writeByte(void * context, int address, int value) {
+  
+  static void __not_in_flash_func(writeByte)(void * context, uint16_t address, uint8_t value) {
     ((Sorcerer2*)context)->writeByte(address, value);
   }
-  
-  // TODO Can addr ever be odd (if not readWord can be simplified)? 
-  static inline int readWord(void * context, int addr) { 
-    return ((Sorcerer2*)context)->readWord(addr); 
-  }
-  
-  // TODO Can addr ever be odd (if not writeWord can be simplified)?
-  static inline void writeWord(void * context, int addr, int value) { 
-    ((Sorcerer2*)context)->writeWord(addr, value);
-  }
-  
-  static inline int readIO(void * context, int address)
-  {
-    //printf("readIO %04X\n", address);
-    const auto m = (Sorcerer2*)context;
-    return m->readIO(address);
+   
+  static uint8_t __not_in_flash_func(readIO)(void * context, uint16_t address) {
+    return ((Sorcerer2*)context)->readIO(address);
   }
 
-  static inline void writeIO(void * context, int address, int value)
-  {
-    //printf("writeIO %04X %02X\n", address, value);
-    const auto m = (Sorcerer2*)context;
-    m->writeIO(address, value);
+  static void __not_in_flash_func(writeIO)(void * context, uint16_t address, uint8_t value) {
+    ((Sorcerer2*)context)->writeIO(address, value);
+  }
+  
+  static uint8_t __not_in_flash_func(readInt)(void * context, uint16_t address) {
+    z80_int(&(((Sorcerer2*)context)->_Z80), false);
+    return 0xff;
   }
 
   uint8_t _RAM[1<<16];
@@ -157,9 +145,9 @@ public:
     Sorcerer2Keyboard *keyboard,
     Sorcerer2DiskSystem *diskSystem
   );
-  inline unsigned char* screenPtr() { return &_RAM[0xF080]; }
-  inline unsigned char* charsPtr() { return &_RAM[0xF800]; }
-  void reset(unsigned int address);
+  inline uint8_t* screenPtr() { return &_RAM[0xF080]; }
+  inline uint8_t* charsPtr() { return &_RAM[0xF800]; }
+  void reset(uint16_t address);
   void reset();
   void __not_in_flash_func(step)();
   Sorcerer2TapeSystem *tapeSystem() { return &_tapeSystem; }
@@ -183,7 +171,7 @@ public:
   inline void stepCpu()
   {
     // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
-      int c = _Z80.step();
+      int c = z80Step(32);
       _cycles += c;
       if (_moderate) {
         uint32_t tu4 = time_us_32() << 2;

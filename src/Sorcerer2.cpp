@@ -13,7 +13,15 @@ Sorcerer2::Sorcerer2(
   _keyboard(keyboard),
   _diskSystem(diskSystem)
 {
-  _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
+  z80Power(true);
+  _Z80.context = this;
+  _Z80.read = readByte;
+  _Z80.fetch = readByte;
+  _Z80.fetch_opcode = readByte;
+  _Z80.write = writeByte;
+  _Z80.in = readIO;
+  _Z80.out = writeIO;
+  _Z80.inta = readInt;
   memcpy(&_RAM[0xE000], monitor, 0x1000);
   memcpy(&_RAM[0xF800], exchr, 0x400);
   if (_diskSystem) {
@@ -21,10 +29,11 @@ Sorcerer2::Sorcerer2(
   }
 }
 
-void Sorcerer2::reset(unsigned int address)
+void Sorcerer2::reset(uint16_t address)
 {
-  _Z80.reset();
-  _Z80.setPC(address);
+  z80Reset();
+
+  Z80_PC(_Z80) = address;
   _cycles = 0;
   _centronicsOut = 0;
 }
@@ -55,13 +64,11 @@ void Sorcerer2::reset() {
   _ta4 = 0;
 }
 
-void Sorcerer2::saveMem()
-{
+void Sorcerer2::saveMem() {
   memcpy(_buf, _RAM + 0x100, 1<<15);
 }
 
-void Sorcerer2::loadMem()
-{
+void Sorcerer2::loadMem() {
   memcpy(_RAM + 0x100, _buf, 1<<15);
 }
 
