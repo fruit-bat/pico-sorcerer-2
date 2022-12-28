@@ -363,6 +363,7 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
     _selectRompac.deleteOptions();
     dirReader.foreach([=](const FILINFO* info) {
       _selectRompac.addOption(new PicoOptionText(info->fname));
+      return true;
     });
    });
   _rompacUnitOp2.toggle([=]() {
@@ -414,9 +415,10 @@ void Sorcerer2Menu::loadSavedTapes(PicoSelect* select) {
   dirReader.foreach([=](const FILINFO* info){ 
     for(int i = 0; i < 2; ++i) {
       Sorcerer2Tape *tape = _sorcerer2->tapeSystem()->unit(i)->tape();
-      if (tape && (strcmp(info->fname, tape->name()) == 0)) return;
+      if (tape && (strcmp(info->fname, tape->name()) == 0)) return true;
     }
     select->addOption(new PicoOptionText(info->fname));
+    return true;
   });
 }
 
@@ -426,9 +428,10 @@ void Sorcerer2Menu::loadSavedDisks(PicoSelect* select) {
   dirReader.foreach([=](const FILINFO* info){ 
     for(int i = 0; i < 4; ++i) {
       Sorcerer2Disk *disk = _sorcerer2->diskSystem()->drive(i)->disk();
-      if (disk && (strcmp(info->fname, disk->name()) == 0)) return;
+      if (disk && (strcmp(info->fname, disk->name()) == 0)) return true;
     }
     select->addOption(new PicoOptionText(info->fname));
+    return true;
   });
 }
 
