@@ -42,8 +42,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 
 ## Screen shots
-<img src="docs/screenshots/menu.png" height="200px"/>  <img src="docs/screenshots/monitor_start_cpm.png" height="200px"/>  <img src="docs/screenshots/cpm_dir.png" height="200px"/>  <img src="docs/screenshots/chomp.png" height="200px"/> <img src="docs/screenshots/asteroids.png" height="200px"/> <img src="docs/screenshots/galx.png" height="200px"/> <img src="docs/screenshots/chess.png" height="200px"/> <img src="docs/screenshots/invaders.png" height="200px"/> <img src="docs/screenshots/monitor_du.png" height="200px"/> <img src="docs/screenshots/kilopede.png" height="200px"/>
-
+<img src="docs/screenshots/menu.png" width="320px"/>  <img src="docs/screenshots/monitor_start_cpm.png" width="320px"/>  <img src="docs/screenshots/cpm_dir.png" width="320px"/>  <img src="docs/screenshots/chomp.png" width="320px"/> <img src="docs/screenshots/asteroids.png" width="320px"/> <img src="docs/screenshots/galx.png" width="320px"/> <img src="docs/screenshots/chess.png" width="320px"/> <img src="docs/screenshots/invaders.png" width="320px"/> <img src="docs/screenshots/monitor_du.png" width="320px"/> 
 
 ## Prototype
 <img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
