@@ -29,6 +29,7 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
+* 08/05/23 - Updated builds
 * 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
