@@ -13,6 +13,7 @@
 #include "hardware/uart.h"
 #include "hardware/pwm.h"
 #include "pico/sem.h"
+#include "ps2kbd.h"
 #include "vga.h"
 #include "Sorcerer2PrepareRgbScanline.h"
 
@@ -144,6 +145,14 @@ void __not_in_flash_func(main_loop)(){
   // TODO
 }
 
+#ifdef USE_PS2_KBD
+static Ps2Kbd ps2kbd(
+  pio1,
+  6,
+  process_kbd_report
+);
+#endif
+
 extern "C" int __not_in_flash_func(main)() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
@@ -157,13 +166,17 @@ extern "C" int __not_in_flash_func(main)() {
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
   tusb_init();
+#ifdef USE_PS2_KBD
+  ps2kbd.init_gpio();
+#endif
 
   // Initialise the audio
   Sorcerer2AudioInit();
 
   // Initialise the menu renderer
   pcw_init_renderer();
-  
+  pcw_init_vga332_renderer();
+
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();
   sorcerer2DiskSystem.drive(0)->insert(new Sorcerer2DiskFatFsSpi(&sdCard0, "/sorcerer2/disks/", "diskA.dsk"));
@@ -186,6 +199,9 @@ extern "C" int __not_in_flash_func(main)() {
   uint frames = 0;
   while (1) {
     tuh_task();
+#ifdef USE_PS2_KBD
+    ps2kbd.tick();
+#endif    
     if (!showMenu) {
       for(int i=0; i < 100; ++i) {
         sorcerer2.stepCpu();

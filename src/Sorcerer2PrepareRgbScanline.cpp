@@ -12,10 +12,10 @@ static uint32_t colour_words[2] = {
 //  X4(VGA_RGBY_1111(0,0,1,0)), // Blue
 //  X4(VGA_RGBY_1111(1,0,0,0)), // Red
 //  X4(VGA_RGBY_1111(1,0,1,0)), // Magenta
-  X4(VGA_RGBY_1111(0,1,0,0)), // Green
+ // X4(VGA_RGBY_1111(0,1,0,0)), // Green
 //  X4(VGA_RGBY_1111(0,1,1,0)), // Cyan
 //  X4(VGA_RGBY_1111(1,1,0,0)), // Yellow
-//  X4(VGA_RGBY_1111(1,1,1,0)), // White
+  X4(VGA_RGBY_1111(1,1,1,0)), // White
 //  X4(VGA_RGBY_1111(0,0,0,0)), // Bright Black
 //  X4(VGA_RGBY_1111(0,0,1,1)), // Bright Blue
 //  X4(VGA_RGBY_1111(1,0,0,1)), // Bright Red
@@ -29,10 +29,10 @@ static uint32_t colour_words[2] = {
 //  X4(VGA_RGB_222(0,0,2)), // Blue
 //  X4(VGA_RGB_222(2,0,0)), // Red
 //  X4(VGA_RGB_222(2,0,2)), // Magenta
-  X4(VGA_RGB_222(0,2,0)), // Green
+//  X4(VGA_RGB_222(0,2,0)), // Green
 //  X4(VGA_RGB_222(0,2,2)), // Cyan
 //  X4(VGA_RGB_222(2,2,0)), // Yellow
-//  X4(VGA_RGB_222(2,2,2)), // White
+  X4(VGA_RGB_222(2,2,2)), // White
 //  X4(VGA_RGB_222(0,0,0)), // Bright Black
 //  X4(VGA_RGB_222(0,0,3)), // Bright Blue
 //  X4(VGA_RGB_222(3,0,0)), // Bright Red
@@ -46,10 +46,10 @@ static uint32_t colour_words[2] = {
 //  X4(VGA_RGB_332(0,0,2)), // Blue
 //  X4(VGA_RGB_332(5,0,0)), // Red
 //  X4(VGA_RGB_332(5,0,2)), // Magenta
-  X4(VGA_RGB_332(0,5,0)), // Green
+//  X4(VGA_RGB_332(0,5,0)), // Green
 //  X4(VGA_RGB_332(0,5,2)), // Cyan
 //  X4(VGA_RGB_332(5,5,0)), // Yellow
-//  X4(VGA_RGB_332(5,5,2)), // White
+  X4(VGA_RGB_332(5,5,2)), // White
 //  X4(VGA_RGB_332(0,0,0)), // Bright Black
 //  X4(VGA_RGB_332(0,0,3)), // Bright Blue
 //  X4(VGA_RGB_332(7,0,0)), // Bright Red
