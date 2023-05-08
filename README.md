@@ -40,9 +40,9 @@ The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-
 [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) do not match up with the
 RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which gets around the problem.
 
+
 ## Screen shots
-<img src="docs/chomp.jpg" width="300"/>
-<img src="docs/disk_menu.jpg" width="300"/>
+<img src="docs/screenshots/menu.png" width="320px"/>  <img src="docs/screenshots/monitor_start_cpm.png" width="320px"/>  <img src="docs/screenshots/cpm_dir.png" width="320px"/>  <img src="docs/screenshots/chomp.png" width="320px"/> <img src="docs/screenshots/asteroids.png" width="320px"/> <img src="docs/screenshots/galx.png" width="320px"/> <img src="docs/screenshots/chess.png" width="320px"/> <img src="docs/screenshots/invaders.png" width="320px"/> <img src="docs/screenshots/monitor_du.png" width="320px"/> 
 
 ## Prototype
 <img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
