@@ -168,7 +168,7 @@ Clone the projects from github:
 Using *git* protocol:
 ```sh
 git clone git@github.com:raspberrypi/pico-extras.git
-git clone git@github.com:Wren6991/PicoDVI.git
+git clone git@github.com:fruit-bat/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-sorcerer2.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
@@ -181,7 +181,7 @@ git clone git@github.com:redcode/Zeta.git
 ...or using *https* protocol:
 ```sh
 git clone https://github.com/raspberrypi/pico-extras.git
-git clone https://github.com/Wren6991/PicoDVI.git
+git clone https://github.com/fruit-bat/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-sorcerer2.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
@@ -198,7 +198,12 @@ and set FF_USE_FIND to 1
 ```
 #define FF_USE_FIND            1
 ```
-
+Switch to the audio branch of PicoDVI
+```sh
+cd PicoDVI
+git checkout audio
+cd -
+```
 
 Perform the build:
 ```sh

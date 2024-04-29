@@ -78,11 +78,11 @@ static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const
   return CHAR_COLS;
 }
 
-void __not_in_flash_func(core1_scanline_callback)() {
+void __not_in_flash_func(core1_scanline_callback)(unsigned int) {
   static uint y = 1;
   static uint ys = 0;
-  uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y++, ys, _frames) : prepare_scanline_64(charbuf, y++, ys);
-  if (0 == (y & 7)) {
+  uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y, ys, _frames) : prepare_scanline_64(charbuf, y, ys);
+  if (0 == (++y & 7)) {
     ys += rs;
   }
   if (y == FRAME_HEIGHT) {
