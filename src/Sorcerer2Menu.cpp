@@ -359,12 +359,18 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
       &_selectRompac, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose ROM Pack"); },
       true);
+    printf("Creating dir reader\n");
     FatFsSpiDirReader dirReader(_sdCard, SAVED_ROMPACS_DIR);
+    printf("Removing old options\n");
     _selectRompac.deleteOptions();
+    printf("Creating dir reader\n");
     dirReader.foreach([=](const FILINFO* info) {
+    printf("About to add option for %s\n", info->fname);
       _selectRompac.addOption(new PicoOptionText(info->fname));
+    printf("Added option for %s\n", info->fname);
       return true;
     });
+    printf("Done reading dir\n");
    });
   _rompacUnitOp2.toggle([=]() {
     Sorcerer2RomPac *rompac = _sorcerer2->romPac();

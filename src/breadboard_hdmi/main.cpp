@@ -80,7 +80,7 @@ static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const
 }
 
 void __not_in_flash_func(core1_scanline_callback)(unsigned int) {
-  static uint y = 1;
+  static uint y = 0;
   static uint ys = 0;
   uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y, ys, _frames) : prepare_scanline_64(charbuf, y, ys);
   if (0 == (++y & 7)) {
@@ -97,13 +97,41 @@ void __not_in_flash_func(core1_scanline_callback)(unsigned int) {
   }
 }
 
+void __not_in_flash_func(scanline_loop)()
+{
+  uint y = 0;
+  uint ys = 0;
+  while (1)
+  {
+
+    uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y, ys, _frames) : prepare_scanline_64(charbuf, y, ys);
+    if (0 == (++y & 7))
+    {
+      ys += rs;
+    }
+    if (y == FRAME_HEIGHT)
+    {
+      _frames++;
+      y = 0;
+      ys = 0;
+      if (toggleMenu)
+      {
+        showMenu = !showMenu;
+        toggleMenu = false;
+      }
+    }
+  }
+}
+
 void core1_main() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
   sem_acquire_blocking(&dvi_start_sem);
 
   dvi_start(&dvi0);
 
-  prepare_scanline_64(charbuf, 0, 0);
+  //prepare_scanline_64(charbuf, 0, 0);
+scanline_loop();
+
   // The text display is completely IRQ driven (takes up around 30% of cycles @
   // VGA). We could do something useful, or we could just take a nice nap
   while (1) 
@@ -202,7 +230,7 @@ extern "C" int __not_in_flash_func(main)() {
 
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
-  dvi0.scanline_callback = core1_scanline_callback;
+  //dvi0.scanline_callback = core1_scanline_callback;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
 
   printf("Prepare first scanline\n");
