@@ -13,6 +13,7 @@ add_executable(sorcerer2_hdmi
 # as big as they need to be 
 target_compile_definitions(sorcerer2_hdmi PRIVATE
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_MONOCHROME_TMDS=1

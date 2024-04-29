@@ -14,6 +14,7 @@ pico_generate_pio_header(sorcerer2_demo_dv
 
 target_compile_definitions(sorcerer2_demo_dv PRIVATE
   DVI_DEFAULT_SERIAL_CONFIG=pimoroni_demo_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_MONOCHROME_TMDS=1
