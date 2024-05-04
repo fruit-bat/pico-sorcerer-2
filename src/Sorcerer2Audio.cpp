@@ -211,10 +211,10 @@ void __not_in_flash_func(sorcerer2AudioHandler)(uint32_t vA, bool mute) {
     ll = rr = 0;
   }
   else {
-    uint32_t l = vA;
-    uint32_t r = vA;
-    ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
-    rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
+    const int32_t l = (int32_t)(vA << 8);
+    const int32_t v = (l - (1 << (8 + 6 - 1))) & 0xffff;
+    ll = (__mul_instruction(_vol, v) >> 8) & 0xffff;
+    rr = (__mul_instruction(_vol, v) >> 8) & 0xffff;
   }
 #if defined(PICO_HDMI_AUDIO)
   audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
