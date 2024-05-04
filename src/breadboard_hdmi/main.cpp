@@ -12,7 +12,11 @@
 #include "hardware/dma.h"
 #include "hardware/uart.h"
 #include "hardware/pwm.h"
+
+#ifdef USE_PS2_KBD
 #include "ps2kbd.h"
+#endif
+
 #include "pico/sem.h"
 extern "C" {
 #include "dvi.h"
@@ -148,7 +152,7 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 	sorcerer2HidKeyboard.unmount();
 }
 
-extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
 #if 0
   // Some help debugging keyboard input/drivers
 	printf("PREV ");print(prev_report);
@@ -165,18 +169,22 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   if (r == 1) toggleMenu = true;
 }
 
+#ifdef USE_PS2_KBD
 static Ps2Kbd ps2kbd(
   pio1,
   6,
   process_kbd_report
 );
+#endif
 
 void __not_in_flash_func(main_loop)() {
   uint frames = 0;
 
   while (1) {
     tuh_task();
+#ifdef USE_PS2_KBD
     ps2kbd.tick();
+#endif
     if (!showMenu) {
       for(int i=0; i < 100; ++i) {
         sorcerer2.stepCpu();
@@ -207,8 +215,9 @@ extern "C" int main() {
   
   printf("Starting TinyUSB\n");
   tusb_init();
+#ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
-
+#endif
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
