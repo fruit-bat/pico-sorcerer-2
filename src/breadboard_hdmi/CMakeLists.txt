@@ -21,7 +21,7 @@ target_compile_definitions(sorcerer2_hdmi PRIVATE
   PCS_COLS=80
   PCS_ROWS=30
   LED_PIN=25
-  SPK_PIN=20
+#  SPK_PIN=20
   FF_USE_FIND=1
   SDCARD_PIO=pio1
   SDCARD_PIO_SM=1
@@ -30,6 +30,7 @@ target_compile_definitions(sorcerer2_hdmi PRIVATE
   SDCARD_PIN_SPI0_SCK=2
   SDCARD_PIN_SPI0_MOSI=3
   SDCARD_PIN_SPI0_MISO=4  
+  PICO_HDMI_AUDIO
 )
 
 set(sorcerer2_hdmi_libs

@@ -94,7 +94,14 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   });
   _mainOp4.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"CPU Speed       [ %-12s]", _sorcerer2->moderate() ? "4 Mhz" : "Unmoderated");
+    const char *m;
+    switch(_sorcerer2->moderate()) {
+      case 4: m = "8.0 Mhz" ; break;
+      case 8: m = "4.0 Mhz" ; break;
+      case 0: m = "Unmoderated" ; break;
+      default: m = "Unknown" ; break;
+    }
+    pen->printAtF(0, 0, false,"CPU Speed       [ %-12s]", m);
   });
   _muteOp.toggle([=]() {
     _sorcerer2->toggleMute();

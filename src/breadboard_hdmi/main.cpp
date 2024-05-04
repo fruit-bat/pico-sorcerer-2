@@ -171,7 +171,28 @@ static Ps2Kbd ps2kbd(
   process_kbd_report
 );
 
-extern "C" int __not_in_flash_func(main)() {
+void __not_in_flash_func(main_loop)() {
+  uint frames = 0;
+
+  while (1) {
+    tuh_task();
+    ps2kbd.tick();
+    if (!showMenu) {
+      for(int i=0; i < 100; ++i) {
+        sorcerer2.stepCpu();
+      }
+      sorcerer2.stepDisk();
+    }
+    else if (frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
+  }
+
+  __builtin_unreachable();
+}
+
+extern "C" int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL
@@ -190,9 +211,6 @@ extern "C" int __not_in_flash_func(main)() {
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-
-  // Initialise the audio
-  Sorcerer2AudioInit();
 
   // Initialise the menu renderer
   pcw_init_renderer();
@@ -214,8 +232,8 @@ extern "C" int __not_in_flash_func(main)() {
   //dvi0.scanline_callback = core1_scanline_callback;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
 
-  printf("Prepare first scanline\n");
-
+  // Initialise the audio
+  sorcerer2AudioInit();
 
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
@@ -226,23 +244,7 @@ extern "C" int __not_in_flash_func(main)() {
 
   sorcerer2.reset();
 
-  uint frames = 0;
-  while (1) {
-    tuh_task();
-    ps2kbd.tick();
-    if (!showMenu) {
-      for(int i=0; i < 100; ++i) {
-        sorcerer2.stepCpu();
-        if (Sorcerer2AudioReady()) {
-          Sorcerer2AudioToGpio(sorcerer2);
-        }
-      }
-      sorcerer2.stepDisk();
-    }
-    else if (frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
-    }
-  }
+  main_loop();
+
   __builtin_unreachable();
 }
