@@ -77,7 +77,7 @@ bool repeating_timer_callback(struct repeating_timer *timer)
   return true;
 }
 
-#define PWM_WRAP (255)
+#define PWM_WRAP (63)
 
 static void init_pwm_pin(uint32_t pin) { 
   gpio_set_function(pin, GPIO_FUNC_PWM);
