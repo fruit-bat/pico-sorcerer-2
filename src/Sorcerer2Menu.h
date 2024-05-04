@@ -9,6 +9,8 @@
 #include "SdCardFatFsSpi.h"
 #include "PicoTextField.h"
 #include <functional>
+#include "PicoSlider.h"
+#include "Sorcerer2Audio.h"
 
 class Sorcerer2;
 
@@ -25,6 +27,7 @@ private:
   PicoQuickKeyAscii _k4;
   PicoQuickKeyAscii _k5;
   PicoQuickKeyAscii _k6;
+  PicoQuickKeyAscii _k7;
 
   PicoWiz _wiz;
   PicoSelect _main;
@@ -33,6 +36,7 @@ private:
   PicoOptionText _mainOp3;
   PicoOption _mainOp4;
   PicoOption _muteOp;
+  PicoOption _volumeOp;
   PicoOptionText _resetOp;
 
   PicoSelect _diskUnits;
@@ -81,7 +85,9 @@ private:
   PicoOptionText _confirmYes;
 
   PicoSelect _selectDelete;
- 
+
+  PicoSlider _volume;
+
   void showError(std::function<void(PicoPen *pen)> message);
   bool deleteSave(const char *folder, const char *file);
   bool createDisk(const char* dnr);

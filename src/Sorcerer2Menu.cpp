@@ -15,9 +15,9 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
  PicoWin(0, 0, 80, 30),
   _sdCard(sdCard),
   _sorcerer2(sorcerer2),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
   _wiz(5, 6, 70, 18),
-  _main(0, 0, 70, 6, 3),
+  _main(0, 0, 70, 7, 2),
   _mainOp1("Disk system"),
   _mainOp2("Tape system"),
   _mainOp3("ROM Pack"),
@@ -50,7 +50,8 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _confirm(0, 0, 70, 6, 3),
   _confirmNo("No"),
   _confirmYes("Yes"),
-  _selectDelete(0, 0, 70, 15, 1)
+  _selectDelete(0, 0, 70, 15, 1),
+  _volume(0, 0, 16, 16)
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -63,7 +64,8 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _main.addOption(_mainOp3.addQuickKey(&_k3));
   _main.addOption(_mainOp4.addQuickKey(&_k4));
   _main.addOption(_muteOp.addQuickKey(&_k5));
-  _main.addOption(_resetOp.addQuickKey(&_k6));
+  _main.addOption(_volumeOp.addQuickKey(&_k6));
+  _main.addOption(_resetOp.addQuickKey(&_k7));
   _main.enableQuickKeys();
   _mainOp1.toggle([=]() {
     _wiz.push(
@@ -106,6 +108,20 @@ Sorcerer2Menu::Sorcerer2Menu(SdCardFatFsSpi* sdCard, Sorcerer2 *sorcerer2) :
   _muteOp.toggle([=]() {
     _sorcerer2->toggleMute();
     _main.repaint();
+  });
+  _volume.config(
+    [](uint32_t v) { sorcerer2AudioSetVolume(v); },
+    []() { return sorcerer2AudioGetVolume(); }
+  );
+  _volumeOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", 16, "Volume", 12, _volume.getChars());
+  });
+  _volumeOp.toggle([=]() {
+    _wiz.push(
+      &_volume, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Volume control"); }, 
+      true);
   });
   _muteOp.onPaint([=](PicoPen *pen){
     pen->clear();
