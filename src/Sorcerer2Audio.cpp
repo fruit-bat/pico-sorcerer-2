@@ -77,7 +77,7 @@ bool repeating_timer_callback(struct repeating_timer *timer)
   return true;
 }
 
-#define PWM_WRAP (63)
+#define PWM_WRAP (63 << 2)
 
 static void init_pwm_pin(uint32_t pin) { 
   gpio_set_function(pin, GPIO_FUNC_PWM);
@@ -235,7 +235,7 @@ void __not_in_flash_func(sorcerer2AudioHandler)(uint32_t vA, bool mute) {
     buf->vA = 0;
   }
   else {
-    buf->vA = vA;
+    buf->vA = (__mul_instruction(_vol, vA) >> 6);
   }
   es_audio_buf_write_next(&es_audio_buf);
 #endif
