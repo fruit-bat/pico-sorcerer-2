@@ -51,33 +51,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 ## Screen shots
 <img src="docs/screenshots/menu.png" width="320px"/>  <img src="docs/screenshots/monitor_start_cpm.png" width="320px"/>  <img src="docs/screenshots/cpm_dir.png" width="320px"/>  <img src="docs/screenshots/chomp.png" width="320px"/> <img src="docs/screenshots/asteroids.png" width="320px"/> <img src="docs/screenshots/galx.png" width="320px"/> <img src="docs/screenshots/chess.png" width="320px"/> <img src="docs/screenshots/invaders.png" width="320px"/> <img src="docs/screenshots/monitor_du.png" width="320px"/> 
 
-## Prototype
-<img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
-
-## Wiring
-
-|       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
-| ----- | ----  | ----- | ---   | --------  | --------- | --------- | ---------------------- |
-| MISO  | RX    | 4     | 6     | DO        | DO        |           | Master In, Slave Out   |
-| CS0   | CSn   | 5     | 7     | SS or CS  | CS        |           | Slave (or Chip) Select |
-| SCK   | SCK   | 2     | 4     | SCLK      | CLK       |           | SPI clock              |
-| MOSI  | TX    | 3     | 5     | DI        | DI        |           | Master Out, Slave In   |
-| CD    |       | 22    | 29    |           | CD        |           | Card Detect            |
-| GND   |       |       | 3     |           | GND       |           | Ground                 |
-| 3v3   |       |       | 36    |           | 3v3       |           | 3.3 volt power         |
-| GND   |       |       | 18,23 |           |           | GND       | Ground                 |
-| GP16  |       | 16    | 21    |           |           | TX2+      | Data channel 2+        |
-| GP17  |       | 17    | 22    |           |           | TX2-      | Data channel 2-        |
-| GP18  |       | 18    | 24    |           |           | TX1+      | Data channel 1+        |
-| GP19  |       | 19    | 25    |           |           | TX1-      | Data channel 1-        |
-| GP12  |       | 12    | 16    |           |           | TX0+      | Data channel 0+        |
-| GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
-| GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
-| GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
-| GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
-| GP6   |       | 6     | 9     |           |           |           | PS/2 data (RP_PS2_DATA)|
-| GP7   |       | 7     | 10    |           |           |           | PS/2 clk  (RP_PS2_CLK) |
-
+## Pi Pico Pinout
 
 ![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
