@@ -3,12 +3,13 @@
 #include "exchr.h"
 #include "diskboot.h"
 #include <memory.h>
+#include "Sorcerer2Audio.h"
 
 Sorcerer2::Sorcerer2(
   Sorcerer2Keyboard *keyboard,
   Sorcerer2DiskSystem *diskSystem
 ) : 
-  _moderate(true),
+  _moderate(8),
   _RAM{0},
   _keyboard(keyboard),
   _diskSystem(diskSystem)
@@ -60,8 +61,7 @@ void Sorcerer2::reset() {
   _tapeSystem.reset();
   if (_diskSystem) _diskSystem->reset();
   reset(0xE000); 
-  _tu4 = time_us_32() << 2;
-  _ta4 = 0;
+  _ta32 = 0;
 }
 
 void Sorcerer2::saveMem() {
@@ -72,23 +72,24 @@ void Sorcerer2::loadMem() {
   memcpy(_RAM + 0x100, _buf, 1<<15);
 }
 
-bool Sorcerer2::moderate() {
-  return _moderate;
-}
-
-void Sorcerer2::moderate(bool on) {
-  if (on == _moderate) return;
-  
-  if (on) {
-    _tu4 = time_us_32() << 2;
-    _ta4 = 0;
+// 0 - Z80 unmoderated
+// 8 - Z80 at 4.0Mhz
+// 4 - Z80 at 8.0Mhz
+void Sorcerer2::moderate(uint32_t mul) {
+  if (mul == _moderate) return;
+  if (mul) {
+    _ta32 = 0;
   }
-  
-  _moderate = on;
+  _moderate = mul;
 }
 
 void Sorcerer2::toggleModerate() {
-  moderate(!_moderate);
+  switch(_moderate) {
+    case 8: moderate(4); break;
+    case 4: moderate(0); break;
+    case 0: moderate(8); break;
+    default: break;
+  }
 }
 
 Sorcerer2RomPac* Sorcerer2::insertRomPac(Sorcerer2RomPac* rompac) {
@@ -115,4 +116,38 @@ Sorcerer2RomPac* Sorcerer2::ejectRomPac() {
   return r;  
 }
 
+void __not_in_flash_func(Sorcerer2::stepDisk)()
+{
+  if (_cycles >= CYCLES_PER_DISK_TICK) {
+    diskTick();
+    _cycles -= CYCLES_PER_DISK_TICK;
+  }
+}
 
+uint32_t __not_in_flash_func(Sorcerer2::stepCpu)()
+{
+  // Time for a single audio out sample in 32nds of a micro second
+  const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
+  
+  const uint32_t c = z80Step(32);
+  _cycles += c;
+  uint32_t vA;
+  if (_moderate) {
+    const uint32_t t32 = __mul_instruction(c, _moderate);
+    // Audio out
+    _ta32 += t32;
+    while(_ta32 >= u32pas) {
+      while(!sorcerer2AudioReady());
+      vA = getSound();
+      sorcerer2AudioHandler(vA, _mute);
+      _ta32 -= u32pas;
+    }
+  }
+  else {
+    if (sorcerer2AudioReady()) {
+      vA = getSound();
+      sorcerer2AudioHandler(vA, _mute);
+    }   
+  }
+  return c;
+}

@@ -45,17 +45,19 @@
 #define FRAME_WIDTH 640
 #define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
-#define DVI_TIMING dvi_timing_640x480p_60hz
 
+#ifndef LED_PIN
 #define LED_PIN 25
+#endif
+#ifndef SPK_PIN
 #define SPK_PIN 9
+#endif
 // Very loud!
 // #define PWM_WRAP 63 
 #define PWM_WRAP 256
 
 struct semaphore dvi_start_sem;
-static const sVmode* vmode = NULL;
-
+static sVmode vmode;
 static uint8_t* charbuf;
 static uint8_t* exchr;
 
@@ -65,12 +67,31 @@ static bool toggleMenu = false;
 // Menu handler
 static volatile uint _frames = 0;
 
+void SorcererRgb332Init()
+{
+  sVgaCfg cfg;
+  cfg.width = FRAME_WIDTH;                // width in pixels
+  cfg.height = FRAME_HEIGHT << 1;         // height in lines
+  cfg.wfull = 0;                          // width of full screen, corresponding to 'hfull' time (0=use 'width' parameter)
+  cfg.video = &VideoVGA;                  // used video timings
+  cfg.freq = 250000;                      // required minimal system frequency in kHz (real frequency can be higher)
+  cfg.fmax = 280000;                      // maximal system frequency in kHz (limit resolution if needed)
+  cfg.dbly = true;                        // double in Y direction
+  cfg.lockfreq = false;                   // lock required frequency, do not change it
+  VgaCfg(&cfg, &vmode);                   // calculate videomode setup
+
+  // initialize system clock
+  set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
+
+  sleep_ms(100);
+}
+
 void core1_main() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
   // TODO fetch the resolution from the mode ?
-  VgaInit(vmode,640,480);
+  VgaInit(&vmode);
 
   while (1) {
 
@@ -141,10 +162,6 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   if (r == 1) toggleMenu = true;
 }
 
-void __not_in_flash_func(main_loop)(){
-  // TODO
-}
-
 #ifdef USE_PS2_KBD
 static Ps2Kbd ps2kbd(
   pio1,
@@ -153,11 +170,33 @@ static Ps2Kbd ps2kbd(
 );
 #endif
 
-extern "C" int __not_in_flash_func(main)() {
+void __not_in_flash_func(main_loop)() {
+  uint frames = 0;
+
+  while (1) {
+    tuh_task();
+#ifdef USE_PS2_KBD
+    ps2kbd.tick();
+#endif
+    if (!showMenu) {
+      for(int i=0; i < 100; ++i) {
+        sorcerer2.stepCpu();
+      }
+      sorcerer2.stepDisk();
+    }
+    else if (frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
+  }
+
+  __builtin_unreachable();
+}
+
+extern "C" int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  vmode = Video(DEV_VGA, RES_HVGA);
-  sleep_ms(100);
+  SorcererRgb332Init();
 
   //Initialise I/O
   stdio_init_all();
@@ -171,7 +210,7 @@ extern "C" int __not_in_flash_func(main)() {
 #endif
 
   // Initialise the audio
-  Sorcerer2AudioInit();
+  sorcerer2AudioInit();
 
   // Initialise the menu renderer
   pcw_init_renderer();
@@ -196,27 +235,7 @@ extern "C" int __not_in_flash_func(main)() {
 
   sorcerer2.reset();
 
-  uint frames = 0;
-  while (1) {
-    tuh_task();
-#ifdef USE_PS2_KBD
-    ps2kbd.tick();
-#endif    
-    if (!showMenu) {
-      for(int i=0; i < 100; ++i) {
-        sorcerer2.stepCpu();
-        if (Sorcerer2AudioReady()) {
-          Sorcerer2AudioToGpio(sorcerer2);
-        }
-      }
-      sorcerer2.stepDisk();
-    }
-    else if (frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
-    }
-  }
+  main_loop();
+
   __builtin_unreachable();
-  
-// TODO   main_loop();
 }

@@ -15,13 +15,13 @@ class Sorcerer2 {
 private:
   Z80 _Z80;
   int32_t _cycles;
-  uint32_t _tu4;
-  int32_t _ta4;
+  int32_t _ta32;
   Sorcerer2TapeSystem _tapeSystem;
-  bool _moderate, _mute;
+  bool _mute;
   uint8_t _centronicsOut;
   Sorcerer2RomPac *_rompac;
-  
+  uint32_t _moderate;
+
   inline uint32_t z80Step(uint32_t tstates) {
     return z80_run(&_Z80, tstates);
   }
@@ -154,8 +154,6 @@ public:
   Sorcerer2DiskSystem *diskSystem() { return _diskSystem; }
   void saveMem();
   void loadMem();
-  void moderate(bool on);
-  bool moderate();
   void mute(bool mute) { _mute = mute; }
   void toggleMute() { _mute = !_mute; }
   bool mute() { return _mute; }
@@ -163,32 +161,15 @@ public:
   Sorcerer2RomPac* ejectRomPac();
   Sorcerer2RomPac* romPac() { return _rompac; }
 
-
+  void moderate(uint32_t mul);
   void toggleModerate();
+  uint32_t moderate() { return _moderate; }
+
   uint8_t inline getCentronics() { return _centronicsOut; }
   uint8_t inline getSound() { return _mute ? 0 : _centronicsOut >> 2; }
 
-  inline void stepCpu()
-  {
-    // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
-      int c = z80Step(32);
-      _cycles += c;
-      if (_moderate) {
-        uint32_t tu4 = time_us_32() << 2;
-        _ta4 += c - tu4 + _tu4; // +ve too fast, -ve too slow
-        _tu4 = tu4;
-        if (_ta4 >= 4) busy_wait_us_32(_ta4 >> 2);
-        if (_ta4 < -100000) _ta4 = -100000;
-      }
-  }
-
-  inline void stepDisk()
-  {
-    if (_cycles >= CYCLES_PER_DISK_TICK) {
-      diskTick();
-      _cycles -= CYCLES_PER_DISK_TICK;
-    }
-  }
+  void stepDisk();
+  uint32_t stepCpu();
 
 };
 

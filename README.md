@@ -5,30 +5,36 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 <img src="docs/sorcerer2.png" width="400"/>
 </a>
 
+
+This project is intended to be relatively easy to breadboard or prototype in some other way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
+
 ## Features
 * CP/M 1.4
-* DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
+* HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * RGB 332 222 & 1111 over VGA<br/>
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read/write to SD card
 * ROM Pac read from SD card
 * USB Keyboard
 * PS/2 keyboard
-* PWM/I2S DAC audio out
+* HDMI/PWM/I2S DAC audio out
 * On screen menu system
 
-## Supported Boards
-* Breadboard
-* [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
-* Pimoroni Pico DV Demo Base 
+## Boards
+Click on the images below for more inforation ...
 
-<a><img src="docs/breadboard.png" width="200"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+<a href="docs/Sorcerer2BreadboardHdmi.md"><img src="docs/pico_sorcerer_prototype_1.jpg" width="200"/></a>
+
+<a href="docs/Sorcerer2PwmAudioVga1111Ps2.md"><img src="docs/Sorcerer2PwmAudioVga1111Ps2Breadboard.jpg" width="200"/></a>
+
+<a href="docs/Sorcerer2PicomputerVga.md"><img src="docs/retrovga.png" width="200"/></a>
+
+<a href="docs/Sorcerer2PicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
+* 05/05/24 - Audio over HDMI, volume conrol on menu
 * 08/05/23 - Updated builds
 * 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 23/07/22 - Added target for Pico DV board
@@ -45,33 +51,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 ## Screen shots
 <img src="docs/screenshots/menu.png" width="320px"/>  <img src="docs/screenshots/monitor_start_cpm.png" width="320px"/>  <img src="docs/screenshots/cpm_dir.png" width="320px"/>  <img src="docs/screenshots/chomp.png" width="320px"/> <img src="docs/screenshots/asteroids.png" width="320px"/> <img src="docs/screenshots/galx.png" width="320px"/> <img src="docs/screenshots/chess.png" width="320px"/> <img src="docs/screenshots/invaders.png" width="320px"/> <img src="docs/screenshots/monitor_du.png" width="320px"/> 
 
-## Prototype
-<img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
-
-## Wiring
-
-|       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
-| ----- | ----  | ----- | ---   | --------  | --------- | --------- | ---------------------- |
-| MISO  | RX    | 4     | 6     | DO        | DO        |           | Master In, Slave Out   |
-| CS0   | CSn   | 5     | 7     | SS or CS  | CS        |           | Slave (or Chip) Select |
-| SCK   | SCK   | 2     | 4     | SCLK      | CLK       |           | SPI clock              |
-| MOSI  | TX    | 3     | 5     | DI        | DI        |           | Master Out, Slave In   |
-| CD    |       | 22    | 29    |           | CD        |           | Card Detect            |
-| GND   |       |       | 3     |           | GND       |           | Ground                 |
-| 3v3   |       |       | 36    |           | 3v3       |           | 3.3 volt power         |
-| GND   |       |       | 18,23 |           |           | GND       | Ground                 |
-| GP16  |       | 16    | 21    |           |           | TX2+      | Data channel 2+        |
-| GP17  |       | 17    | 22    |           |           | TX2-      | Data channel 2-        |
-| GP18  |       | 18    | 24    |           |           | TX1+      | Data channel 1+        |
-| GP19  |       | 19    | 25    |           |           | TX1-      | Data channel 1-        |
-| GP12  |       | 12    | 16    |           |           | TX0+      | Data channel 0+        |
-| GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
-| GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
-| GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
-| GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
-| GP6   |       | 6     | 9     |           |           |           | PS/2 data (RP_PS2_DATA)|
-| GP7   |       | 7     | 10    |           |           |           | PS/2 clk  (RP_PS2_CLK) |
-
+## Pi Pico Pinout
 
 ![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
@@ -168,7 +148,7 @@ Clone the projects from github:
 Using *git* protocol:
 ```sh
 git clone git@github.com:raspberrypi/pico-extras.git
-git clone git@github.com:Wren6991/PicoDVI.git
+git clone git@github.com:fruit-bat/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-sorcerer2.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
@@ -181,7 +161,7 @@ git clone git@github.com:redcode/Zeta.git
 ...or using *https* protocol:
 ```sh
 git clone https://github.com/raspberrypi/pico-extras.git
-git clone https://github.com/Wren6991/PicoDVI.git
+git clone https://github.com/fruit-bat/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-sorcerer2.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
@@ -198,7 +178,12 @@ and set FF_USE_FIND to 1
 ```
 #define FF_USE_FIND            1
 ```
-
+Switch to the audio branch of PicoDVI
+```sh
+cd PicoDVI
+git checkout audio
+cd -
+```
 
 Perform the build:
 ```sh

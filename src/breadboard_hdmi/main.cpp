@@ -12,7 +12,11 @@
 #include "hardware/dma.h"
 #include "hardware/uart.h"
 #include "hardware/pwm.h"
+
+#ifdef USE_PS2_KBD
 #include "ps2kbd.h"
+#endif
+
 #include "pico/sem.h"
 extern "C" {
 #include "dvi.h"
@@ -79,20 +83,28 @@ static uint __not_in_flash_func(prepare_scanline_64)(const uint8_t *chars, const
   return CHAR_COLS;
 }
 
-void __not_in_flash_func(core1_scanline_callback)() {
-  static uint y = 1;
-  static uint ys = 0;
-  uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y++, ys, _frames) : prepare_scanline_64(charbuf, y++, ys);
-  if (0 == (y & 7)) {
-    ys += rs;
-  }
-  if (y == FRAME_HEIGHT) {
-    _frames++;
-    y = 0;
-    ys = 0;
-    if (toggleMenu) {
-      showMenu = !showMenu;
-      toggleMenu = false;
+void __not_in_flash_func(scanline_loop)()
+{
+  uint y = 0;
+  uint ys = 0;
+  while (1)
+  {
+
+    uint rs = showMenu ? pcw_prepare_scanline_80(&dvi0, y, ys, _frames) : prepare_scanline_64(charbuf, y, ys);
+    if (0 == (++y & 7))
+    {
+      ys += rs;
+    }
+    if (y == FRAME_HEIGHT)
+    {
+      _frames++;
+      y = 0;
+      ys = 0;
+      if (toggleMenu)
+      {
+        showMenu = !showMenu;
+        toggleMenu = false;
+      }
     }
   }
 }
@@ -102,6 +114,8 @@ void core1_main() {
   sem_acquire_blocking(&dvi_start_sem);
 
   dvi_start(&dvi0);
+
+  scanline_loop();
 
   // The text display is completely IRQ driven (takes up around 30% of cycles @
   // VGA). We could do something useful, or we could just take a nice nap
@@ -138,7 +152,7 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 	sorcerer2HidKeyboard.unmount();
 }
 
-extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
 #if 0
   // Some help debugging keyboard input/drivers
 	printf("PREV ");print(prev_report);
@@ -155,13 +169,38 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   if (r == 1) toggleMenu = true;
 }
 
+#ifdef USE_PS2_KBD
 static Ps2Kbd ps2kbd(
   pio1,
   6,
   process_kbd_report
 );
+#endif
 
-extern "C" int __not_in_flash_func(main)() {
+void __not_in_flash_func(main_loop)() {
+  uint frames = 0;
+
+  while (1) {
+    tuh_task();
+#ifdef USE_PS2_KBD
+    ps2kbd.tick();
+#endif
+    if (!showMenu) {
+      for(int i=0; i < 100; ++i) {
+        sorcerer2.stepCpu();
+      }
+      sorcerer2.stepDisk();
+    }
+    else if (frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
+  }
+
+  __builtin_unreachable();
+}
+
+extern "C" int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL
@@ -176,13 +215,11 @@ extern "C" int __not_in_flash_func(main)() {
   
   printf("Starting TinyUSB\n");
   tusb_init();
+#ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
-
+#endif
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-
-  // Initialise the audio
-  Sorcerer2AudioInit();
 
   // Initialise the menu renderer
   pcw_init_renderer();
@@ -201,12 +238,10 @@ extern "C" int __not_in_flash_func(main)() {
 
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
-  dvi0.scanline_callback = core1_scanline_callback;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
 
-  printf("Prepare first scanline\n");
-
-  prepare_scanline_64(charbuf, 0, 0);
+  // Initialise the audio
+  sorcerer2AudioInit();
 
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
@@ -217,23 +252,7 @@ extern "C" int __not_in_flash_func(main)() {
 
   sorcerer2.reset();
 
-  uint frames = 0;
-  while (1) {
-    tuh_task();
-    ps2kbd.tick();
-    if (!showMenu) {
-      for(int i=0; i < 100; ++i) {
-        sorcerer2.stepCpu();
-        if (Sorcerer2AudioReady()) {
-          Sorcerer2AudioToGpio(sorcerer2);
-        }
-      }
-      sorcerer2.stepDisk();
-    }
-    else if (frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
-    }
-  }
+  main_loop();
+
   __builtin_unreachable();
 }
