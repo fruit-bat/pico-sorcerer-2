@@ -34,7 +34,7 @@ Click on the images below for more inforation ...
 Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
-* 05/05/24 - Audio over HDMI, volumn conrol on menu
+* 05/05/24 - Audio over HDMI, volume conrol on menu
 * 08/05/23 - Updated builds
 * 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 23/07/22 - Added target for Pico DV board
