@@ -14,6 +14,7 @@ It supports the following:
 
 #### Circuit diagrams
 Only GPIO 20 is used for audio output.
+
 ![image](Sorcerer2PwmAudioVga1111Ps2.png)
 
 The digram below has the wrong pin numbers, trust the picture above.

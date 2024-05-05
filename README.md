@@ -10,24 +10,22 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Features
 * CP/M 1.4
-* DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
+* HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * RGB 332 222 & 1111 over VGA<br/>
 * 4 emulated disk units with read/write to SD card
 * 2 eumlated tape units with read/write to SD card
 * ROM Pac read from SD card
 * USB Keyboard
 * PS/2 keyboard
-* PWM/I2S DAC audio out
+* HDMI/PWM/I2S DAC audio out
 * On screen menu system
 
 ## Boards
 Click on the images below for more inforation ...
 
-* Breadboard
-* [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
-* Pimoroni Pico DV Demo Base 
+<a href="docs/Sorcerer2BreadboardHdmi.md"><img src="docs/pico_sorcerer_prototype_1.jpg" width="200"/></a>
 
-<a><img src="docs/breadboard.png" width="200"/></a>
+<a href="docs/Sorcerer2PwmAudioVga1111Ps2.md"><img src="docs/Sorcerer2PwmAudioVga1111Ps2Breadboard.jpg" width="200"/></a>
 
 <a href="docs/Sorcerer2PicomputerVga"><img src="docs/retrovga.png" width="200"/></a>
 
