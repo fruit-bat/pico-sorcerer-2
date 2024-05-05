@@ -27,7 +27,7 @@ Click on the images below for more inforation ...
 
 <a href="docs/Sorcerer2PwmAudioVga1111Ps2.md"><img src="docs/Sorcerer2PwmAudioVga1111Ps2Breadboard.jpg" width="200"/></a>
 
-<a href="docs/Sorcerer2PicomputerVga"><img src="docs/retrovga.png" width="200"/></a>
+<a href="docs/Sorcerer2PicomputerVga.md"><img src="docs/retrovga.png" width="200"/></a>
 
 <a href="docs/Sorcerer2PicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
