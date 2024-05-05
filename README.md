@@ -5,6 +5,9 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 <img src="docs/sorcerer2.png" width="400"/>
 </a>
 
+
+This project is intended to be relatively easy to breadboard or prototype in some other way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
+
 ## Features
 * CP/M 1.4
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
@@ -17,18 +20,23 @@ Exidy Sorcerer for Raspberry Pi Pico RP2040
 * PWM/I2S DAC audio out
 * On screen menu system
 
-## Supported Boards
+## Boards
+Click on the images below for more inforation ...
+
 * Breadboard
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * Pimoroni Pico DV Demo Base 
 
 <a><img src="docs/breadboard.png" width="200"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+
+<a href="docs/Sorcerer2PicomputerVga"><img src="docs/retrovga.png" width="200"/></a>
+
+<a href="docs/Sorcerer2PicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 Currently, only the USB keyboard is working on the RetroVGA.
 
 ## Updates
+* 05/05/24 - Audio over HDMI, volumn conrol on menu
 * 08/05/23 - Updated builds
 * 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 23/07/22 - Added target for Pico DV board
