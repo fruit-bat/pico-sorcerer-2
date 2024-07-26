@@ -143,6 +143,15 @@ static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
+extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report) {
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
+}
+
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
 	sorcerer2HidKeyboard.mount();
 }
