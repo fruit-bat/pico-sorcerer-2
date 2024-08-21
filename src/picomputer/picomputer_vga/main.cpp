@@ -14,8 +14,7 @@
 #include "hardware/pwm.h"
 #include "pico/sem.h"
 #include "ps2kbd.h"
-#include "vga.h"
-#include "Sorcerer2PrepareRgbScanline.h"
+#include "Sorcerer2ScanlineVgaRenderLoop.h"
 
 #include "Sorcerer2.h"
 #include "Sorcerer2HidKeyboard.h"
@@ -57,7 +56,6 @@
 #define PWM_WRAP 256
 
 struct semaphore dvi_start_sem;
-static sVmode vmode;
 static uint8_t* charbuf;
 static uint8_t* exchr;
 
@@ -67,65 +65,26 @@ static bool toggleMenu = false;
 // Menu handler
 static volatile uint _frames = 0;
 
-void SorcererRgb332Init()
-{
-  sVgaCfg cfg;
-  cfg.width = FRAME_WIDTH;                // width in pixels
-  cfg.height = FRAME_HEIGHT << 1;         // height in lines
-  cfg.wfull = 0;                          // width of full screen, corresponding to 'hfull' time (0=use 'width' parameter)
-  cfg.video = &VideoVGA;                  // used video timings
-  cfg.freq = 250000;                      // required minimal system frequency in kHz (real frequency can be higher)
-  cfg.fmax = 280000;                      // maximal system frequency in kHz (limit resolution if needed)
-  cfg.dbly = true;                        // double in Y direction
-  cfg.lockfreq = false;                   // lock required frequency, do not change it
-  VgaCfg(&cfg, &vmode);                   // calculate videomode setup
+void __not_in_flash_func(Sorcerer2ScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
 
-  // initialize system clock
-  set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
+}
 
-  sleep_ms(100);
+void __not_in_flash_func(Sorcerer2ScanlineVgaRenderLoopCallbackMenu)(bool state) {
+
 }
 
 void core1_main() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-  // TODO fetch the resolution from the mode ?
-  VgaInit(&vmode);
+  Sorcerer2ScanlineVgaRenderLoop(
+    charbuf,
+    exchr,
+    _frames,
+    showMenu,
+    toggleMenu
+  );
 
-  while (1) {
-
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      prepare_rgb_scanline(
-        buf, 
-        y, 
-        charbuf,
-        exchr
-      );
-    }
-      
-//    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-           
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-//        picomputerJoystick.enabled(!showMenu);
-      }
-      
-      _frames = linebuf->frame;
-    }    
-  }
   __builtin_unreachable();
 }
 
@@ -142,6 +101,15 @@ static Sorcerer2 sorcerer2(
 static Sorcerer2Menu picoRootWin(&sdCard0, &sorcerer2);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
+
+extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report) {
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
+}
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
 	sorcerer2HidKeyboard.mount();
@@ -194,9 +162,11 @@ void __not_in_flash_func(main_loop)() {
 }
 
 extern "C" int main() {
+  
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  SorcererRgb332Init();
+
+  Sorcerer2ScanlineVgaRenderLoopInit();
 
   //Initialise I/O
   stdio_init_all();
@@ -214,7 +184,6 @@ extern "C" int main() {
 
   // Initialise the menu renderer
   pcw_init_renderer();
-  pcw_init_vga332_renderer();
 
   charbuf = sorcerer2.screenPtr();
   exchr = sorcerer2.charsPtr();

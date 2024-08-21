@@ -13,3 +13,4 @@ sdcard/sorcerer2/tapes-all
 sdcard/sorcerer2/disks-orig
 sdcard/sorcerer2/roms
 build/**
+build_pimoroni_vga/**

@@ -22,6 +22,11 @@ set(sorcerer2_rgb_src
 	${CMAKE_CURRENT_LIST_DIR}/Sorcerer2PrepareRgbScanline.cpp
 )
 
+set(sorcerer2_scanline_src
+	${CMAKE_CURRENT_LIST_DIR}/Sorcerer2PrepareScanvideoScanline.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Sorcerer2ScanlineVgaRenderLoop.cpp
+)
+
 set(sorcerer2_audio_i2s_pio
   ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio
 )

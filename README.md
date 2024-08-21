@@ -147,7 +147,7 @@ Clone the projects from github:
 
 Using *git* protocol:
 ```sh
-git clone git@github.com:raspberrypi/pico-extras.git
+git clone git@github.com:fruit-bat/pico-extras.git
 git clone git@github.com:fruit-bat/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-sorcerer2.git
@@ -160,7 +160,7 @@ git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
-git clone https://github.com/raspberrypi/pico-extras.git
+git clone https://github.com/fruit-bat/pico-extras.git
 git clone https://github.com/fruit-bat/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-sorcerer2.git
