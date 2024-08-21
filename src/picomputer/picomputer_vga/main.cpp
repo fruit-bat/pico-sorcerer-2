@@ -59,7 +59,7 @@ struct semaphore dvi_start_sem;
 static uint8_t* charbuf;
 static uint8_t* exchr;
 
-static bool showMenu = true;
+static bool showMenu = false;
 static bool toggleMenu = false;
 
 // Menu handler
