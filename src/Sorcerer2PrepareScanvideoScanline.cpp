@@ -97,7 +97,7 @@ static const uint32_t colour_words[16] = {
 };
 
 static const uint32_t bgc = colour_words[0]; // The background colour word
-static const uint32_t fgc = colour_words[4]; // The foreground colour word
+static const uint32_t fgc = colour_words[7]; // The foreground colour word
 
 static uint32_t bbcw[4] {
   bgc | (bgc << 16),
