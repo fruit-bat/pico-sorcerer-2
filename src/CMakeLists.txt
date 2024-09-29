@@ -36,6 +36,7 @@ set(sorcerer2_common_libs
 	pico_multicore
 	pico_util
 	pico_emu_utils
+  pico_hid_host
   sdcard
   fatfs
   hardware_dma

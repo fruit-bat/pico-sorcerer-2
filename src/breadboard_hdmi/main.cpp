@@ -38,6 +38,7 @@ extern "C" {
 #include <pico/printf.h>
 #include "PicoCharRenderer.h"
 #include "Sorcerer2Audio.h"
+#include "hid_app.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -175,7 +176,10 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   else {
     r = sorcerer2HidKeyboard.processHidReport(report, prev_report);
   }
-  if (r == 1) toggleMenu = true;
+  if (r == 1) {
+    toggleMenu = true;
+    picoWinHidKeyboard.cancelRepeat();
+  }
 }
 
 #ifdef USE_PS2_KBD
@@ -200,9 +204,12 @@ void __not_in_flash_func(main_loop)() {
       }
       sorcerer2.stepDisk();
     }
-    else if (frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
+    else {
+      picoWinHidKeyboard.processKeyRepeat();
+      if (frames != _frames) {
+        frames = _frames;
+        picoDisplay.refresh();
+      }
     }
   }
 
@@ -212,18 +219,14 @@ void __not_in_flash_func(main_loop)() {
 extern "C" int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-#ifdef RUN_FROM_CRYSTAL
-  set_sys_clock_khz(12000, true);
-#else
   // Run system at TMDS bit clock
   set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
-#endif
+  sleep_ms(10);
 
   setup_default_uart();
-  sleep_ms(1000);
   
   printf("Starting TinyUSB\n");
-  tusb_init();
+  tuh_hid_app_startup();
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif
