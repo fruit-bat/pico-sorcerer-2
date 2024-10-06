@@ -117,25 +117,6 @@ At the prompt type 'GO BC00' to enter CP/M:
 ```
 
 ## Build
-The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
-will need to be replaced with a version containing a HID report parser and USB hub support.
-
-Using *git* protocol:
-```sh
-cd $PICO_SDK_PATH/lib/
-mv tinyusb tinyusb.orig
-git clone git@github.com:fruit-bat/tinyusb.git
-cd tinyusb
-git checkout hid_micro_parser
-```
-...or using *https* protocol:
-```sh
-cd $PICO_SDK_PATH/lib/
-mv tinyusb tinyusb.orig
-git clone https://github.com/fruit-bat/tinyusb.git
-cd tinyusb
-git checkout hid_micro_parser
-```
 
 Make a folder in which to clone the required projects e.g.
 ```sh
@@ -147,22 +128,21 @@ Clone the projects from github:
 
 Using *git* protocol:
 ```sh
+git clone git@github.com:fruit-bat/pico-hid-host
 git clone git@github.com:fruit-bat/pico-extras.git
 git clone git@github.com:fruit-bat/PicoDVI.git
-git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-sorcerer2.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 git clone git@github.com:redcode/Z80.git
 git clone git@github.com:redcode/Zeta.git
-
 ```
 ...or using *https* protocol:
 ```sh
+git clone https://github.com/fruit-bat/pico-hid-host
 git clone https://github.com/fruit-bat/pico-extras.git
 git clone https://github.com/fruit-bat/PicoDVI.git
-git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-sorcerer2.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
